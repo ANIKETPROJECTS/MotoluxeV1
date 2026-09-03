@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { uploadToCloudinary } from "@/lib/server/cloudinary";
+import { recordMediaAsset } from "@/lib/server/admin-media";
 import { findAdminFromRequest } from "@/lib/server/admin-auth";
 import { jsonError } from "@/lib/server/http";
 
@@ -32,7 +33,18 @@ export const Route = createFileRoute("/api/admin/media/upload")({
             ...(typeof publicId === "string" ? { publicId } : {}),
           } as const;
           const result = await uploadToCloudinary(uploadOptions);
-          return Response.json({ asset: result }, { status: 201 });
+          const asset = await recordMediaAsset({
+            secureUrl: result.secureUrl,
+            publicId: result.publicId,
+            assetId: result.assetId,
+            folder: result.folder,
+            kind: kind as (typeof uploadKinds)[number],
+            section: typeof section === "string" ? section : "",
+            originalName: file.name,
+            mimeType: file.type,
+            bytes: file.size,
+          });
+          return Response.json({ asset }, { status: 201 });
         } catch (error) {
           console.error("Cloudinary media upload unavailable", error);
           return jsonError(

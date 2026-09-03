@@ -96,3 +96,29 @@ export async function uploadToCloudinary(options: {
     folder,
   };
 }
+
+export async function deleteFromCloudinary(publicId: string) {
+  if (!publicId) return;
+  const cloudName = requiredSecret("CLOUDINARY_CLOUD_NAME");
+  const apiKey = requiredSecret("CLOUDINARY_API_KEY");
+  const apiSecret = requiredSecret("CLOUDINARY_API_SECRET");
+  const timestamp = Math.floor(Date.now() / 1000).toString();
+  const signedParams = { public_id: publicId, timestamp };
+  const form = new FormData();
+  form.append("public_id", publicId);
+  form.append("timestamp", timestamp);
+  form.append("api_key", apiKey);
+  form.append("signature", signatureFor(signedParams, apiSecret));
+
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/destroy`, {
+    method: "POST",
+    body: form,
+  });
+  const payload = (await response.json().catch(() => ({}))) as {
+    result?: string;
+    error?: { message?: string };
+  };
+  if (!response.ok || (payload.result !== "ok" && payload.result !== "not found")) {
+    throw new Error(payload.error?.message ?? "Cloudinary could not remove the image.");
+  }
+}

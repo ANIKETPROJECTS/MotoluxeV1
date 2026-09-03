@@ -20,6 +20,7 @@ import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
 import { Route as AdminCustomersRouteImport } from './routes/admin.customers'
 import { Route as AdminInventoryRouteImport } from './routes/admin.inventory'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminMediaRouteImport } from './routes/admin.media'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
@@ -51,6 +52,8 @@ import { Route as ApiAdminCategoriesReorderRouteImport } from './routes/api/admi
 import { Route as ApiAdminCustomersIndexRouteImport } from './routes/api/admin/customers/index'
 import { Route as ApiAdminCustomersCustomerIdRouteImport } from './routes/api/admin/customers/$customerId'
 import { Route as ApiAdminInventoryMovementIdRouteImport } from './routes/api/admin/inventory/$movementId'
+import { Route as ApiAdminMediaIndexRouteImport } from './routes/api/admin/media/index'
+import { Route as ApiAdminMediaMediaIdRouteImport } from './routes/api/admin/media/$mediaId'
 import { Route as ApiAdminMediaUploadRouteImport } from './routes/api/admin/media/upload'
 import { Route as ApiAdminOrdersOrderIdRouteImport } from './routes/api/admin/orders/$orderId'
 import { Route as ApiAdminProductsIndexRouteImport } from './routes/api/admin/products/index'
@@ -111,6 +114,11 @@ const AdminInventoryRoute = AdminInventoryRouteImport.update({
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMediaRoute = AdminMediaRouteImport.update({
+  id: '/media',
+  path: '/media',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminOrdersRoute = AdminOrdersRouteImport.update({
@@ -272,6 +280,16 @@ const ApiAdminInventoryMovementIdRoute =
     path: '/$movementId',
     getParentRoute: () => ApiAdminInventoryRoute,
   } as any)
+const ApiAdminMediaIndexRoute = ApiAdminMediaIndexRouteImport.update({
+  id: '/api/admin/media/',
+  path: '/api/admin/media/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminMediaMediaIdRoute = ApiAdminMediaMediaIdRouteImport.update({
+  id: '/api/admin/media/$mediaId',
+  path: '/api/admin/media/$mediaId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminMediaUploadRoute = ApiAdminMediaUploadRouteImport.update({
   id: '/api/admin/media/upload',
   path: '/api/admin/media/upload',
@@ -316,6 +334,7 @@ export interface FileRoutesByFullPath {
   '/admin/customers': typeof AdminCustomersRoute
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/media': typeof AdminMediaRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/reviews': typeof AdminReviewsRoute
@@ -344,6 +363,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/categories/reorder': typeof ApiAdminCategoriesReorderRoute
   '/api/admin/customers/$customerId': typeof ApiAdminCustomersCustomerIdRoute
   '/api/admin/inventory/$movementId': typeof ApiAdminInventoryMovementIdRoute
+  '/api/admin/media/$mediaId': typeof ApiAdminMediaMediaIdRoute
   '/api/admin/media/upload': typeof ApiAdminMediaUploadRoute
   '/api/admin/orders/$orderId': typeof ApiAdminOrdersOrderIdRoute
   '/api/admin/products/$productId': typeof ApiAdminProductsProductIdRoute
@@ -351,6 +371,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/brands/': typeof ApiAdminBrandsIndexRoute
   '/api/admin/categories/': typeof ApiAdminCategoriesIndexRoute
   '/api/admin/customers/': typeof ApiAdminCustomersIndexRoute
+  '/api/admin/media/': typeof ApiAdminMediaIndexRoute
   '/api/admin/products/': typeof ApiAdminProductsIndexRoute
   '/api/admin/reviews/': typeof ApiAdminReviewsIndexRoute
 }
@@ -366,6 +387,7 @@ export interface FileRoutesByTo {
   '/admin/customers': typeof AdminCustomersRoute
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/media': typeof AdminMediaRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/reviews': typeof AdminReviewsRoute
@@ -394,6 +416,7 @@ export interface FileRoutesByTo {
   '/api/admin/categories/reorder': typeof ApiAdminCategoriesReorderRoute
   '/api/admin/customers/$customerId': typeof ApiAdminCustomersCustomerIdRoute
   '/api/admin/inventory/$movementId': typeof ApiAdminInventoryMovementIdRoute
+  '/api/admin/media/$mediaId': typeof ApiAdminMediaMediaIdRoute
   '/api/admin/media/upload': typeof ApiAdminMediaUploadRoute
   '/api/admin/orders/$orderId': typeof ApiAdminOrdersOrderIdRoute
   '/api/admin/products/$productId': typeof ApiAdminProductsProductIdRoute
@@ -401,6 +424,7 @@ export interface FileRoutesByTo {
   '/api/admin/brands': typeof ApiAdminBrandsIndexRoute
   '/api/admin/categories': typeof ApiAdminCategoriesIndexRoute
   '/api/admin/customers': typeof ApiAdminCustomersIndexRoute
+  '/api/admin/media': typeof ApiAdminMediaIndexRoute
   '/api/admin/products': typeof ApiAdminProductsIndexRoute
   '/api/admin/reviews': typeof ApiAdminReviewsIndexRoute
 }
@@ -417,6 +441,7 @@ export interface FileRoutesById {
   '/admin/customers': typeof AdminCustomersRoute
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/media': typeof AdminMediaRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/reviews': typeof AdminReviewsRoute
@@ -445,6 +470,7 @@ export interface FileRoutesById {
   '/api/admin/categories/reorder': typeof ApiAdminCategoriesReorderRoute
   '/api/admin/customers/$customerId': typeof ApiAdminCustomersCustomerIdRoute
   '/api/admin/inventory/$movementId': typeof ApiAdminInventoryMovementIdRoute
+  '/api/admin/media/$mediaId': typeof ApiAdminMediaMediaIdRoute
   '/api/admin/media/upload': typeof ApiAdminMediaUploadRoute
   '/api/admin/orders/$orderId': typeof ApiAdminOrdersOrderIdRoute
   '/api/admin/products/$productId': typeof ApiAdminProductsProductIdRoute
@@ -452,6 +478,7 @@ export interface FileRoutesById {
   '/api/admin/brands/': typeof ApiAdminBrandsIndexRoute
   '/api/admin/categories/': typeof ApiAdminCategoriesIndexRoute
   '/api/admin/customers/': typeof ApiAdminCustomersIndexRoute
+  '/api/admin/media/': typeof ApiAdminMediaIndexRoute
   '/api/admin/products/': typeof ApiAdminProductsIndexRoute
   '/api/admin/reviews/': typeof ApiAdminReviewsIndexRoute
 }
@@ -469,6 +496,7 @@ export interface FileRouteTypes {
     | '/admin/customers'
     | '/admin/inventory'
     | '/admin/login'
+    | '/admin/media'
     | '/admin/orders'
     | '/admin/products'
     | '/admin/reviews'
@@ -497,6 +525,7 @@ export interface FileRouteTypes {
     | '/api/admin/categories/reorder'
     | '/api/admin/customers/$customerId'
     | '/api/admin/inventory/$movementId'
+    | '/api/admin/media/$mediaId'
     | '/api/admin/media/upload'
     | '/api/admin/orders/$orderId'
     | '/api/admin/products/$productId'
@@ -504,6 +533,7 @@ export interface FileRouteTypes {
     | '/api/admin/brands/'
     | '/api/admin/categories/'
     | '/api/admin/customers/'
+    | '/api/admin/media/'
     | '/api/admin/products/'
     | '/api/admin/reviews/'
   fileRoutesByTo: FileRoutesByTo
@@ -519,6 +549,7 @@ export interface FileRouteTypes {
     | '/admin/customers'
     | '/admin/inventory'
     | '/admin/login'
+    | '/admin/media'
     | '/admin/orders'
     | '/admin/products'
     | '/admin/reviews'
@@ -547,6 +578,7 @@ export interface FileRouteTypes {
     | '/api/admin/categories/reorder'
     | '/api/admin/customers/$customerId'
     | '/api/admin/inventory/$movementId'
+    | '/api/admin/media/$mediaId'
     | '/api/admin/media/upload'
     | '/api/admin/orders/$orderId'
     | '/api/admin/products/$productId'
@@ -554,6 +586,7 @@ export interface FileRouteTypes {
     | '/api/admin/brands'
     | '/api/admin/categories'
     | '/api/admin/customers'
+    | '/api/admin/media'
     | '/api/admin/products'
     | '/api/admin/reviews'
   id:
@@ -569,6 +602,7 @@ export interface FileRouteTypes {
     | '/admin/customers'
     | '/admin/inventory'
     | '/admin/login'
+    | '/admin/media'
     | '/admin/orders'
     | '/admin/products'
     | '/admin/reviews'
@@ -597,6 +631,7 @@ export interface FileRouteTypes {
     | '/api/admin/categories/reorder'
     | '/api/admin/customers/$customerId'
     | '/api/admin/inventory/$movementId'
+    | '/api/admin/media/$mediaId'
     | '/api/admin/media/upload'
     | '/api/admin/orders/$orderId'
     | '/api/admin/products/$productId'
@@ -604,6 +639,7 @@ export interface FileRouteTypes {
     | '/api/admin/brands/'
     | '/api/admin/categories/'
     | '/api/admin/customers/'
+    | '/api/admin/media/'
     | '/api/admin/products/'
     | '/api/admin/reviews/'
   fileRoutesById: FileRoutesById
@@ -639,12 +675,14 @@ export interface RootRouteChildren {
   ApiAdminCategoriesCategoryIdRoute: typeof ApiAdminCategoriesCategoryIdRoute
   ApiAdminCategoriesReorderRoute: typeof ApiAdminCategoriesReorderRoute
   ApiAdminCustomersCustomerIdRoute: typeof ApiAdminCustomersCustomerIdRoute
+  ApiAdminMediaMediaIdRoute: typeof ApiAdminMediaMediaIdRoute
   ApiAdminMediaUploadRoute: typeof ApiAdminMediaUploadRoute
   ApiAdminProductsProductIdRoute: typeof ApiAdminProductsProductIdRoute
   ApiAdminReviewsReviewIdRoute: typeof ApiAdminReviewsReviewIdRoute
   ApiAdminBrandsIndexRoute: typeof ApiAdminBrandsIndexRoute
   ApiAdminCategoriesIndexRoute: typeof ApiAdminCategoriesIndexRoute
   ApiAdminCustomersIndexRoute: typeof ApiAdminCustomersIndexRoute
+  ApiAdminMediaIndexRoute: typeof ApiAdminMediaIndexRoute
   ApiAdminProductsIndexRoute: typeof ApiAdminProductsIndexRoute
   ApiAdminReviewsIndexRoute: typeof ApiAdminReviewsIndexRoute
 }
@@ -726,6 +764,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/media': {
+      id: '/admin/media'
+      path: '/media'
+      fullPath: '/admin/media'
+      preLoaderRoute: typeof AdminMediaRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/orders': {
@@ -945,6 +990,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminInventoryMovementIdRouteImport
       parentRoute: typeof ApiAdminInventoryRoute
     }
+    '/api/admin/media/': {
+      id: '/api/admin/media/'
+      path: '/api/admin/media'
+      fullPath: '/api/admin/media/'
+      preLoaderRoute: typeof ApiAdminMediaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/media/$mediaId': {
+      id: '/api/admin/media/$mediaId'
+      path: '/api/admin/media/$mediaId'
+      fullPath: '/api/admin/media/$mediaId'
+      preLoaderRoute: typeof ApiAdminMediaMediaIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/media/upload': {
       id: '/api/admin/media/upload'
       path: '/api/admin/media/upload'
@@ -995,6 +1054,7 @@ interface AdminRouteChildren {
   AdminCustomersRoute: typeof AdminCustomersRoute
   AdminInventoryRoute: typeof AdminInventoryRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminMediaRoute: typeof AdminMediaRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminProductsRoute: typeof AdminProductsRoute
   AdminReviewsRoute: typeof AdminReviewsRoute
@@ -1006,6 +1066,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCustomersRoute: AdminCustomersRoute,
   AdminInventoryRoute: AdminInventoryRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminMediaRoute: AdminMediaRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminProductsRoute: AdminProductsRoute,
   AdminReviewsRoute: AdminReviewsRoute,
@@ -1068,12 +1129,14 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminCategoriesCategoryIdRoute: ApiAdminCategoriesCategoryIdRoute,
   ApiAdminCategoriesReorderRoute: ApiAdminCategoriesReorderRoute,
   ApiAdminCustomersCustomerIdRoute: ApiAdminCustomersCustomerIdRoute,
+  ApiAdminMediaMediaIdRoute: ApiAdminMediaMediaIdRoute,
   ApiAdminMediaUploadRoute: ApiAdminMediaUploadRoute,
   ApiAdminProductsProductIdRoute: ApiAdminProductsProductIdRoute,
   ApiAdminReviewsReviewIdRoute: ApiAdminReviewsReviewIdRoute,
   ApiAdminBrandsIndexRoute: ApiAdminBrandsIndexRoute,
   ApiAdminCategoriesIndexRoute: ApiAdminCategoriesIndexRoute,
   ApiAdminCustomersIndexRoute: ApiAdminCustomersIndexRoute,
+  ApiAdminMediaIndexRoute: ApiAdminMediaIndexRoute,
   ApiAdminProductsIndexRoute: ApiAdminProductsIndexRoute,
   ApiAdminReviewsIndexRoute: ApiAdminReviewsIndexRoute,
 }

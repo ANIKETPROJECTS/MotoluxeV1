@@ -10,6 +10,7 @@ const navigation = [
   { label: "Orders", to: "/admin/orders" },
   { label: "Customers", to: "/admin/customers" },
   { label: "Reviews & questions", to: "/admin/reviews" },
+  { label: "Media library", to: "/admin/media" },
   { label: "Reports & exports" },
   { label: "Settings" },
 ];
@@ -131,7 +132,7 @@ function AdminShell({
           />
         )}
         <aside
-          className={`z-30 h-full shrink-0 overflow-y-auto border-r border-border bg-card p-5 transition-[width,transform] duration-200 lg:static lg:block ${
+          className={`admin-sidebar z-30 h-full shrink-0 overflow-y-auto border-r border-border p-5 transition-[width,transform] duration-200 lg:static lg:block ${
             mobileOpen ? "fixed inset-y-0 left-0 block w-64 shadow-2xl" : "hidden lg:block"
           } ${collapsed ? "lg:w-20 lg:px-3" : "w-64"}`}
         >
