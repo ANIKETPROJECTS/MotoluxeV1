@@ -22,6 +22,7 @@ type CustomerDocument = {
   createdAt: Date;
   updatedAt: Date;
   lastLoginAt?: Date;
+  archivedAt?: Date;
 };
 
 type SessionDocument = {
@@ -208,7 +209,10 @@ export async function findCustomerFromRequest(request: Request) {
   const session = await getSessionFromRequest(request);
   if (!session) return null;
   const { customers } = await getCollections();
-  const customer = await customers.findOne({ _id: session.customerId });
+  const customer = await customers.findOne({
+    _id: session.customerId,
+    archivedAt: { $exists: false },
+  });
   return customer ? customerFromDocument(customer) : null;
 }
 
@@ -261,6 +265,13 @@ export async function destroyCustomerSession(request: Request) {
 
 export async function loginCustomer(phone: string, name: string) {
   const { customers } = await getCollections();
+  const archived = await customers.findOne({ phone, archivedAt: { $exists: true } });
+  if (archived) {
+    return {
+      error:
+        "This customer account is archived. Please contact support to restore access." as const,
+    };
+  }
   const now = new Date();
   const existing = await customers.findOneAndUpdate(
     { phone },
@@ -311,7 +322,10 @@ export async function getAuthenticatedCustomer(request: Request) {
   const session = await getSessionFromRequest(request);
   if (!session) return null;
   const { customers } = await getCollections();
-  const customer = await customers.findOne({ _id: session.customerId });
+  const customer = await customers.findOne({
+    _id: session.customerId,
+    archivedAt: { $exists: false },
+  });
   return customer ?? null;
 }
 

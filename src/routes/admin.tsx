@@ -1,5 +1,5 @@
 import { Outlet, createFileRoute, Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { AdminAuthProvider, useAdminAuth } from "@/components/AdminAuthContext";
 
 const navigation = [
@@ -8,7 +8,7 @@ const navigation = [
   { label: "Categories & brands", to: "/admin/categories" },
   { label: "Inventory", to: "/admin/inventory" },
   { label: "Orders", to: "/admin/orders" },
-  { label: "Customers" },
+  { label: "Customers", to: "/admin/customers" },
   { label: "Reports & exports" },
   { label: "Settings" },
 ];
@@ -42,16 +42,7 @@ function AdminPage() {
     if (!checking && !admin) void navigate({ to: "/admin/login", replace: true });
   }, [admin, checking, isPublicAdminPath, navigate]);
 
-  if (pathname !== "/admin" && pathname !== "/admin/") {
-    if (!isPublicAdminPath && (checking || !admin)) {
-      return (
-        <section className="admin-theme flex min-h-[75vh] items-center justify-center bg-background px-5 py-20 text-foreground">
-          <span className="font-display text-xs uppercase tracking-[0.16em] text-primary">
-            Checking access
-          </span>
-        </section>
-      );
-    }
+  if (isPublicAdminPath) {
     return (
       <section className="admin-theme min-h-screen bg-background text-foreground">
         <Outlet />
@@ -70,53 +61,13 @@ function AdminPage() {
   }
 
   return (
-    <section className="admin-theme min-h-screen bg-background text-foreground">
-      <div className="mx-auto flex max-w-[1600px]">
-        <aside className="hidden w-64 shrink-0 border-r border-border bg-card p-5 lg:block">
-          <Link to="/" className="block border-b border-border pb-6">
-            <span className="font-display text-sm uppercase tracking-[0.14em]">Motoluxe Admin</span>
-            <span className="mt-2 block h-1 w-12 bg-primary" />
-          </Link>
-          <nav className="mt-6 grid gap-1" aria-label="Admin navigation">
-            {navigation.map((item) => {
-              const active =
-                item.to === pathname || (item.to === "/admin" && pathname === "/admin/");
-              const className = `flex items-center justify-between px-3 py-3 text-xs ${
-                active ? "bg-primary/10 font-medium text-primary" : "text-muted-foreground"
-              }`;
-              if (item.to) {
-                return (
-                  <Link key={item.label} to={item.to} className={className}>
-                    {item.label}
-                  </Link>
-                );
-              }
-              return (
-                <div key={item.label} className={className}>
-                  {item.label}
-                  <span className="ml-auto text-[9px] uppercase tracking-wider">Next</span>
-                </div>
-              );
-            })}
-          </nav>
-          <div className="mt-8 border-t border-border pt-5">
-            <div className="min-w-0">
-              <p className="truncate text-sm text-foreground">{admin.username}</p>
-              <p className="mt-1 font-display text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
-                {admin.role.replaceAll("_", " ")}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => void logout().then(() => navigate({ to: "/admin/login" }))}
-              className="mt-5 text-xs text-muted-foreground transition-colors hover:text-primary"
-            >
-              Sign out
-            </button>
-          </div>
-        </aside>
-
-        <div className="min-w-0 flex-1">
+    <AdminShell
+      admin={admin}
+      pathname={pathname}
+      onLogout={() => void logout().then(() => navigate({ to: "/admin/login" }))}
+    >
+      {pathname === "/admin" || pathname === "/admin/" ? (
+        <div>
           <header className="border-b border-border bg-card px-5 py-6 sm:px-8">
             <div className="flex flex-wrap items-start justify-between gap-5">
               <div>
@@ -134,10 +85,136 @@ function AdminPage() {
               </div>
             </div>
           </header>
-
           <div className="p-5 sm:p-8">
             <AdminOverview />
           </div>
+        </div>
+      ) : (
+        <Outlet />
+      )}
+    </AdminShell>
+  );
+}
+
+function AdminShell({
+  admin,
+  pathname,
+  onLogout,
+  children,
+}: {
+  admin: { username: string; role: string };
+  pathname: string;
+  onLogout: () => void;
+  children: ReactNode;
+}) {
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    setCollapsed(window.localStorage.getItem("motoluxe_admin_sidebar") === "collapsed");
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem("motoluxe_admin_sidebar", collapsed ? "collapsed" : "open");
+  }, [collapsed]);
+
+  return (
+    <section className="admin-theme min-h-screen bg-background text-foreground">
+      <div className="relative mx-auto flex min-h-screen max-w-[1600px]">
+        {mobileOpen && (
+          <button
+            type="button"
+            aria-label="Close admin navigation"
+            onClick={() => setMobileOpen(false)}
+            className="fixed inset-0 z-20 bg-foreground/20 lg:hidden"
+          />
+        )}
+        <aside
+          className={`z-30 shrink-0 border-r border-border bg-card p-5 transition-[width,transform] duration-200 lg:static lg:block ${
+            mobileOpen ? "fixed inset-y-0 left-0 block w-64 shadow-2xl" : "hidden lg:block"
+          } ${collapsed ? "lg:w-20 lg:px-3" : "w-64"}`}
+        >
+          <div className={`border-b border-border pb-6 ${collapsed ? "lg:text-center" : ""}`}>
+            <Link to="/" className="block" onClick={() => setMobileOpen(false)}>
+              <span className="font-display text-sm uppercase tracking-[0.14em]">
+                {collapsed ? "ML" : "Motoluxe Admin"}
+              </span>
+              <span className={`mt-2 block h-1 bg-primary ${collapsed ? "mx-auto w-7" : "w-12"}`} />
+            </Link>
+          </div>
+          <nav className="mt-6 grid gap-1" aria-label="Admin navigation">
+            {navigation.map((item) => {
+              const active =
+                item.to === pathname || (item.to === "/admin" && pathname === "/admin/");
+              const className = `flex items-center justify-between px-3 py-3 text-xs ${
+                active ? "bg-primary/10 font-medium text-primary" : "text-muted-foreground"
+              } ${collapsed ? "lg:justify-center lg:px-1" : ""}`;
+              const label = collapsed ? item.label.slice(0, 1) : item.label;
+              if (item.to) {
+                return (
+                  <Link
+                    key={item.label}
+                    to={item.to}
+                    className={className}
+                    title={collapsed ? item.label : undefined}
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <span>{label}</span>
+                  </Link>
+                );
+              }
+              return (
+                <div
+                  key={item.label}
+                  className={className}
+                  title={collapsed ? item.label : undefined}
+                >
+                  <span>{label}</span>
+                  {!collapsed && (
+                    <span className="ml-auto text-[9px] uppercase tracking-wider">Next</span>
+                  )}
+                </div>
+              );
+            })}
+          </nav>
+          <div className={`mt-8 border-t border-border pt-5 ${collapsed ? "lg:text-center" : ""}`}>
+            <div className={collapsed ? "lg:hidden" : ""}>
+              <p className="truncate text-sm text-foreground">{admin.username}</p>
+              <p className="mt-1 font-display text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                {admin.role.replaceAll("_", " ")}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onLogout}
+              className="mt-5 text-xs text-muted-foreground transition-colors hover:text-primary"
+            >
+              Sign out
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={() => setCollapsed((value) => !value)}
+            className="mt-8 hidden w-full border-t border-border pt-5 text-center font-display text-[10px] uppercase tracking-[0.12em] text-muted-foreground hover:text-primary lg:block"
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {collapsed ? "Expand" : "Collapse"}
+          </button>
+        </aside>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between border-b border-border bg-card px-5 py-4 lg:hidden">
+            <span className="font-display text-sm uppercase tracking-[0.14em]">Motoluxe Admin</span>
+            <button
+              type="button"
+              onClick={() => setMobileOpen((value) => !value)}
+              className="border border-border px-3 py-2 font-display text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
+              aria-expanded={mobileOpen}
+            >
+              {mobileOpen ? "Close menu" : "Menu"}
+            </button>
+          </div>
+          {children}
         </div>
       </div>
     </section>
