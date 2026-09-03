@@ -84,14 +84,12 @@ function AboutPage() {
       <section className="mx-auto grid max-w-7xl gap-12 px-5 py-20 lg:grid-cols-[0.8fr_1.2fr] lg:py-28">
         <div>
           <span className="eyebrow text-accent">The Motoluxe standard</span>
-          <h2 className="mt-4 text-4xl font-bold sm:text-5xl">
-            Better care is a habit.
-          </h2>
+          <h2 className="mt-4 text-4xl font-bold sm:text-5xl">Better care is a habit.</h2>
         </div>
         <div className="space-y-6 text-base leading-relaxed text-muted-foreground">
           <p>
-            A clean chain, a protected surface and a well-finished interior are not separate
-            ideas. They are part of owning, running and handing over a machine with pride.
+            A clean chain, a protected surface and a well-finished interior are not separate ideas.
+            They are part of owning, running and handing over a machine with pride.
           </p>
           <p>
             We bring those jobs into one focused range, with formulas and instructions made to be

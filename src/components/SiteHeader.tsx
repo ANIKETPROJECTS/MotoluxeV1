@@ -1,7 +1,7 @@
 import { ChevronDown, Heart, LogOut, ShoppingCart, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { categories, getProductsByCategory } from "@/data/catalog";
+import { categories, getProductsByCategory, type CategorySlug } from "@/data/catalog";
 import { Logo } from "./Logo";
 import { CartPanel, useCart } from "./CartContext";
 import { AccountIcon, useCustomerAuth } from "./CustomerAuthContext";
@@ -12,15 +12,23 @@ const linkBase =
 
 function CategoriesMenu() {
   const [open, setOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<CategorySlug | null>(null);
 
   return (
     <div
       className="relative flex h-full items-center"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      onMouseEnter={() => {
+        setOpen(true);
+        setActiveCategory((current) => current ?? "chain-care");
+      }}
+      onMouseLeave={() => {
+        setOpen(false);
+        setActiveCategory(null);
+      }}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
           setOpen(false);
+          setActiveCategory(null);
         }
       }}
     >
@@ -29,38 +37,55 @@ function CategoriesMenu() {
         className={`${linkBase} inline-flex items-center gap-1 py-6`}
         aria-expanded={open}
         aria-haspopup="true"
-        onFocus={() => setOpen(true)}
-        onClick={() => setOpen((isOpen) => !isOpen)}
+        onFocus={() => {
+          setOpen(true);
+          setActiveCategory((current) => current ?? "chain-care");
+        }}
+        onClick={() => {
+          const nextOpen = !open;
+          setOpen(nextOpen);
+          setActiveCategory(nextOpen ? (activeCategory ?? "chain-care") : null);
+        }}
       >
         Categories
         <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
 
       <div
-        className={`absolute left-1/2 top-full z-50 w-[min(42rem,calc(100vw-2rem))] -translate-x-1/2 border border-border bg-surface/95 p-4 shadow-2xl backdrop-blur-xl transition-all duration-200 ${
+        className={`absolute left-1/2 top-full z-50 w-[min(40rem,calc(100vw-2rem))] -translate-x-1/2 border border-border bg-surface/95 p-3 shadow-2xl backdrop-blur-xl transition-all duration-200 ${
           open
             ? "pointer-events-auto visible translate-y-0 opacity-100"
             : "invisible pointer-events-none translate-y-2 opacity-0"
         }`}
       >
-        <div className="mb-4 border-b border-border pb-3">
+        <div className="mb-3 border-b border-border pb-3">
           <span className="eyebrow text-accent">Browse the product tree</span>
-          <p className="mt-1.5 font-display text-xl uppercase tracking-[0.08em] text-foreground">
-            Care essentials by routine
+          <p className="mt-1.5 font-display text-lg uppercase tracking-[0.08em] text-foreground">
+            Categories
           </p>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-3">
-          {categories.map((category) => {
-            const categoryProducts = getProductsByCategory(category.slug);
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="grid gap-1 sm:w-44 sm:shrink-0">
+            {categories.map((category) => {
+              const isActive = activeCategory === category.slug;
 
-            return (
-              <section key={category.slug}>
+              return (
                 <Link
+                  key={category.slug}
                   to="/category/$category"
                   params={{ category: category.slug }}
-                  className="group/category flex items-center justify-between border-b border-border pb-1.5 font-display text-xs uppercase tracking-[0.12em] text-foreground transition-colors hover:text-primary"
-                  onClick={() => setOpen(false)}
+                  onMouseEnter={() => setActiveCategory(category.slug)}
+                  onFocus={() => setActiveCategory(category.slug)}
+                  onClick={() => {
+                    setOpen(false);
+                    setActiveCategory(null);
+                  }}
+                  className={`group/category flex items-center justify-between border border-transparent px-2.5 py-2.5 font-display text-xs uppercase tracking-[0.1em] transition-colors ${
+                    isActive
+                      ? "border-primary/40 bg-primary/10 text-primary"
+                      : "text-foreground hover:border-border hover:bg-background"
+                  }`}
                 >
                   <span>
                     <span className="mr-2 text-accent">{category.index}</span>
@@ -68,32 +93,67 @@ function CategoriesMenu() {
                   </span>
                   <ChevronDown className="h-3 w-3 -rotate-90 transition-transform group-hover/category:translate-x-1" />
                 </Link>
-                <div className="mt-1.5 grid gap-0.5">
-                  {categoryProducts.map((product) => (
+              );
+            })}
+          </div>
+
+          <div className="min-h-36 flex-1 border-t border-border pt-3 sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0">
+            {activeCategory ? (
+              (() => {
+                const category = categories.find((item) => item.slug === activeCategory);
+                if (!category) return null;
+
+                return (
+                  <>
                     <Link
-                      key={product.slug}
-                      to="/product/$product"
-                      params={{ product: product.slug }}
-                      className="border border-transparent px-1.5 py-1.5 text-xs text-muted-foreground transition-colors hover:border-border hover:bg-background hover:text-foreground"
-                      onClick={() => setOpen(false)}
+                      to="/category/$category"
+                      params={{ category: category.slug }}
+                      onClick={() => {
+                        setOpen(false);
+                        setActiveCategory(null);
+                      }}
+                      className="group/category flex items-center justify-between border-b border-border pb-2 font-display text-xs uppercase tracking-[0.12em] text-foreground transition-colors hover:text-primary"
                     >
-                      <span className="block font-display uppercase tracking-[0.08em]">
-                        {product.name}
+                      <span>
+                        <span className="mr-2 text-accent">{category.index}</span>
+                        {category.name}
                       </span>
-                      <span className="mt-0.5 block text-[11px] leading-snug">
-                        {product.tagline}
+                      <span className="text-[10px] text-muted-foreground transition-colors group-hover/category:text-primary">
+                        View all
                       </span>
                     </Link>
-                  ))}
-                </div>
-              </section>
-            );
-          })}
+                    <div className="mt-2 grid gap-1">
+                      {getProductsByCategory(category.slug).map((product) => (
+                        <Link
+                          key={product.slug}
+                          to="/product/$product"
+                          params={{ product: product.slug }}
+                          onClick={() => {
+                            setOpen(false);
+                            setActiveCategory(null);
+                          }}
+                          className="border border-transparent px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:border-border hover:bg-background hover:text-foreground"
+                        >
+                          <span className="block font-display uppercase tracking-[0.08em]">
+                            {product.name}
+                          </span>
+                          <span className="mt-0.5 block text-[11px] leading-snug">
+                            {product.tagline}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  </>
+                );
+              })()
+            ) : (
+              <p className="text-xs text-muted-foreground">Hover a category to browse products.</p>
+            )}
+          </div>
         </div>
 
-        <p className="mt-4 border-t border-border pt-3 text-[11px] text-muted-foreground">
-          Select a category to view all products, or choose an individual product to see its
-          details.
+        <p className="mt-3 border-t border-border pt-3 text-[11px] text-muted-foreground">
+          Hover a category for its products, or click a category to view the full collection.
         </p>
       </div>
     </div>
@@ -117,6 +177,9 @@ export function SiteHeader() {
         Home
       </Link>
       <CategoriesMenu />
+      <Link to="/about" className={linkBase} activeProps={{ className: "text-foreground" }}>
+        About Us
+      </Link>
       <Link to="/contact" className={linkBase} activeProps={{ className: "text-foreground" }}>
         Contact Us
       </Link>
