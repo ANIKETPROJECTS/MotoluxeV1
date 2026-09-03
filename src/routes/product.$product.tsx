@@ -12,11 +12,7 @@ import {
   ShoppingCart,
   ShieldCheck,
 } from "lucide-react";
-import {
-  getCategory,
-  getProduct,
-  getProductsByCategory,
-} from "@/data/catalog";
+import { getCategory, getProduct, getProductsByCategory } from "@/data/catalog";
 import { ProductCard } from "@/components/ProductCard";
 import { useCart } from "@/components/CartContext";
 import { useWishlist } from "@/components/WishlistContext";
@@ -28,18 +24,13 @@ export const Route = createFileRoute("/product/$product")({
     return {
       product,
       category: getCategory(product.category)!,
-      related: getProductsByCategory(product.category).filter(
-        (item) => item.slug !== product.slug,
-      ),
+      related: getProductsByCategory(product.category).filter((item) => item.slug !== product.slug),
     };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [
-          { title: "Product not found — Motoluxe" },
-          { name: "robots", content: "noindex" },
-        ],
+        meta: [{ title: "Product not found — Motoluxe" }, { name: "robots", content: "noindex" }],
       };
     }
     const { product } = loaderData;
@@ -112,7 +103,11 @@ function ProductPage() {
             </span>
             <button
               type="button"
-              aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
+              aria-label={
+                wishlisted
+                  ? `Remove ${product.name} from wishlist`
+                  : `Add ${product.name} to wishlist`
+              }
               aria-pressed={wishlisted}
               onClick={() => toggleWishlist(product)}
               className={`absolute right-5 top-5 grid h-11 w-11 place-items-center border backdrop-blur transition-colors ${
@@ -146,9 +141,7 @@ function ProductPage() {
 
         <div>
           <span className="eyebrow text-primary">{category.name}</span>
-          <h1 className="mt-4 max-w-2xl text-5xl font-bold sm:text-7xl">
-            {product.name}
-          </h1>
+          <h1 className="mt-4 max-w-2xl text-5xl font-bold sm:text-7xl">{product.name}</h1>
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
             {product.tagline}
           </p>
@@ -222,8 +215,7 @@ function ProductPage() {
             <div className="bg-card p-5">
               <span className="eyebrow text-primary">Best for</span>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                Riders, detailers and workshops building a dependable care
-                routine.
+                Riders, detailers and workshops building a dependable care routine.
               </p>
             </div>
             <div className="bg-card p-5">
@@ -246,9 +238,7 @@ function ProductPage() {
                   <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center bg-primary/15 text-primary">
                     <Check className="h-3.5 w-3.5" />
                   </span>
-                  <span className="leading-snug text-foreground/90">
-                    {benefit}
-                  </span>
+                  <span className="leading-snug text-foreground/90">{benefit}</span>
                 </li>
               ))}
             </ul>
@@ -262,9 +252,7 @@ function ProductPage() {
                   <span className="grid h-7 w-7 shrink-0 place-items-center border border-primary/40 font-display text-sm text-primary">
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <span className="leading-relaxed text-muted-foreground">
-                    {step}
-                  </span>
+                  <span className="leading-relaxed text-muted-foreground">{step}</span>
                 </li>
               ))}
             </ol>
@@ -277,9 +265,7 @@ function ProductPage() {
           <div className="flex flex-wrap items-end justify-between gap-5">
             <div>
               <span className="eyebrow text-primary">Complete the routine</span>
-              <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-                More from {category.name}
-              </h2>
+              <h2 className="mt-3 text-3xl font-bold sm:text-4xl">More from {category.name}</h2>
             </div>
             <Link
               to="/category/$category"
