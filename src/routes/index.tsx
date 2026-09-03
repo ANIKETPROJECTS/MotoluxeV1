@@ -134,7 +134,7 @@ function Home() {
                 to="/contact"
                 className="inline-flex items-center gap-2 border border-white/25 bg-black/20 px-7 py-4 font-display text-sm uppercase tracking-[0.22em] text-foreground backdrop-blur transition-colors hover:border-accent hover:text-accent"
               >
-                Dealer enquiries
+                Dealer support
                 <ArrowUpRight className="h-4 w-4" />
               </Link>
             </div>
@@ -364,7 +364,7 @@ function Home() {
               to="/contact"
               className="group mt-7 inline-flex items-center gap-3 bg-background px-6 py-4 font-display text-xs uppercase tracking-[0.2em] text-foreground transition-colors hover:bg-accent"
             >
-              Start an enquiry
+              Talk to our team
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>

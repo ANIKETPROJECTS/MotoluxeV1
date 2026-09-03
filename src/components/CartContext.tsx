@@ -105,7 +105,7 @@ export function CartPanel() {
           type="button"
           aria-label="Close cart"
           onClick={closeCart}
-          className="fixed inset-0 z-[60] cursor-default bg-background"
+          className="fixed inset-0 z-[60] cursor-default bg-black/45 backdrop-blur-[1px]"
         />
       )}
       <aside
@@ -297,7 +297,7 @@ export function CartPanel() {
               Review this selection before placing your order.
             </p>
             <Link
-              to="/contact"
+              to="/order"
               onClick={closeCart}
               className="group mt-5 flex items-center justify-center gap-2 bg-primary px-5 py-4 font-display text-xs uppercase tracking-[0.2em] text-primary-foreground"
             >

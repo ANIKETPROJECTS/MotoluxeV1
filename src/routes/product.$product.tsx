@@ -145,7 +145,7 @@ function ProductPage() {
                 {product.price}
               </span>
               <span className="mt-2 block text-xs text-muted-foreground">
-                Contact us for current stock and dealer pricing.
+                Select your quantity and continue to place your order.
               </span>
             </div>
             <span className="eyebrow text-muted-foreground">{product.size}</span>

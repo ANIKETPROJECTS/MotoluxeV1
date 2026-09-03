@@ -1,0 +1,257 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowLeft, ArrowRight, Check, Minus, Plus } from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { useCart } from "@/components/CartContext";
+
+export const Route = createFileRoute("/order")({
+  head: () => ({
+    meta: [
+      { title: "Place Your Order — Motoluxe" },
+      {
+        name: "description",
+        content:
+          "Review your Motoluxe products and submit your order details.",
+      },
+    ],
+  }),
+  component: OrderPage,
+});
+
+function OrderPage() {
+  const { lines, itemCount, updateQuantity, removeFromCart } = useCart();
+  const [placed, setPlaced] = useState(false);
+
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setPlaced(true);
+  }
+
+  if (placed) {
+    return (
+      <section className="mx-auto flex min-h-[70vh] max-w-3xl items-center justify-center px-5 py-20">
+        <div className="w-full border border-border bg-card p-8 text-center sm:p-14">
+          <div className="mx-auto grid h-16 w-16 place-items-center bg-accent/15 text-accent">
+            <Check className="h-8 w-8" />
+          </div>
+          <span className="eyebrow mt-7 block text-primary">Order received</span>
+          <h1 className="mt-4 text-4xl font-bold sm:text-5xl">
+            Your order is ready
+          </h1>
+          <p className="mx-auto mt-5 max-w-lg text-sm leading-relaxed text-muted-foreground">
+            We have recorded your order details. Our team will confirm product
+            availability and delivery information with you.
+          </p>
+          <Link
+            to="/"
+            className="group mt-8 inline-flex items-center gap-2 bg-primary px-6 py-4 font-display text-xs uppercase tracking-[0.2em] text-primary-foreground"
+          >
+            Continue shopping
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </Link>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="mx-auto max-w-7xl px-5 py-16 lg:py-20">
+      <Link
+        to="/"
+        className="inline-flex items-center gap-2 text-xs text-muted-foreground transition-colors hover:text-primary"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
+        Continue shopping
+      </Link>
+
+      <div className="mt-8 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+        <div>
+          <span className="eyebrow flex items-center gap-3 text-primary">
+            <span className="h-px w-8 bg-primary" />
+            Place an order
+          </span>
+          <h1 className="mt-4 max-w-2xl text-5xl font-bold sm:text-6xl">
+            Order details
+          </h1>
+          <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground">
+            Share your contact and delivery details. We will confirm
+            availability and the next steps for your order.
+          </p>
+
+          {lines.length === 0 ? (
+            <div className="mt-10 border border-border bg-card p-8">
+              <h2 className="text-2xl font-semibold">Your cart is empty</h2>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                Add a Motoluxe product before placing an order.
+              </p>
+              <Link
+                to="/category/$category"
+                params={{ category: "chain-care" }}
+                className="mt-7 inline-flex items-center gap-2 bg-primary px-5 py-3 font-display text-xs uppercase tracking-[0.2em] text-primary-foreground"
+              >
+                Browse products <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          ) : (
+            <form onSubmit={onSubmit} className="mt-10 space-y-6">
+              <div>
+                <label
+                  htmlFor="order-name"
+                  className="eyebrow mb-2 block text-muted-foreground"
+                >
+                  Name
+                </label>
+                <input
+                  id="order-name"
+                  name="name"
+                  required
+                  placeholder="Your full name"
+                  className="w-full border border-input bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary"
+                />
+              </div>
+              <div className="grid gap-6 sm:grid-cols-2">
+                <div>
+                  <label
+                    htmlFor="order-email"
+                    className="eyebrow mb-2 block text-muted-foreground"
+                  >
+                    Email
+                  </label>
+                  <input
+                    id="order-email"
+                    name="email"
+                    type="email"
+                    required
+                    placeholder="you@example.com"
+                    className="w-full border border-input bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="order-phone"
+                    className="eyebrow mb-2 block text-muted-foreground"
+                  >
+                    Phone
+                  </label>
+                  <input
+                    id="order-phone"
+                    name="phone"
+                    type="tel"
+                    required
+                    placeholder="+91"
+                    className="w-full border border-input bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary"
+                  />
+                </div>
+              </div>
+              <div>
+                <label
+                  htmlFor="order-address"
+                  className="eyebrow mb-2 block text-muted-foreground"
+                >
+                  Delivery details
+                </label>
+                <textarea
+                  id="order-address"
+                  name="address"
+                  required
+                  rows={5}
+                  placeholder="Delivery address and any order notes"
+                  className="w-full resize-none border border-input bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary"
+                />
+              </div>
+              <button
+                type="submit"
+                className="group inline-flex items-center gap-2 bg-primary px-8 py-4 font-display text-sm uppercase tracking-[0.22em] text-primary-foreground transition-all hover:ember-glow"
+              >
+                Place order
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </button>
+            </form>
+          )}
+        </div>
+
+        <aside className="h-fit border border-border bg-card p-6 sm:p-8">
+          <div className="flex items-center justify-between border-b border-border pb-4">
+            <div>
+              <span className="eyebrow text-primary">Your selection</span>
+              <h2 className="mt-2 text-2xl font-semibold">Order summary</h2>
+            </div>
+            <span className="font-display text-xs uppercase tracking-[0.12em] text-muted-foreground">
+              {itemCount} item{itemCount === 1 ? "" : "s"}
+            </span>
+          </div>
+
+          {lines.length === 0 ? (
+            <p className="py-8 text-sm text-muted-foreground">
+              Your selected products will appear here.
+            </p>
+          ) : (
+            <div className="divide-y divide-border">
+              {lines.map((line) => (
+                <div key={line.product.slug} className="flex gap-4 py-5">
+                  <img
+                    src={line.product.image}
+                    alt={line.product.name}
+                    width={80}
+                    height={96}
+                    className="h-24 w-20 shrink-0 object-cover"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <span className="eyebrow text-primary">Motoluxe</span>
+                        <h3 className="mt-1 text-lg font-semibold">
+                          {line.product.name}
+                        </h3>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeFromCart(line.product.slug)}
+                        className="text-xs text-muted-foreground transition-colors hover:text-primary"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div className="mt-4 flex items-center justify-between gap-3">
+                      <div className="flex items-center border border-border bg-surface">
+                        <button
+                          type="button"
+                          aria-label={`Decrease ${line.product.name} quantity`}
+                          onClick={() => {
+                            if (line.quantity === 1) {
+                              removeFromCart(line.product.slug);
+                            } else {
+                              updateQuantity(line.product.slug, line.quantity - 1);
+                            }
+                          }}
+                          className="grid h-8 w-8 place-items-center transition-colors hover:bg-surface-raised"
+                        >
+                          <Minus className="h-3.5 w-3.5" />
+                        </button>
+                        <span className="w-8 text-center font-display text-sm">
+                          {line.quantity}
+                        </span>
+                        <button
+                          type="button"
+                          aria-label={`Increase ${line.product.name} quantity`}
+                          onClick={() =>
+                            updateQuantity(line.product.slug, line.quantity + 1)
+                          }
+                          className="grid h-8 w-8 place-items-center transition-colors hover:bg-surface-raised"
+                        >
+                          <Plus className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                      <span className="font-display text-xs uppercase tracking-[0.12em] text-muted-foreground">
+                        {line.product.price}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </aside>
+      </div>
+    </section>
+  );
+}
