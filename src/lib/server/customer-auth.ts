@@ -359,3 +359,8 @@ export async function getOrderCollection() {
   const { orders } = await getCollections();
   return orders;
 }
+
+export async function getCustomerCollection() {
+  const { customers } = await getCollections();
+  return customers;
+}

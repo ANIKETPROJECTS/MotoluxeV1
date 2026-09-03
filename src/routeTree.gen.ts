@@ -21,6 +21,7 @@ import { Route as CategoryCategoryRouteImport } from './routes/category.$categor
 import { Route as ProductProductRouteImport } from './routes/product.$product'
 import { Route as ApiAccountMeRouteImport } from './routes/api/account/me'
 import { Route as ApiAccountWishlistRouteImport } from './routes/api/account/wishlist'
+import { Route as ApiAdminOverviewRouteImport } from './routes/api/admin/overview'
 import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
 import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthMeRouteImport } from './routes/api/auth/me'
@@ -31,6 +32,8 @@ import { Route as ApiAdminAuthLogoutRouteImport } from './routes/api/admin/auth/
 import { Route as ApiAdminAuthMeRouteImport } from './routes/api/admin/auth/me'
 import { Route as ApiAdminAuthSetupRouteImport } from './routes/api/admin/auth/setup'
 import { Route as ApiAdminAuthStatusRouteImport } from './routes/api/admin/auth/status'
+import { Route as ApiAdminProductsIndexRouteImport } from './routes/api/admin/products/index'
+import { Route as ApiAdminProductsProductIdRouteImport } from './routes/api/admin/products/$productId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -92,6 +95,11 @@ const ApiAccountWishlistRoute = ApiAccountWishlistRouteImport.update({
   path: '/api/account/wishlist',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminOverviewRoute = ApiAdminOverviewRouteImport.update({
+  id: '/api/admin/overview',
+  path: '/api/admin/overview',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthLoginRoute = ApiAuthLoginRouteImport.update({
   id: '/api/auth/login',
   path: '/api/auth/login',
@@ -142,6 +150,17 @@ const ApiAdminAuthStatusRoute = ApiAdminAuthStatusRouteImport.update({
   path: '/api/admin/auth/status',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminProductsIndexRoute = ApiAdminProductsIndexRouteImport.update({
+  id: '/api/admin/products/',
+  path: '/api/admin/products/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminProductsProductIdRoute =
+  ApiAdminProductsProductIdRouteImport.update({
+    id: '/api/admin/products/$productId',
+    path: '/api/admin/products/$productId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -156,6 +175,7 @@ export interface FileRoutesByFullPath {
   '/product/$product': typeof ProductProductRoute
   '/api/account/me': typeof ApiAccountMeRoute
   '/api/account/wishlist': typeof ApiAccountWishlistRoute
+  '/api/admin/overview': typeof ApiAdminOverviewRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
@@ -166,6 +186,8 @@ export interface FileRoutesByFullPath {
   '/api/admin/auth/me': typeof ApiAdminAuthMeRoute
   '/api/admin/auth/setup': typeof ApiAdminAuthSetupRoute
   '/api/admin/auth/status': typeof ApiAdminAuthStatusRoute
+  '/api/admin/products/$productId': typeof ApiAdminProductsProductIdRoute
+  '/api/admin/products/': typeof ApiAdminProductsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -180,6 +202,7 @@ export interface FileRoutesByTo {
   '/product/$product': typeof ProductProductRoute
   '/api/account/me': typeof ApiAccountMeRoute
   '/api/account/wishlist': typeof ApiAccountWishlistRoute
+  '/api/admin/overview': typeof ApiAdminOverviewRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
@@ -190,6 +213,8 @@ export interface FileRoutesByTo {
   '/api/admin/auth/me': typeof ApiAdminAuthMeRoute
   '/api/admin/auth/setup': typeof ApiAdminAuthSetupRoute
   '/api/admin/auth/status': typeof ApiAdminAuthStatusRoute
+  '/api/admin/products/$productId': typeof ApiAdminProductsProductIdRoute
+  '/api/admin/products': typeof ApiAdminProductsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -205,6 +230,7 @@ export interface FileRoutesById {
   '/product/$product': typeof ProductProductRoute
   '/api/account/me': typeof ApiAccountMeRoute
   '/api/account/wishlist': typeof ApiAccountWishlistRoute
+  '/api/admin/overview': typeof ApiAdminOverviewRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
@@ -215,6 +241,8 @@ export interface FileRoutesById {
   '/api/admin/auth/me': typeof ApiAdminAuthMeRoute
   '/api/admin/auth/setup': typeof ApiAdminAuthSetupRoute
   '/api/admin/auth/status': typeof ApiAdminAuthStatusRoute
+  '/api/admin/products/$productId': typeof ApiAdminProductsProductIdRoute
+  '/api/admin/products/': typeof ApiAdminProductsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -231,6 +259,7 @@ export interface FileRouteTypes {
     | '/product/$product'
     | '/api/account/me'
     | '/api/account/wishlist'
+    | '/api/admin/overview'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
@@ -241,6 +270,8 @@ export interface FileRouteTypes {
     | '/api/admin/auth/me'
     | '/api/admin/auth/setup'
     | '/api/admin/auth/status'
+    | '/api/admin/products/$productId'
+    | '/api/admin/products/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -255,6 +286,7 @@ export interface FileRouteTypes {
     | '/product/$product'
     | '/api/account/me'
     | '/api/account/wishlist'
+    | '/api/admin/overview'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
@@ -265,6 +297,8 @@ export interface FileRouteTypes {
     | '/api/admin/auth/me'
     | '/api/admin/auth/setup'
     | '/api/admin/auth/status'
+    | '/api/admin/products/$productId'
+    | '/api/admin/products'
   id:
     | '__root__'
     | '/'
@@ -279,6 +313,7 @@ export interface FileRouteTypes {
     | '/product/$product'
     | '/api/account/me'
     | '/api/account/wishlist'
+    | '/api/admin/overview'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
@@ -289,6 +324,8 @@ export interface FileRouteTypes {
     | '/api/admin/auth/me'
     | '/api/admin/auth/setup'
     | '/api/admin/auth/status'
+    | '/api/admin/products/$productId'
+    | '/api/admin/products/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -302,6 +339,7 @@ export interface RootRouteChildren {
   ProductProductRoute: typeof ProductProductRoute
   ApiAccountMeRoute: typeof ApiAccountMeRoute
   ApiAccountWishlistRoute: typeof ApiAccountWishlistRoute
+  ApiAdminOverviewRoute: typeof ApiAdminOverviewRoute
   ApiAuthLoginRoute: typeof ApiAuthLoginRoute
   ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
   ApiAuthMeRoute: typeof ApiAuthMeRoute
@@ -312,6 +350,8 @@ export interface RootRouteChildren {
   ApiAdminAuthMeRoute: typeof ApiAdminAuthMeRoute
   ApiAdminAuthSetupRoute: typeof ApiAdminAuthSetupRoute
   ApiAdminAuthStatusRoute: typeof ApiAdminAuthStatusRoute
+  ApiAdminProductsProductIdRoute: typeof ApiAdminProductsProductIdRoute
+  ApiAdminProductsIndexRoute: typeof ApiAdminProductsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -400,6 +440,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAccountWishlistRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/overview': {
+      id: '/api/admin/overview'
+      path: '/api/admin/overview'
+      fullPath: '/api/admin/overview'
+      preLoaderRoute: typeof ApiAdminOverviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/login': {
       id: '/api/auth/login'
       path: '/api/auth/login'
@@ -470,6 +517,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminAuthStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/products/': {
+      id: '/api/admin/products/'
+      path: '/api/admin/products'
+      fullPath: '/api/admin/products/'
+      preLoaderRoute: typeof ApiAdminProductsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/products/$productId': {
+      id: '/api/admin/products/$productId'
+      path: '/api/admin/products/$productId'
+      fullPath: '/api/admin/products/$productId'
+      preLoaderRoute: typeof ApiAdminProductsProductIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -496,6 +557,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductProductRoute: ProductProductRoute,
   ApiAccountMeRoute: ApiAccountMeRoute,
   ApiAccountWishlistRoute: ApiAccountWishlistRoute,
+  ApiAdminOverviewRoute: ApiAdminOverviewRoute,
   ApiAuthLoginRoute: ApiAuthLoginRoute,
   ApiAuthLogoutRoute: ApiAuthLogoutRoute,
   ApiAuthMeRoute: ApiAuthMeRoute,
@@ -506,6 +568,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminAuthMeRoute: ApiAdminAuthMeRoute,
   ApiAdminAuthSetupRoute: ApiAdminAuthSetupRoute,
   ApiAdminAuthStatusRoute: ApiAdminAuthStatusRoute,
+  ApiAdminProductsProductIdRoute: ApiAdminProductsProductIdRoute,
+  ApiAdminProductsIndexRoute: ApiAdminProductsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
