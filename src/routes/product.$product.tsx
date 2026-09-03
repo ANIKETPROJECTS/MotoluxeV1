@@ -6,6 +6,7 @@ import {
   Check,
   ChevronRight,
   Flame,
+  Heart,
   Minus,
   Plus,
   ShoppingCart,
@@ -18,6 +19,7 @@ import {
 } from "@/data/catalog";
 import { ProductCard } from "@/components/ProductCard";
 import { useCart } from "@/components/CartContext";
+import { useWishlist } from "@/components/WishlistContext";
 
 export const Route = createFileRoute("/product/$product")({
   loader: ({ params }) => {
@@ -58,8 +60,10 @@ export const Route = createFileRoute("/product/$product")({
 function ProductPage() {
   const { product, category, related } = Route.useLoaderData();
   const { addToCart, removeFromCart } = useCart();
+  const { isWishlisted, toggleWishlist } = useWishlist();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const wishlisted = isWishlisted(product.slug);
   const frames = ["center", "top", "bottom"];
 
   function decreaseQuantity() {
@@ -106,6 +110,19 @@ function ProductPage() {
               <ShieldCheck className="h-3.5 w-3.5 text-accent" />
               Workshop tested care
             </span>
+            <button
+              type="button"
+              aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
+              aria-pressed={wishlisted}
+              onClick={() => toggleWishlist(product)}
+              className={`absolute right-5 top-5 grid h-11 w-11 place-items-center border backdrop-blur transition-colors ${
+                wishlisted
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-white/20 bg-background/80 text-foreground hover:border-primary hover:text-primary"
+              }`}
+            >
+              <Heart className={`h-5 w-5 ${wishlisted ? "fill-current" : ""}`} />
+            </button>
           </div>
           <div className="mt-4 grid grid-cols-3 gap-4">
             {frames.map((position) => (

@@ -15,6 +15,7 @@ import { SiteHeader } from "../components/SiteHeader";
 import { SiteFooter } from "../components/SiteFooter";
 import { CartProvider } from "../components/CartContext";
 import { CustomerAuthProvider } from "../components/CustomerAuthContext";
+import { WishlistProvider } from "../components/WishlistContext";
 
 function NotFoundComponent() {
   return (
@@ -141,16 +142,18 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <CustomerAuthProvider>
-        <CartProvider>
-          <div className="flex min-h-screen flex-col">
-            <SiteHeader />
-            <main className="flex-1">
-              {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-              <Outlet />
-            </main>
-            <SiteFooter />
-          </div>
-        </CartProvider>
+        <WishlistProvider>
+          <CartProvider>
+            <div className="flex min-h-screen flex-col">
+              <SiteHeader />
+              <main className="flex-1">
+                {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+                <Outlet />
+              </main>
+              <SiteFooter />
+            </div>
+          </CartProvider>
+        </WishlistProvider>
       </CustomerAuthProvider>
     </QueryClientProvider>
   );
