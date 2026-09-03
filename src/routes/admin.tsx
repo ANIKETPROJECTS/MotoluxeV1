@@ -11,7 +11,7 @@ const navigation = [
   { label: "Customers", to: "/admin/customers" },
   { label: "Reviews & questions", to: "/admin/reviews" },
   { label: "Reports & exports", to: "/admin/reports" },
-  { label: "Settings" },
+  { label: "Settings", to: "/admin/settings" },
 ];
 
 export const Route = createFileRoute("/admin")({

@@ -2,6 +2,7 @@ import "@tanstack/react-start/server-only";
 
 import { ObjectId, type Filter } from "mongodb";
 import { getAuthenticatedCustomer, getOrderCollection } from "@/lib/server/customer-auth";
+import { getStorefrontSettings } from "@/lib/server/admin-settings";
 import { getMotoluxeDatabase, MOTOLUXE_COLLECTIONS } from "@/lib/server/mongodb";
 
 export const reviewStatuses = ["pending", "approved", "rejected"] as const;
@@ -276,6 +277,8 @@ function customerReviewSummary(
 export async function listCustomerReviewEligibility(request: Request) {
   const customer = await getAuthenticatedCustomer(request);
   if (!customer) return null;
+  const settings = await getStorefrontSettings();
+  if (!settings.customerReviewsEnabled) return [];
 
   const { reviews } = await getCollections();
   const orders = (await (
@@ -346,6 +349,10 @@ export async function createCustomerReview(
 ) {
   const customer = await getAuthenticatedCustomer(request);
   if (!customer) return { error: "Please sign in before reviewing a product." as const };
+  const settings = await getStorefrontSettings();
+  if (!settings.customerReviewsEnabled) {
+    return { error: "Customer reviews are temporarily paused." as const };
+  }
 
   const orders = (await getOrderCollection()).find({
     customerId: customer._id.toHexString(),

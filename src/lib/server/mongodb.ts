@@ -14,6 +14,7 @@ export const MOTOLUXE_COLLECTIONS = {
   categories: "categories",
   brands: "brands",
   reviews: "reviews",
+  settings: "settings",
   inventoryMovements: "inventory_movements",
   orders: "orders",
 } as const;
@@ -75,6 +76,7 @@ export async function getMotoluxeDatabase() {
     db.collection(MOTOLUXE_COLLECTIONS.reviews).createIndex({ status: 1, createdAt: -1 }),
     db.collection(MOTOLUXE_COLLECTIONS.reviews).createIndex({ productSlug: 1, status: 1 }),
     db.collection(MOTOLUXE_COLLECTIONS.reviews).createIndex({ customerId: 1, productSlug: 1 }),
+    db.collection(MOTOLUXE_COLLECTIONS.settings).createIndex({ key: 1 }, { unique: true }),
     db.collection(MOTOLUXE_COLLECTIONS.inventoryMovements).createIndex({ createdAt: -1 }),
   ]).then(() => undefined);
   await globals.__motoluxeSharedIndexesReady;

@@ -293,7 +293,17 @@ function ProfilePage() {
           )}
 
           {activeTab === "orders" ? (
-            <div className="mt-6 grid gap-4">
+            <div className="mt-6 grid gap-5">
+              {reviewEligibility.length > 0 && (
+                <div className="border border-accent/40 bg-accent/10 p-5">
+                  <span className="eyebrow text-accent">Share your experience</span>
+                  <p className="mt-2 text-sm leading-relaxed text-foreground">
+                    Choose “Write a review” below a purchased product. Your review is sent to the
+                    Motoluxe team as pending and appears in Admin Reviews & Questions for
+                    moderation.
+                  </p>
+                </div>
+              )}
               {orders.length > 0 ? (
                 orders.map((order) => (
                   <article key={order.id} className="border border-border bg-card p-5 sm:p-6">

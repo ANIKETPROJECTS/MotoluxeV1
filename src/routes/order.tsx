@@ -71,27 +71,58 @@ function OrderPage() {
 
   if (placedOrderId) {
     return (
-      <section className="mx-auto flex min-h-[70vh] max-w-3xl items-center justify-center px-5 py-20">
-        <div className="w-full border border-border bg-card p-8 text-center sm:p-14">
+      <section className="relative mx-auto flex min-h-[70vh] max-w-3xl items-center justify-center px-5 py-20">
+        <div className="w-full border border-border bg-card p-8 text-center opacity-40 blur-[1px] sm:p-14">
           <div className="mx-auto grid h-16 w-16 place-items-center bg-accent/15 text-accent">
             <Check className="h-8 w-8" />
           </div>
           <span className="eyebrow mt-7 block text-primary">Order received</span>
           <h1 className="mt-4 text-4xl font-bold sm:text-5xl">Your order is ready</h1>
-          <p className="mx-auto mt-5 max-w-lg text-sm leading-relaxed text-muted-foreground">
-            We have recorded your order details. Our team will confirm product availability and
-            delivery information with you.
-          </p>
-          <p className="mt-5 font-display text-xs uppercase tracking-[0.16em] text-muted-foreground">
-            Reference: <span className="text-accent">{placedOrderId}</span>
-          </p>
-          <Link
-            to="/"
-            className="group mt-8 inline-flex items-center gap-2 bg-primary px-6 py-4 font-display text-xs uppercase tracking-[0.2em] text-primary-foreground"
-          >
-            Continue shopping
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Link>
+        </div>
+        <div
+          className="fixed inset-0 z-[100] grid place-items-center bg-foreground/70 px-5 py-8"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="order-success-title"
+        >
+          <div className="w-full max-w-lg border border-border bg-card shadow-2xl">
+            <div className="hazard-stripes h-1" />
+            <div className="p-7 text-center sm:p-10">
+              <div className="mx-auto grid h-16 w-16 place-items-center bg-accent/15 text-accent">
+                <Check className="h-8 w-8" />
+              </div>
+              <span className="eyebrow mt-7 block text-primary">Order placed</span>
+              <h1 id="order-success-title" className="mt-3 text-4xl font-bold sm:text-5xl">
+                Thank you.
+              </h1>
+              <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
+                Your order details have been sent to the Motoluxe team and are now available in your
+                account and the Admin Orders screen.
+              </p>
+              <p className="mt-5 border border-accent/30 bg-accent/10 px-4 py-3 font-display text-xs uppercase tracking-[0.14em] text-accent">
+                Reference: <span>{placedOrderId}</span>
+              </p>
+              <div className="mt-7 grid gap-3 sm:grid-cols-2">
+                <Link
+                  to="/profile"
+                  className="group inline-flex items-center justify-center gap-2 bg-primary px-5 py-4 font-display text-xs uppercase tracking-[0.16em] text-primary-foreground"
+                >
+                  View order & write review
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+                <Link
+                  to="/"
+                  className="inline-flex items-center justify-center border border-border px-5 py-4 font-display text-xs uppercase tracking-[0.16em] text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                >
+                  Continue shopping
+                </Link>
+              </div>
+              <p className="mt-5 text-xs leading-relaxed text-muted-foreground">
+                After placing an order, open your profile and choose “Write a review” beside a
+                purchased product. Your review goes to Admin Reviews & Questions for moderation.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
     );

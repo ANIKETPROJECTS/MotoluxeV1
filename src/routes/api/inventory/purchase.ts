@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getAuthenticatedCustomer, getOrderCollection } from "@/lib/server/customer-auth";
 import { getProduct } from "@/data/catalog";
+import { getStorefrontSettings } from "@/lib/server/admin-settings";
 import { jsonError, readJson } from "@/lib/server/http";
 
 type SubmittedItem = {
@@ -20,6 +21,20 @@ export const Route = createFileRoute("/api/inventory/purchase")({
           return jsonError("Orders are temporarily unavailable. Please try again shortly.", 503);
         }
         if (!customer) return jsonError("Please sign in before placing an order.", 401);
+
+        let settings;
+        try {
+          settings = await getStorefrontSettings();
+        } catch (error) {
+          console.error("Storefront settings unavailable", error);
+          return jsonError("Orders are temporarily unavailable. Please try again shortly.", 503);
+        }
+        if (!settings.ordersEnabled) {
+          return Response.json(
+            { error: "Orders are temporarily paused. Please check back soon." },
+            { status: 423 },
+          );
+        }
 
         const body = await readJson(request);
         const submittedItems = Array.isArray(body?.["items"])
