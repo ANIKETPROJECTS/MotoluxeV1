@@ -1,6 +1,7 @@
 import "@tanstack/react-start/server-only";
 
 import { ObjectId, type Filter } from "mongodb";
+import { getAuthenticatedCustomer, getOrderCollection } from "@/lib/server/customer-auth";
 import { getMotoluxeDatabase, MOTOLUXE_COLLECTIONS } from "@/lib/server/mongodb";
 
 export const reviewStatuses = ["pending", "approved", "rejected"] as const;
@@ -28,6 +29,8 @@ export type AdminReview = {
 
 type ReviewDocument = Omit<AdminReview, "id" | "createdAt" | "updatedAt" | "moderatedAt"> & {
   _id?: ObjectId;
+  customerId?: string;
+  orderId?: string;
   createdAt: Date;
   updatedAt: Date;
   moderatedAt?: Date | null;
@@ -231,4 +234,156 @@ export async function listApprovedReviews(productSlug?: string) {
   const filter: Filter<ReviewDocument> = { status: "approved" };
   if (productSlug) filter.productSlug = productSlug;
   return (await reviews.find(filter).sort({ createdAt: -1 }).limit(100).toArray()).map(toReview);
+}
+
+export type CustomerReviewEligibility = {
+  orderId: string;
+  productSlug: string;
+  productName: string;
+  submittedReview: Pick<
+    AdminReview,
+    "id" | "rating" | "title" | "body" | "status" | "createdAt"
+  > | null;
+};
+
+type CustomerOrderItem = {
+  productId?: string;
+  productName?: string;
+  quantity?: number;
+};
+
+type CustomerOrder = {
+  _id?: ObjectId;
+  customerId?: string;
+  status?: string;
+  items?: CustomerOrderItem[];
+  createdAt?: Date;
+};
+
+function customerReviewSummary(
+  review: ReviewDocument & { _id: ObjectId },
+): CustomerReviewEligibility["submittedReview"] {
+  return {
+    id: review._id.toHexString(),
+    rating: review.rating,
+    title: review.title,
+    body: review.body,
+    status: review.status,
+    createdAt: review.createdAt.toISOString(),
+  };
+}
+
+export async function listCustomerReviewEligibility(request: Request) {
+  const customer = await getAuthenticatedCustomer(request);
+  if (!customer) return null;
+
+  const { reviews } = await getCollections();
+  const orders = (await (
+    await getOrderCollection()
+  )
+    .find({
+      customerId: customer._id.toHexString(),
+      status: { $nin: ["cancelled", "rejected"] },
+    } as never)
+    .sort({ createdAt: -1 })
+    .limit(100)
+    .toArray()) as CustomerOrder[];
+  const submittedReviews = await reviews
+    .find({ customerId: customer._id.toHexString() })
+    .sort({ createdAt: -1 })
+    .toArray();
+  const latestByProduct = new Map<string, ReviewDocument & { _id: ObjectId }>();
+  for (const review of submittedReviews) {
+    if (!review._id || latestByProduct.has(review.productSlug)) continue;
+    latestByProduct.set(review.productSlug, review as ReviewDocument & { _id: ObjectId });
+  }
+
+  const seen = new Set<string>();
+  const eligible: CustomerReviewEligibility[] = [];
+  for (const order of orders) {
+    const orderId = order._id?.toHexString();
+    if (!orderId) continue;
+    for (const item of order.items ?? []) {
+      const productSlug = item.productId?.trim();
+      if (!productSlug || seen.has(productSlug)) continue;
+      seen.add(productSlug);
+      const submittedReview = latestByProduct.get(productSlug);
+      eligible.push({
+        orderId,
+        productSlug,
+        productName: item.productName ?? "Motoluxe product",
+        submittedReview: submittedReview ? customerReviewSummary(submittedReview) : null,
+      });
+    }
+  }
+  return eligible;
+}
+
+export function validateCustomerReviewInput(input: Record<string, unknown>) {
+  const productSlug = typeof input["productSlug"] === "string" ? input["productSlug"].trim() : "";
+  const rating = typeof input["rating"] === "number" ? input["rating"] : Number(input["rating"]);
+  const title = typeof input["title"] === "string" ? input["title"].trim() : "";
+  const body = typeof input["body"] === "string" ? input["body"].trim() : "";
+
+  if (!productSlug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(productSlug)) {
+    return { error: "Choose a valid purchased product." as const };
+  }
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return { error: "Rating must be a whole number from 1 to 5." as const };
+  }
+  if (title.length < 2 || title.length > 120) {
+    return { error: "Review title must be between 2 and 120 characters." as const };
+  }
+  if (body.length < 2 || body.length > 3000) {
+    return { error: "Review body must be between 2 and 3,000 characters." as const };
+  }
+  return { input: { productSlug, rating, title, body } };
+}
+
+export async function createCustomerReview(
+  request: Request,
+  input: { productSlug: string; rating: number; title: string; body: string },
+) {
+  const customer = await getAuthenticatedCustomer(request);
+  if (!customer) return { error: "Please sign in before reviewing a product." as const };
+
+  const orders = (await getOrderCollection()).find({
+    customerId: customer._id.toHexString(),
+    status: { $nin: ["cancelled", "rejected"] },
+    "items.productId": input.productSlug,
+  } as never);
+  const order = (await orders.sort({ createdAt: -1 }).limit(1).next()) as CustomerOrder | null;
+  if (!order?._id) {
+    return { error: "You can only review products from your orders." as const };
+  }
+
+  const { reviews, products } = await getCollections();
+  const existing = await reviews.findOne({
+    customerId: customer._id.toHexString(),
+    productSlug: input.productSlug,
+  });
+  if (existing) return { error: "You have already reviewed this product." as const };
+
+  const product = await productNameForSlug(products, input.productSlug);
+  if (!product) return { error: "That product is no longer available." as const };
+
+  const now = new Date();
+  const document = {
+    productSlug: input.productSlug,
+    productName: product.name,
+    customerId: customer._id.toHexString(),
+    orderId: order._id.toHexString(),
+    reviewerName: customer.name ?? "Motoluxe customer",
+    rating: input.rating,
+    title: input.title,
+    body: input.body,
+    status: "pending" as const,
+    media: [],
+    createdAt: now,
+    updatedAt: now,
+  };
+  const result = await reviews.insertOne(document);
+  return {
+    review: toReview({ _id: result.insertedId, ...document }),
+  };
 }

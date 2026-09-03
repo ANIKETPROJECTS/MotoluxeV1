@@ -10,7 +10,7 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import type { Product } from "@/data/catalog";
 import { useCustomerAuth, type Customer } from "@/components/CustomerAuthContext";
 import { useWishlist } from "@/components/WishlistContext";
@@ -21,10 +21,25 @@ type AccountOrder = {
   createdAt: string;
   itemCount: number;
   items: Array<{
+    productId: string;
     productName: string;
     quantity: number;
     price: string;
   }>;
+};
+
+type CustomerReviewEligibility = {
+  orderId: string;
+  productSlug: string;
+  productName: string;
+  submittedReview: {
+    id: string;
+    rating: number;
+    title: string;
+    body: string;
+    status: "pending" | "approved" | "rejected";
+    createdAt: string;
+  } | null;
 };
 
 type AccountResponse = {
@@ -64,6 +79,8 @@ function ProfilePage() {
   const { wishlist, wishlistCount, removeFromWishlist, error: wishlistError } = useWishlist();
   const [activeTab, setActiveTab] = useState<"orders" | "wishlist">("orders");
   const [account, setAccount] = useState<AccountResponse | null>(null);
+  const [reviewEligibility, setReviewEligibility] = useState<CustomerReviewEligibility[]>([]);
+  const [reviewError, setReviewError] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -96,6 +113,30 @@ function ProfilePage() {
     return () => {
       cancelled = true;
     };
+  }, [authenticated, checking]);
+
+  async function loadReviewEligibility() {
+    try {
+      const response = await fetch("/api/account/reviews", { credentials: "same-origin" });
+      const payload = (await response.json().catch(() => ({}))) as {
+        eligible?: CustomerReviewEligibility[];
+        error?: string;
+      };
+      if (!response.ok) throw new Error(payload.error ?? "We could not load your review options.");
+      setReviewEligibility(payload.eligible ?? []);
+      setReviewError("");
+    } catch (requestError) {
+      setReviewError(
+        requestError instanceof Error
+          ? requestError.message
+          : "We could not load your review options.",
+      );
+    }
+  }
+
+  useEffect(() => {
+    if (checking || !authenticated) return;
+    void loadReviewEligibility();
   }, [authenticated, checking]);
 
   if (checking || loading) {
@@ -274,12 +315,41 @@ function ProfilePage() {
                     </div>
                     <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
-                        {order.items.map((item) => (
-                          <span key={`${order.id}-${item.productName}`}>
-                            {item.productName} × {item.quantity}
-                          </span>
-                        ))}
+                        {order.items.map((item) => {
+                          const eligibility = reviewEligibility.find(
+                            (review) =>
+                              review.orderId === order.id && review.productSlug === item.productId,
+                          );
+                          return (
+                            <div key={`${order.id}-${item.productName}`} className="grid gap-2">
+                              <span>
+                                {item.productName} × {item.quantity}
+                              </span>
+                              {eligibility && (
+                                <div className="border-t border-border pt-2">
+                                  {eligibility.submittedReview ? (
+                                    <p className="text-xs text-muted-foreground">
+                                      Review {eligibility.submittedReview.status}. Thank you for
+                                      sharing your experience.
+                                    </p>
+                                  ) : (
+                                    <CustomerReviewForm
+                                      productName={eligibility.productName}
+                                      productSlug={eligibility.productSlug}
+                                      onSubmitted={loadReviewEligibility}
+                                    />
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
+                      {reviewError && (
+                        <p className="mt-3 text-xs text-primary" role="alert">
+                          {reviewError}
+                        </p>
+                      )}
                       <span className="font-display text-xs uppercase tracking-[0.12em] text-muted-foreground">
                         {order.itemCount} item{order.itemCount === 1 ? "" : "s"}
                       </span>
@@ -374,5 +444,130 @@ function ProfilePage() {
         </div>
       </div>
     </section>
+  );
+}
+
+function CustomerReviewForm({
+  productName,
+  productSlug,
+  onSubmitted,
+}: {
+  productName: string;
+  productSlug: string;
+  onSubmitted: () => Promise<void>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [rating, setRating] = useState("5");
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [working, setWorking] = useState(false);
+  const [error, setError] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setWorking(true);
+    setError("");
+    try {
+      const response = await fetch("/api/account/reviews", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productSlug,
+          rating: Number(rating),
+          title,
+          body,
+        }),
+      });
+      const payload = (await response.json().catch(() => ({}))) as { error?: string };
+      if (!response.ok) throw new Error(payload.error ?? "We could not submit your review.");
+      setSubmitted(true);
+      await onSubmitted();
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error ? submitError.message : "We could not submit your review.",
+      );
+    } finally {
+      setWorking(false);
+    }
+  }
+
+  if (submitted) {
+    return (
+      <p className="text-xs text-muted-foreground">Review submitted for moderation. Thank you.</p>
+    );
+  }
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="text-xs text-accent transition-colors hover:text-primary"
+      >
+        Write a review
+      </button>
+    );
+  }
+
+  return (
+    <form onSubmit={submit} className="grid gap-3 text-left">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <span className="text-xs text-foreground">Review {productName}</span>
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          className="text-xs text-muted-foreground hover:text-primary"
+        >
+          Cancel
+        </button>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-[120px_1fr]">
+        <label className="grid gap-1 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+          Rating
+          <select
+            value={rating}
+            onChange={(event) => setRating(event.target.value)}
+            className="border border-input bg-background px-2 py-2 text-xs text-foreground outline-none focus:border-primary"
+          >
+            {[5, 4, 3, 2, 1].map((value) => (
+              <option key={value} value={value}>
+                {value} / 5
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="grid gap-1 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+          Title
+          <input
+            required
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            placeholder="How did it work for you?"
+            className="border border-input bg-background px-3 py-2 text-xs text-foreground outline-none focus:border-primary"
+          />
+        </label>
+      </div>
+      <label className="grid gap-1 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+        Your experience
+        <textarea
+          required
+          rows={3}
+          value={body}
+          onChange={(event) => setBody(event.target.value)}
+          placeholder="Share an honest experience with this product."
+          className="resize-y border border-input bg-background px-3 py-2 text-xs text-foreground outline-none focus:border-primary"
+        />
+      </label>
+      {error && <p className="text-xs text-primary">{error}</p>}
+      <button
+        type="submit"
+        disabled={working}
+        className="w-fit bg-primary px-3 py-2 font-display text-[10px] uppercase tracking-[0.14em] text-primary-foreground disabled:opacity-60"
+      >
+        {working ? "Submitting…" : "Submit for review"}
+      </button>
+    </form>
   );
 }

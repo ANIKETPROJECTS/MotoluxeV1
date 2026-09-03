@@ -38,6 +38,7 @@ type SessionDocument = {
 };
 
 type OrderItemDocument = {
+  productId?: string;
   productName?: string;
   quantity?: number;
   price?: string;
@@ -317,6 +318,7 @@ export async function getAccountSnapshot(request: Request): Promise<AccountSnaps
     customer: customerFromDocument(customer),
     orders: orderDocuments.map((order) => {
       const items = (order.items ?? []).map((item) => ({
+        productId: item.productId ?? "",
         productName: item.productName ?? "Motoluxe product",
         quantity: Number.isInteger(item.quantity) ? (item.quantity as number) : 0,
         price: item.price ?? "Request price",

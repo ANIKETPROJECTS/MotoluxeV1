@@ -74,6 +74,7 @@ export async function getMotoluxeDatabase() {
     db.collection(MOTOLUXE_COLLECTIONS.reviews).createIndex({ createdAt: -1 }),
     db.collection(MOTOLUXE_COLLECTIONS.reviews).createIndex({ status: 1, createdAt: -1 }),
     db.collection(MOTOLUXE_COLLECTIONS.reviews).createIndex({ productSlug: 1, status: 1 }),
+    db.collection(MOTOLUXE_COLLECTIONS.reviews).createIndex({ customerId: 1, productSlug: 1 }),
     db.collection(MOTOLUXE_COLLECTIONS.inventoryMovements).createIndex({ createdAt: -1 }),
   ]).then(() => undefined);
   await globals.__motoluxeSharedIndexesReady;

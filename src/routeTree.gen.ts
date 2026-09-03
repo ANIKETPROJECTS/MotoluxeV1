@@ -28,6 +28,7 @@ import { Route as ApiReviewsRouteImport } from './routes/api/reviews'
 import { Route as CategoryCategoryRouteImport } from './routes/category.$category'
 import { Route as ProductProductRouteImport } from './routes/product.$product'
 import { Route as ApiAccountMeRouteImport } from './routes/api/account/me'
+import { Route as ApiAccountReviewsRouteImport } from './routes/api/account/reviews'
 import { Route as ApiAccountWishlistRouteImport } from './routes/api/account/wishlist'
 import { Route as ApiAdminInventoryRouteImport } from './routes/api/admin/inventory'
 import { Route as ApiAdminOrdersRouteImport } from './routes/api/admin/orders'
@@ -149,6 +150,11 @@ const ProductProductRoute = ProductProductRouteImport.update({
 const ApiAccountMeRoute = ApiAccountMeRouteImport.update({
   id: '/api/account/me',
   path: '/api/account/me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAccountReviewsRoute = ApiAccountReviewsRouteImport.update({
+  id: '/api/account/reviews',
+  path: '/api/account/reviews',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAccountWishlistRoute = ApiAccountWishlistRouteImport.update({
@@ -312,6 +318,7 @@ export interface FileRoutesByFullPath {
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$product': typeof ProductProductRoute
   '/api/account/me': typeof ApiAccountMeRoute
+  '/api/account/reviews': typeof ApiAccountReviewsRoute
   '/api/account/wishlist': typeof ApiAccountWishlistRoute
   '/api/admin/inventory': typeof ApiAdminInventoryRouteWithChildren
   '/api/admin/orders': typeof ApiAdminOrdersRouteWithChildren
@@ -360,6 +367,7 @@ export interface FileRoutesByTo {
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$product': typeof ProductProductRoute
   '/api/account/me': typeof ApiAccountMeRoute
+  '/api/account/reviews': typeof ApiAccountReviewsRoute
   '/api/account/wishlist': typeof ApiAccountWishlistRoute
   '/api/admin/inventory': typeof ApiAdminInventoryRouteWithChildren
   '/api/admin/orders': typeof ApiAdminOrdersRouteWithChildren
@@ -409,6 +417,7 @@ export interface FileRoutesById {
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$product': typeof ProductProductRoute
   '/api/account/me': typeof ApiAccountMeRoute
+  '/api/account/reviews': typeof ApiAccountReviewsRoute
   '/api/account/wishlist': typeof ApiAccountWishlistRoute
   '/api/admin/inventory': typeof ApiAdminInventoryRouteWithChildren
   '/api/admin/orders': typeof ApiAdminOrdersRouteWithChildren
@@ -459,6 +468,7 @@ export interface FileRouteTypes {
     | '/category/$category'
     | '/product/$product'
     | '/api/account/me'
+    | '/api/account/reviews'
     | '/api/account/wishlist'
     | '/api/admin/inventory'
     | '/api/admin/orders'
@@ -507,6 +517,7 @@ export interface FileRouteTypes {
     | '/category/$category'
     | '/product/$product'
     | '/api/account/me'
+    | '/api/account/reviews'
     | '/api/account/wishlist'
     | '/api/admin/inventory'
     | '/api/admin/orders'
@@ -555,6 +566,7 @@ export interface FileRouteTypes {
     | '/category/$category'
     | '/product/$product'
     | '/api/account/me'
+    | '/api/account/reviews'
     | '/api/account/wishlist'
     | '/api/admin/inventory'
     | '/api/admin/orders'
@@ -596,6 +608,7 @@ export interface RootRouteChildren {
   CategoryCategoryRoute: typeof CategoryCategoryRoute
   ProductProductRoute: typeof ProductProductRoute
   ApiAccountMeRoute: typeof ApiAccountMeRoute
+  ApiAccountReviewsRoute: typeof ApiAccountReviewsRoute
   ApiAccountWishlistRoute: typeof ApiAccountWishlistRoute
   ApiAdminInventoryRoute: typeof ApiAdminInventoryRouteWithChildren
   ApiAdminOrdersRoute: typeof ApiAdminOrdersRouteWithChildren
@@ -756,6 +769,13 @@ declare module '@tanstack/react-router' {
       path: '/api/account/me'
       fullPath: '/api/account/me'
       preLoaderRoute: typeof ApiAccountMeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/account/reviews': {
+      id: '/api/account/reviews'
+      path: '/api/account/reviews'
+      fullPath: '/api/account/reviews'
+      preLoaderRoute: typeof ApiAccountReviewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/account/wishlist': {
@@ -1009,6 +1029,7 @@ const rootRouteChildren: RootRouteChildren = {
   CategoryCategoryRoute: CategoryCategoryRoute,
   ProductProductRoute: ProductProductRoute,
   ApiAccountMeRoute: ApiAccountMeRoute,
+  ApiAccountReviewsRoute: ApiAccountReviewsRoute,
   ApiAccountWishlistRoute: ApiAccountWishlistRoute,
   ApiAdminInventoryRoute: ApiAdminInventoryRouteWithChildren,
   ApiAdminOrdersRoute: ApiAdminOrdersRouteWithChildren,
