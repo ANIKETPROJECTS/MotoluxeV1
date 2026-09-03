@@ -1,14 +1,21 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  ChevronRight,
+  ArrowLeft,
+  ArrowUpRight,
   Check,
-  ShoppingCart,
+  ChevronRight,
+  Flame,
   Minus,
   Plus,
-  Flame,
+  ShoppingCart,
+  ShieldCheck,
 } from "lucide-react";
-import { getProduct, getCategory, getProductsByCategory } from "@/data/catalog";
+import {
+  getCategory,
+  getProduct,
+  getProductsByCategory,
+} from "@/data/catalog";
 import { ProductCard } from "@/components/ProductCard";
 
 export const Route = createFileRoute("/product/$product")({
@@ -19,7 +26,7 @@ export const Route = createFileRoute("/product/$product")({
       product,
       category: getCategory(product.category)!,
       related: getProductsByCategory(product.category).filter(
-        (p) => p.slug !== product.slug,
+        (item) => item.slug !== product.slug,
       ),
     };
   },
@@ -34,7 +41,7 @@ export const Route = createFileRoute("/product/$product")({
     }
     const { product } = loaderData;
     const title = `${product.name} — Motoluxe`;
-    const desc = `${product.tagline}. ${product.size}, ${product.price}.`;
+    const desc = `${product.tagline} ${product.description}`;
     return {
       meta: [
         { title },
@@ -51,12 +58,10 @@ function ProductPage() {
   const { product, category, related } = Route.useLoaderData();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
-  // Single studio shot per product: reuse it across the gallery frames with
-  // varied crop anchors for an editorial gallery feel.
   const frames = ["center", "top", "bottom"];
 
   return (
-    <div className="mx-auto max-w-7xl px-5 py-12">
+    <div className="mx-auto max-w-7xl px-5 py-10 lg:py-14">
       <nav className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
         <Link to="/" className="transition-colors hover:text-primary">
           Home
@@ -73,8 +78,7 @@ function ProductPage() {
         <span className="text-foreground">{product.name}</span>
       </nav>
 
-      <div className="mt-10 grid gap-12 lg:grid-cols-2">
-        {/* Gallery */}
+      <div className="mt-10 grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
         <div>
           <div className="relative overflow-hidden border border-border bg-card">
             <img
@@ -82,26 +86,22 @@ function ProductPage() {
               alt={product.name}
               width={640}
               height={800}
-              className="aspect-4/5 w-full object-cover"
+              className="aspect-4/5 w-full object-cover transition-transform duration-700 hover:scale-[1.02]"
             />
-            <div className="pointer-events-none absolute inset-0 gloss" />
-            {product.badge && (
-              <span
-                className={`slash-tag absolute left-0 top-5 px-3.5 py-1.5 pr-6 font-display text-[11px] uppercase tracking-[0.24em] ${
-                  product.badge === "Premium"
-                    ? "bg-accent text-accent-foreground"
-                    : "bg-primary text-primary-foreground"
-                }`}
-              >
-                {product.badge}
-              </span>
-            )}
+            <div className="pointer-events-none absolute inset-0 bg-linear-to-tr from-black/30 via-transparent to-white/10" />
+            <span className="slash-tag absolute left-0 top-5 bg-primary px-3.5 py-1.5 pr-6 font-display text-[11px] uppercase tracking-[0.24em] text-primary-foreground">
+              {product.badge ?? "Motoluxe original"}
+            </span>
+            <span className="absolute bottom-5 right-5 flex items-center gap-2 bg-background/80 px-3 py-2 font-display text-[10px] uppercase tracking-[0.16em] text-muted-foreground backdrop-blur">
+              <ShieldCheck className="h-3.5 w-3.5 text-accent" />
+              Workshop tested care
+            </span>
           </div>
           <div className="mt-4 grid grid-cols-3 gap-4">
-            {frames.map((pos) => (
+            {frames.map((position) => (
               <div
-                key={pos}
-                className="overflow-hidden border border-border bg-card opacity-70 transition-opacity hover:opacity-100"
+                key={position}
+                className="overflow-hidden border border-border bg-card opacity-65 transition-all hover:border-primary hover:opacity-100"
               >
                 <img
                   src={product.image}
@@ -109,50 +109,53 @@ function ProductPage() {
                   loading="lazy"
                   width={640}
                   height={800}
-                  className="aspect-square w-full object-cover"
-                  style={{ objectPosition: `center ${pos}` }}
+                  className="aspect-square w-full object-cover transition-transform duration-500 hover:scale-110"
+                  style={{ objectPosition: `center ${position}` }}
                 />
               </div>
             ))}
           </div>
         </div>
 
-        {/* Info */}
         <div>
           <span className="eyebrow text-primary">{category.name}</span>
-          <h1 className="mt-3 text-5xl font-bold sm:text-6xl">
+          <h1 className="mt-4 max-w-2xl text-5xl font-bold sm:text-7xl">
             {product.name}
           </h1>
-          <p className="mt-4 max-w-lg text-base leading-relaxed text-muted-foreground">
+          <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
+            {product.tagline}
+          </p>
+          <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground">
             {product.description}
           </p>
 
-          <div className="mt-8 flex items-end gap-4 border-y border-border py-6">
-            <span className="font-display text-5xl font-bold">
-              {product.price}
-            </span>
-            <span className="mb-1.5 eyebrow text-muted-foreground">
-              {product.size} · incl. taxes
-            </span>
+          <div className="mt-8 flex flex-wrap items-end justify-between gap-5 border-y border-border py-6">
+            <div>
+              <span className="block font-display text-4xl font-bold uppercase">
+                {product.price}
+              </span>
+              <span className="mt-2 block text-xs text-muted-foreground">
+                Contact us for current stock and dealer pricing.
+              </span>
+            </div>
+            <span className="eyebrow text-muted-foreground">{product.size}</span>
           </div>
 
           <div className="mt-8 flex flex-wrap items-stretch gap-3">
-            <div className="flex items-center border border-border">
+            <div className="flex items-center border border-border bg-surface">
               <button
                 type="button"
                 aria-label="Decrease quantity"
-                onClick={() => setQty((q) => Math.max(1, q - 1))}
+                onClick={() => setQty((value) => Math.max(1, value - 1))}
                 className="grid h-full w-11 place-items-center transition-colors hover:bg-surface-raised"
               >
                 <Minus className="h-4 w-4" />
               </button>
-              <span className="w-10 text-center font-display text-lg">
-                {qty}
-              </span>
+              <span className="w-10 text-center font-display text-lg">{qty}</span>
               <button
                 type="button"
                 aria-label="Increase quantity"
-                onClick={() => setQty((q) => q + 1)}
+                onClick={() => setQty((value) => value + 1)}
                 className="grid h-full w-11 place-items-center transition-colors hover:bg-surface-raised"
               >
                 <Plus className="h-4 w-4" />
@@ -161,51 +164,71 @@ function ProductPage() {
             <button
               type="button"
               onClick={() => setAdded(true)}
-              className={`inline-flex flex-1 items-center justify-center gap-2 px-8 py-4 font-display text-sm uppercase tracking-[0.22em] transition-all sm:flex-none ${
+              className={`inline-flex min-h-12 flex-1 items-center justify-center gap-2 px-7 py-4 font-display text-sm uppercase tracking-[0.2em] transition-all sm:flex-none ${
                 added
                   ? "bg-accent text-accent-foreground"
-                  : "bg-primary text-primary-foreground hover:ember-glow"
+                  : "bg-primary text-primary-foreground hover:shadow-[0_16px_40px_-16px_rgba(230,30,35,0.95)]"
               }`}
             >
               {added ? (
                 <>
-                  <Check className="h-4 w-4" /> Added to Cart
+                  <Check className="h-4 w-4" /> Added to cart
                 </>
               ) : (
                 <>
-                  <ShoppingCart className="h-4 w-4" /> Add to Cart
+                  <ShoppingCart className="h-4 w-4" /> Add to enquiry
                 </>
               )}
             </button>
           </div>
           <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
             <Flame className="h-3.5 w-3.5 text-accent" />
-            Checkout is not wired up — this build is a UI demonstration.
+            Frontend preview — checkout and payment are not wired up.
           </p>
 
-          {/* Benefits */}
-          <div className="mt-10 border border-border bg-card p-7">
-            <h2 className="text-lg font-semibold">Key Benefits</h2>
+          <div className="mt-10 grid gap-px border border-border bg-border sm:grid-cols-2">
+            <div className="bg-card p-5">
+              <span className="eyebrow text-primary">Best for</span>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                Riders, detailers and workshops building a dependable care
+                routine.
+              </p>
+            </div>
+            <div className="bg-card p-5">
+              <span className="eyebrow text-primary">Need support?</span>
+              <Link
+                to="/contact"
+                className="group mt-3 inline-flex items-center gap-2 text-sm text-foreground"
+              >
+                Speak with Motoluxe
+                <ArrowUpRight className="h-3.5 w-3.5 text-primary transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
+          </div>
+
+          <div className="mt-6 border border-border bg-card p-7">
+            <h2 className="text-xl font-semibold">Why it belongs in your kit</h2>
             <ul className="mt-5 space-y-3">
-              {product.benefits.map((b) => (
-                <li key={b} className="flex gap-3 text-sm">
+              {product.benefits.map((benefit) => (
+                <li key={benefit} className="flex gap-3 text-sm">
                   <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center bg-primary/15 text-primary">
                     <Check className="h-3.5 w-3.5" />
                   </span>
-                  <span className="leading-snug text-foreground/90">{b}</span>
+                  <span className="leading-snug text-foreground/90">
+                    {benefit}
+                  </span>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Usage */}
           <div className="mt-6 border border-border bg-card p-7">
-            <h2 className="text-lg font-semibold">Application</h2>
+            <h2 className="text-xl font-semibold">How to use</h2>
             <ol className="mt-5 space-y-4">
-              {product.usage.map((step, i) => (
+              {product.usage.map((step, index) => (
                 <li key={step} className="flex gap-4 text-sm">
                   <span className="grid h-7 w-7 shrink-0 place-items-center border border-primary/40 font-display text-sm text-primary">
-                    {i + 1}
+                    {String(index + 1).padStart(2, "0")}
                   </span>
                   <span className="leading-relaxed text-muted-foreground">
                     {step}
@@ -217,15 +240,26 @@ function ProductPage() {
         </div>
       </div>
 
-      {/* Related */}
       {related.length > 0 && (
-        <section className="mt-20 border-t border-border pt-14">
-          <h2 className="text-3xl font-bold sm:text-4xl">
-            More from {category.name}
-          </h2>
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
-            {related.map((p) => (
-              <ProductCard key={p.slug} product={p} />
+        <section className="mt-24 border-t border-border pt-14">
+          <div className="flex flex-wrap items-end justify-between gap-5">
+            <div>
+              <span className="eyebrow text-primary">Complete the routine</span>
+              <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
+                More from {category.name}
+              </h2>
+            </div>
+            <Link
+              to="/category/$category"
+              params={{ category: category.slug }}
+              className="inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.2em] text-accent"
+            >
+              View category <ArrowLeft className="h-4 w-4 rotate-180" />
+            </Link>
+          </div>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {related.map((item) => (
+              <ProductCard key={item.slug} product={item} />
             ))}
           </div>
         </section>
