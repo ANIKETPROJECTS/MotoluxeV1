@@ -1,6 +1,5 @@
 import { Outlet, createFileRoute, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
-  Archive,
   BarChart3,
   Boxes,
   ClipboardList,
@@ -13,6 +12,7 @@ import {
   ShieldCheck,
   Store,
   Users,
+  Tags,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AdminAuthProvider, useAdminAuth } from "@/components/AdminAuthContext";
@@ -20,7 +20,7 @@ import { AdminAuthProvider, useAdminAuth } from "@/components/AdminAuthContext";
 const navigation = [
   { label: "Overview", icon: LayoutDashboard, to: "/admin" },
   { label: "Products & catalog", icon: PackageSearch, to: "/admin/products" },
-  { label: "Categories & brands", icon: Archive },
+  { label: "Categories & brands", icon: Tags, to: "/admin/categories" },
   { label: "Inventory", icon: Boxes },
   { label: "Orders", icon: ClipboardList },
   { label: "Customers", icon: Users },
