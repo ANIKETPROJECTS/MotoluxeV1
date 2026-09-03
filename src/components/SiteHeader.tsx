@@ -1,4 +1,4 @@
-import { ChevronDown, Heart, LogOut, ShoppingCart, X } from "lucide-react";
+import { ChevronDown, Heart, ShoppingCart, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { categories, getProductsByCategory, type CategorySlug } from "@/data/catalog";
@@ -162,7 +162,7 @@ function CategoriesMenu() {
 
 export function SiteHeader() {
   const { itemCount, openCart } = useCart();
-  const { customer, authenticated, openAuth, logout } = useCustomerAuth();
+  const { customer, authenticated, openAuth } = useCustomerAuth();
   const { wishlist, wishlistCount, removeFromWishlist } = useWishlist();
   const [wishlistOpen, setWishlistOpen] = useState(false);
 
@@ -199,17 +199,28 @@ export function SiteHeader() {
           <nav className="hidden h-full items-center gap-8 whitespace-nowrap md:flex">{nav()}</nav>
 
           <div className="flex shrink-0 items-center gap-3">
-            <button
-              type="button"
-              aria-label={authenticated ? "Sign out" : "Sign in"}
-              onClick={() => (authenticated ? void logout() : openAuth())}
-              className="hidden items-center gap-2 border border-border bg-surface px-3 py-2 font-display text-[10px] uppercase tracking-[0.14em] text-foreground transition-colors hover:border-primary hover:text-primary sm:flex"
-            >
-              {authenticated ? <LogOut className="h-3.5 w-3.5" /> : <AccountIcon />}
-              <span className="max-w-[7rem] truncate">
-                {authenticated ? (customer?.name ?? "Account") : "Sign in"}
-              </span>
-            </button>
+            {authenticated ? (
+              <Link
+                to="/profile"
+                aria-label="Open your profile"
+                className="flex items-center gap-2 border border-border bg-surface px-2 py-2 font-display text-[10px] uppercase tracking-[0.14em] text-foreground transition-colors hover:border-primary hover:text-primary sm:px-3"
+              >
+                <AccountIcon />
+                <span className="hidden max-w-[7rem] truncate sm:block">
+                  {customer?.name ?? "Profile"}
+                </span>
+              </Link>
+            ) : (
+              <button
+                type="button"
+                aria-label="Sign in"
+                onClick={() => openAuth()}
+                className="flex items-center gap-2 border border-border bg-surface px-2 py-2 font-display text-[10px] uppercase tracking-[0.14em] text-foreground transition-colors hover:border-primary hover:text-primary sm:px-3"
+              >
+                <AccountIcon />
+                <span className="hidden sm:block">Sign in</span>
+              </button>
+            )}
             <div
               className="relative"
               onBlur={(event) => {

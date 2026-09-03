@@ -1,6 +1,7 @@
 import "@tanstack/react-start/server-only";
 
 import { MongoClient, type Db, type ObjectId } from "mongodb";
+import { getProduct } from "@/data/catalog";
 
 const SESSION_COOKIE = "motoluxe_customer";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
@@ -19,6 +20,7 @@ type CustomerDocument = {
   phone: string;
   name?: string;
   email?: string;
+  wishlistSlugs?: string[];
   createdAt: Date;
   updatedAt: Date;
   lastLoginAt?: Date;
@@ -26,6 +28,7 @@ type CustomerDocument = {
 
 type OtpDocument = {
   phone: string;
+  name: string;
   otpHash: string;
   createdAt: Date;
   expiresAt: Date;
@@ -37,6 +40,41 @@ type SessionDocument = {
   customerId: ObjectId;
   createdAt: Date;
   expiresAt: Date;
+};
+
+type OrderItemDocument = {
+  productName?: string;
+  quantity?: number;
+  price?: string;
+};
+
+type OrderDocument = {
+  _id?: ObjectId;
+  customerId: string;
+  items?: OrderItemDocument[];
+  status?: string;
+  createdAt?: Date;
+  delivery?: {
+    address?: string;
+  };
+};
+
+export type AccountOrder = {
+  id: string;
+  status: string;
+  createdAt: string;
+  itemCount: number;
+  items: Array<{
+    productName: string;
+    quantity: number;
+    price: string;
+  }>;
+};
+
+export type AccountSnapshot = {
+  customer: Customer;
+  orders: AccountOrder[];
+  wishlistSlugs: string[];
 };
 
 type DatabaseGlobals = typeof globalThis & {
@@ -75,7 +113,7 @@ async function getCollections() {
     customers: db.collection<CustomerDocument>("customers"),
     otps: db.collection<OtpDocument>("customer_otps"),
     sessions: db.collection<SessionDocument>("customer_sessions"),
-    orders: db.collection("orders"),
+    orders: db.collection<OrderDocument>("orders"),
   };
 }
 
@@ -164,7 +202,7 @@ async function getSessionFromRequest(request: Request) {
     return null;
   }
 
-  const { sessions, customers } = await getCollections();
+  const { sessions } = await getCollections();
   const session = await sessions.findOne({
     sessionId,
     expiresAt: { $gt: new Date() },
@@ -238,7 +276,7 @@ async function hash(value: string) {
   return base64UrlEncode(new Uint8Array(digest));
 }
 
-export async function issueOtp(phone: string) {
+export async function issueOtp(phone: string, name: string) {
   const { otps } = await getCollections();
   const now = new Date();
   const recentOtp = await otps.findOne({
@@ -253,6 +291,7 @@ export async function issueOtp(phone: string) {
   await otps.deleteMany({ phone });
   await otps.insertOne({
     phone,
+    name,
     otpHash: await hash(otp),
     createdAt: now,
     expiresAt: new Date(now.getTime() + OTP_TTL_MS),
@@ -265,7 +304,7 @@ export async function issueOtp(phone: string) {
   };
 }
 
-export async function verifyOtp(phone: string, otp: string) {
+export async function verifyOtp(phone: string, otp: string, submittedName?: string) {
   const { otps, customers } = await getCollections();
   const record = await otps.findOne({ phone });
   if (!record || record.expiresAt.getTime() <= Date.now()) {
@@ -281,12 +320,17 @@ export async function verifyOtp(phone: string, otp: string) {
     return { error: "That code is not correct. Try again." as const };
   }
 
+  const name = (record.name ?? submittedName ?? "").trim();
+  if (name.length < 2 || name.length > 100) {
+    return { error: "Enter your full name before signing in." as const };
+  }
+
   await otps.deleteOne({ _id: record._id });
   const now = new Date();
   const existing = await customers.findOneAndUpdate(
     { phone },
     {
-      $set: { updatedAt: now, lastLoginAt: now },
+      $set: { name, updatedAt: now, lastLoginAt: now },
       $setOnInsert: { phone, createdAt: now },
     },
     { upsert: true, returnDocument: "after" },
@@ -305,17 +349,9 @@ export async function updateCustomerProfile(
   request: Request,
   input: { name: string; email?: string },
 ) {
-  const cookie = getCookie(request, SESSION_COOKIE);
-  if (!cookie) return null;
-  const [sessionId] = cookie.split(".");
-  if (!sessionId) return null;
-
-  const { sessions, customers } = await getCollections();
-  const session = await sessions.findOne({
-    sessionId,
-    expiresAt: { $gt: new Date() },
-  });
+  const session = await getSessionFromRequest(request);
   if (!session) return null;
+  const { customers } = await getCollections();
 
   const name = input.name.trim();
   const email = input.email?.trim().toLowerCase();
@@ -342,6 +378,52 @@ export async function getAuthenticatedCustomer(request: Request) {
   const { customers } = await getCollections();
   const customer = await customers.findOne({ _id: session.customerId });
   return customer ?? null;
+}
+
+export async function getAccountSnapshot(request: Request): Promise<AccountSnapshot | null> {
+  const customer = await getAuthenticatedCustomer(request);
+  if (!customer) return null;
+
+  const { orders } = await getCollections();
+  const orderDocuments = await orders
+    .find({ customerId: customer._id.toHexString() })
+    .sort({ createdAt: -1 })
+    .limit(50)
+    .toArray();
+
+  return {
+    customer: customerFromDocument(customer),
+    orders: orderDocuments.map((order) => {
+      const items = (order.items ?? []).map((item) => ({
+        productName: item.productName ?? "Motoluxe product",
+        quantity: Number.isInteger(item.quantity) ? (item.quantity as number) : 0,
+        price: item.price ?? "Request price",
+      }));
+      return {
+        id: order._id?.toHexString() ?? "",
+        status: order.status ?? "pending_confirmation",
+        createdAt: order.createdAt?.toISOString() ?? new Date(0).toISOString(),
+        itemCount: items.reduce((total, item) => total + item.quantity, 0),
+        items,
+      };
+    }),
+    wishlistSlugs: customer.wishlistSlugs ?? [],
+  };
+}
+
+export async function updateCustomerWishlist(request: Request, submittedSlugs: string[]) {
+  const customer = await getAuthenticatedCustomer(request);
+  if (!customer) return null;
+
+  const wishlistSlugs = Array.from(
+    new Set(submittedSlugs.filter((slug) => Boolean(getProduct(slug)))),
+  ).slice(0, 50);
+  const { customers } = await getCollections();
+  await customers.updateOne(
+    { _id: customer._id },
+    { $set: { wishlistSlugs, updatedAt: new Date() } },
+  );
+  return wishlistSlugs;
 }
 
 export async function getOrderCollection() {

@@ -13,8 +13,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as OrderRouteImport } from './routes/order'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as CategoryCategoryRouteImport } from './routes/category.$category'
 import { Route as ProductProductRouteImport } from './routes/product.$product'
+import { Route as ApiAccountMeRouteImport } from './routes/api/account/me'
+import { Route as ApiAccountWishlistRouteImport } from './routes/api/account/wishlist'
 import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthMeRouteImport } from './routes/api/auth/me'
 import { Route as ApiAuthProfileRouteImport } from './routes/api/auth/profile'
@@ -42,6 +45,11 @@ const OrderRoute = OrderRouteImport.update({
   path: '/order',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CategoryCategoryRoute = CategoryCategoryRouteImport.update({
   id: '/category/$category',
   path: '/category/$category',
@@ -50,6 +58,16 @@ const CategoryCategoryRoute = CategoryCategoryRouteImport.update({
 const ProductProductRoute = ProductProductRouteImport.update({
   id: '/product/$product',
   path: '/product/$product',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAccountMeRoute = ApiAccountMeRouteImport.update({
+  id: '/api/account/me',
+  path: '/api/account/me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAccountWishlistRoute = ApiAccountWishlistRouteImport.update({
+  id: '/api/account/wishlist',
+  path: '/api/account/wishlist',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthLogoutRoute = ApiAuthLogoutRouteImport.update({
@@ -88,8 +106,11 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/order': typeof OrderRoute
+  '/profile': typeof ProfileRoute
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$product': typeof ProductProductRoute
+  '/api/account/me': typeof ApiAccountMeRoute
+  '/api/account/wishlist': typeof ApiAccountWishlistRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/profile': typeof ApiAuthProfileRoute
@@ -102,8 +123,11 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/order': typeof OrderRoute
+  '/profile': typeof ProfileRoute
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$product': typeof ProductProductRoute
+  '/api/account/me': typeof ApiAccountMeRoute
+  '/api/account/wishlist': typeof ApiAccountWishlistRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/profile': typeof ApiAuthProfileRoute
@@ -117,8 +141,11 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/order': typeof OrderRoute
+  '/profile': typeof ProfileRoute
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$product': typeof ProductProductRoute
+  '/api/account/me': typeof ApiAccountMeRoute
+  '/api/account/wishlist': typeof ApiAccountWishlistRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/profile': typeof ApiAuthProfileRoute
@@ -133,8 +160,11 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/order'
+    | '/profile'
     | '/category/$category'
     | '/product/$product'
+    | '/api/account/me'
+    | '/api/account/wishlist'
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/profile'
@@ -147,8 +177,11 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/order'
+    | '/profile'
     | '/category/$category'
     | '/product/$product'
+    | '/api/account/me'
+    | '/api/account/wishlist'
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/profile'
@@ -161,8 +194,11 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/order'
+    | '/profile'
     | '/category/$category'
     | '/product/$product'
+    | '/api/account/me'
+    | '/api/account/wishlist'
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/profile'
@@ -176,8 +212,11 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
   OrderRoute: typeof OrderRoute
+  ProfileRoute: typeof ProfileRoute
   CategoryCategoryRoute: typeof CategoryCategoryRoute
   ProductProductRoute: typeof ProductProductRoute
+  ApiAccountMeRoute: typeof ApiAccountMeRoute
+  ApiAccountWishlistRoute: typeof ApiAccountWishlistRoute
   ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
   ApiAuthMeRoute: typeof ApiAuthMeRoute
   ApiAuthProfileRoute: typeof ApiAuthProfileRoute
@@ -216,6 +255,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrderRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/category/$category': {
       id: '/category/$category'
       path: '/category/$category'
@@ -228,6 +274,20 @@ declare module '@tanstack/react-router' {
       path: '/product/$product'
       fullPath: '/product/$product'
       preLoaderRoute: typeof ProductProductRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/account/me': {
+      id: '/api/account/me'
+      path: '/api/account/me'
+      fullPath: '/api/account/me'
+      preLoaderRoute: typeof ApiAccountMeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/account/wishlist': {
+      id: '/api/account/wishlist'
+      path: '/api/account/wishlist'
+      fullPath: '/api/account/wishlist'
+      preLoaderRoute: typeof ApiAccountWishlistRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/logout': {
@@ -280,8 +340,11 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
   OrderRoute: OrderRoute,
+  ProfileRoute: ProfileRoute,
   CategoryCategoryRoute: CategoryCategoryRoute,
   ProductProductRoute: ProductProductRoute,
+  ApiAccountMeRoute: ApiAccountMeRoute,
+  ApiAccountWishlistRoute: ApiAccountWishlistRoute,
   ApiAuthLogoutRoute: ApiAuthLogoutRoute,
   ApiAuthMeRoute: ApiAuthMeRoute,
   ApiAuthProfileRoute: ApiAuthProfileRoute,

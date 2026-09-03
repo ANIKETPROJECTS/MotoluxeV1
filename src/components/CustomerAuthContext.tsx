@@ -45,11 +45,10 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [checking, setChecking] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
-  const [step, setStep] = useState<"phone" | "otp" | "profile">("phone");
+  const [step, setStep] = useState<"phone" | "otp">("phone");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [developmentOtp, setDevelopmentOtp] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -70,6 +69,9 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
     }
     pendingAction.current = callback;
     setError("");
+    setName("");
+    setPhone("");
+    setOtp("");
     setStep("phone");
     setIsOpen(true);
   }
@@ -98,7 +100,7 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
         method: "POST",
         headers: { "content-type": "application/json" },
         credentials: "same-origin",
-        body: JSON.stringify({ phone }),
+        body: JSON.stringify({ name, phone }),
       });
       const payload = await parseResponse(response);
       setDevelopmentOtp(payload.developmentOtp ?? "");
@@ -120,45 +122,16 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
         method: "POST",
         headers: { "content-type": "application/json" },
         credentials: "same-origin",
-        body: JSON.stringify({ phone, otp }),
+        body: JSON.stringify({ name, phone, otp }),
       });
       const payload = await parseResponse(response);
       const verifiedCustomer = payload.customer;
       if (!verifiedCustomer) throw new Error("We could not sign you in.");
 
-      setName(verifiedCustomer.name ?? "");
-      setEmail(verifiedCustomer.email ?? "");
-      if (!verifiedCustomer.name || !verifiedCustomer.email) {
-        setStep("profile");
-      } else {
-        completeAuthentication(verifiedCustomer);
-      }
+      completeAuthentication(verifiedCustomer);
     } catch (requestError) {
       setError(
         requestError instanceof Error ? requestError.message : "We could not verify that code.",
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function saveProfile(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setLoading(true);
-    setError("");
-    try {
-      const response = await fetch("/api/auth/profile", {
-        method: "PUT",
-        headers: { "content-type": "application/json" },
-        credentials: "same-origin",
-        body: JSON.stringify({ name, email }),
-      });
-      const payload = await parseResponse(response);
-      if (!payload.customer) throw new Error("We could not save your details.");
-      completeAuthentication(payload.customer);
-    } catch (requestError) {
-      setError(
-        requestError instanceof Error ? requestError.message : "We could not save your details.",
       );
     } finally {
       setLoading(false);
@@ -225,9 +198,24 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
               {step === "phone" && (
                 <form onSubmit={requestOtp} className="space-y-5">
                   <p className="text-sm leading-relaxed text-muted-foreground">
-                    Use your phone number to access checkout and keep your orders connected to one
+                    Enter your name and phone number to create or access your Motoluxe customer
                     account.
                   </p>
+                  <div>
+                    <label htmlFor="auth-name" className="eyebrow mb-2 block text-muted-foreground">
+                      Full name
+                    </label>
+                    <input
+                      id="auth-name"
+                      autoFocus
+                      required
+                      minLength={2}
+                      value={name}
+                      onChange={(event) => setName(event.target.value)}
+                      placeholder="Your full name"
+                      className="w-full border border-input bg-background px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
+                    />
+                  </div>
                   <div>
                     <label
                       htmlFor="auth-phone"
@@ -237,7 +225,6 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
                     </label>
                     <input
                       id="auth-phone"
-                      autoFocus
                       required
                       type="tel"
                       value={phone}
@@ -312,57 +299,6 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
                     className="mx-auto flex items-center gap-2 text-xs text-muted-foreground transition-colors hover:text-primary"
                   >
                     <ArrowLeft className="h-3.5 w-3.5" /> Use a different number
-                  </button>
-                </form>
-              )}
-
-              {step === "profile" && (
-                <form onSubmit={saveProfile} className="space-y-5">
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    Add these details once so we can prepare your order and send important updates.
-                  </p>
-                  <div>
-                    <label htmlFor="auth-name" className="eyebrow mb-2 block text-muted-foreground">
-                      Full name
-                    </label>
-                    <input
-                      id="auth-name"
-                      autoFocus
-                      required
-                      minLength={2}
-                      value={name}
-                      onChange={(event) => setName(event.target.value)}
-                      placeholder="Your full name"
-                      className="w-full border border-input bg-background px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="auth-email"
-                      className="eyebrow mb-2 block text-muted-foreground"
-                    >
-                      Email address
-                    </label>
-                    <input
-                      id="auth-email"
-                      required
-                      type="email"
-                      value={email}
-                      onChange={(event) => setEmail(event.target.value)}
-                      placeholder="you@example.com"
-                      className="w-full border border-input bg-background px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="group flex w-full items-center justify-center gap-2 bg-primary px-5 py-4 font-display text-xs uppercase tracking-[0.2em] text-primary-foreground disabled:cursor-wait disabled:opacity-60"
-                  >
-                    {loading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : null}
-                    Save and continue
-                    {!loading && (
-                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    )}
                   </button>
                 </form>
               )}

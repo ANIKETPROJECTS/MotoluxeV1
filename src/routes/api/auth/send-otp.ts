@@ -8,8 +8,12 @@ export const Route = createFileRoute("/api/auth/send-otp")({
       POST: async ({ request }) => {
         const body = await readJson(request);
         const phone = normalizePhone(body?.["phone"]);
+        const name = typeof body?.["name"] === "string" ? body["name"].trim() : "";
         if (!phone) {
           return jsonError("Enter a valid phone number.", 400);
+        }
+        if (name.length < 2 || name.length > 100) {
+          return jsonError("Enter your full name.", 400);
         }
         if (process.env["NODE_ENV"] === "production") {
           return jsonError("Phone verification is not configured for production yet.", 503);
@@ -17,7 +21,7 @@ export const Route = createFileRoute("/api/auth/send-otp")({
 
         let result;
         try {
-          result = await issueOtp(phone);
+          result = await issueOtp(phone, name);
         } catch (error) {
           console.error("Customer OTP service unavailable", error);
           return jsonError(

@@ -24,6 +24,9 @@ React UI. Checkout uses the server API and MongoDB:
 - Sessions use a signed, HttpOnly cookie and a MongoDB session record.
 - Orders are validated against the static catalog on the server and store the
   authenticated customer ID plus delivery snapshot.
+- The profile route reads customer details and that customer's order history from
+  MongoDB. Authenticated wishlist slugs are stored on the customer record and
+  synced through the account API; signed-out wishlist items remain browser-local.
 
 The production build uses the Node Nitro preset because the MongoDB Node driver
 requires a Node server runtime.
