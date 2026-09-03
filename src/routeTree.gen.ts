@@ -26,6 +26,7 @@ import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminSetupRouteImport } from './routes/admin.setup'
+import { Route as ApiCouponsRouteImport } from './routes/api/coupons'
 import { Route as ApiReviewsRouteImport } from './routes/api/reviews'
 import { Route as CategoryCategoryRouteImport } from './routes/category.$category'
 import { Route as ProductProductRouteImport } from './routes/product.$product'
@@ -146,6 +147,11 @@ const AdminSetupRoute = AdminSetupRouteImport.update({
   id: '/setup',
   path: '/setup',
   getParentRoute: () => AdminRoute,
+} as any)
+const ApiCouponsRoute = ApiCouponsRouteImport.update({
+  id: '/api/coupons',
+  path: '/api/coupons',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiReviewsRoute = ApiReviewsRouteImport.update({
   id: '/api/reviews',
@@ -346,6 +352,7 @@ export interface FileRoutesByFullPath {
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/setup': typeof AdminSetupRoute
+  '/api/coupons': typeof ApiCouponsRoute
   '/api/reviews': typeof ApiReviewsRoute
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$product': typeof ProductProductRoute
@@ -400,6 +407,7 @@ export interface FileRoutesByTo {
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/setup': typeof AdminSetupRoute
+  '/api/coupons': typeof ApiCouponsRoute
   '/api/reviews': typeof ApiReviewsRoute
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$product': typeof ProductProductRoute
@@ -455,6 +463,7 @@ export interface FileRoutesById {
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/setup': typeof AdminSetupRoute
+  '/api/coupons': typeof ApiCouponsRoute
   '/api/reviews': typeof ApiReviewsRoute
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$product': typeof ProductProductRoute
@@ -511,6 +520,7 @@ export interface FileRouteTypes {
     | '/admin/reviews'
     | '/admin/settings'
     | '/admin/setup'
+    | '/api/coupons'
     | '/api/reviews'
     | '/category/$category'
     | '/product/$product'
@@ -565,6 +575,7 @@ export interface FileRouteTypes {
     | '/admin/reviews'
     | '/admin/settings'
     | '/admin/setup'
+    | '/api/coupons'
     | '/api/reviews'
     | '/category/$category'
     | '/product/$product'
@@ -619,6 +630,7 @@ export interface FileRouteTypes {
     | '/admin/reviews'
     | '/admin/settings'
     | '/admin/setup'
+    | '/api/coupons'
     | '/api/reviews'
     | '/category/$category'
     | '/product/$product'
@@ -664,6 +676,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   OrderRoute: typeof OrderRoute
   ProfileRoute: typeof ProfileRoute
+  ApiCouponsRoute: typeof ApiCouponsRoute
   ApiReviewsRoute: typeof ApiReviewsRoute
   CategoryCategoryRoute: typeof CategoryCategoryRoute
   ProductProductRoute: typeof ProductProductRoute
@@ -819,6 +832,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/setup'
       preLoaderRoute: typeof AdminSetupRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/api/coupons': {
+      id: '/api/coupons'
+      path: '/api/coupons'
+      fullPath: '/api/coupons'
+      preLoaderRoute: typeof ApiCouponsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/reviews': {
       id: '/api/reviews'
@@ -1127,6 +1147,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   OrderRoute: OrderRoute,
   ProfileRoute: ProfileRoute,
+  ApiCouponsRoute: ApiCouponsRoute,
   ApiReviewsRoute: ApiReviewsRoute,
   CategoryCategoryRoute: CategoryCategoryRoute,
   ProductProductRoute: ProductProductRoute,

@@ -2,6 +2,7 @@ import "@tanstack/react-start/server-only";
 
 import { ObjectId, type Collection, type Filter } from "mongodb";
 import { getOrderCollection } from "@/lib/server/customer-auth";
+import { ensureLegacyOrderNumbers, formatOrderNumber } from "@/lib/server/order-number";
 
 export const orderStatuses = [
   "pending_confirmation",
@@ -35,6 +36,7 @@ type OrderHistoryDocument = {
 
 type AdminOrderDocument = {
   _id?: ObjectId;
+  orderNumber?: number;
   customerId?: string;
   items?: OrderItemDocument[];
   status?: string;
@@ -131,10 +133,6 @@ function numericValue(value: unknown) {
   return null;
 }
 
-function orderNumber(id: ObjectId | undefined) {
-  return id ? `MLX-${id.toHexString().slice(-8).toUpperCase()}` : "MLX-UNKNOWN";
-}
-
 function dateValue(value: Date | undefined) {
   return value?.toISOString() ?? new Date(0).toISOString();
 }
@@ -152,7 +150,7 @@ function paymentStatusValue(value: unknown) {
 function listItem(document: AdminOrderDocument & { _id: ObjectId }): AdminOrderListItem {
   return {
     id: document._id.toHexString(),
-    number: orderNumber(document._id),
+    number: formatOrderNumber(document.orderNumber),
     customerName: document.delivery?.name ?? "Customer",
     phone: document.delivery?.phone ?? "",
     email: document.delivery?.email ?? "",
@@ -225,18 +223,20 @@ export async function listAdminOrders(
   to = "",
   sort = "newest",
 ) {
+  await ensureLegacyOrderNumbers();
   const collection = asCollection(await getOrderCollection());
   const clauses: Filter<AdminOrderDocument>[] = [{ deletedAt: { $exists: false } }];
   if (search.trim()) {
     const escaped = search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    clauses.push({
-      $or: [
-        { "delivery.name": { $regex: escaped, $options: "i" } },
-        { "delivery.phone": { $regex: escaped, $options: "i" } },
-        { "delivery.email": { $regex: escaped, $options: "i" } },
-      ],
-    });
-    if (ObjectId.isValid(search.trim())) clauses.push({ _id: new ObjectId(search.trim()) });
+    const alternatives: Filter<AdminOrderDocument>[] = [
+      { "delivery.name": { $regex: escaped, $options: "i" } },
+      { "delivery.phone": { $regex: escaped, $options: "i" } },
+      { "delivery.email": { $regex: escaped, $options: "i" } },
+    ];
+    if (ObjectId.isValid(search.trim())) alternatives.push({ _id: new ObjectId(search.trim()) });
+    const numberMatch = /^MOTOLUXE-(\d+)$/i.exec(search.trim());
+    if (numberMatch) alternatives.push({ orderNumber: Number(numberMatch[1]) });
+    clauses.push({ $or: alternatives });
   }
   if (orderStatuses.includes(status as OrderStatus)) clauses.push({ status });
   if (paymentStatuses.includes(paymentStatus as PaymentStatus)) {
@@ -282,6 +282,7 @@ export async function listAdminOrders(
 
 export async function getAdminOrder(id: string) {
   if (!ObjectId.isValid(id)) return null;
+  await ensureLegacyOrderNumbers();
   const collection = asCollection(await getOrderCollection());
   const document = await collection.findOne({
     _id: new ObjectId(id),

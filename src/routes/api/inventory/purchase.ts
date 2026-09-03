@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { getAuthenticatedCustomer, getOrderCollection } from "@/lib/server/customer-auth";
 import { getProduct } from "@/data/catalog";
 import { getStorefrontSettings } from "@/lib/server/admin-settings";
+import { allocateOrderNumber, formatOrderNumber } from "@/lib/server/order-number";
+import { calculateCouponDiscount, isCouponCurrentlyActive, numericPrice } from "@/lib/coupon-types";
 import { jsonError, readJson } from "@/lib/server/http";
 
 type SubmittedItem = {
@@ -61,6 +63,31 @@ export const Route = createFileRoute("/api/inventory/purchase")({
           });
         }
 
+        const submittedCouponCode =
+          typeof body?.["couponCode"] === "string"
+            ? body["couponCode"].trim().toUpperCase().slice(0, 32)
+            : "";
+        const coupon = submittedCouponCode
+          ? settings.coupons.find(
+              (candidate) =>
+                candidate.code === submittedCouponCode && isCouponCurrentlyActive(candidate),
+            )
+          : null;
+        if (submittedCouponCode && !coupon) {
+          return jsonError("That coupon is no longer active or does not exist.", 400);
+        }
+        const subtotal = items.reduce(
+          (total, item) => total + numericPrice(item.price) * item.quantity,
+          0,
+        );
+        if (coupon && subtotal < coupon.minimumOrderValue) {
+          return jsonError(
+            `This coupon requires a minimum order of ₹${coupon.minimumOrderValue}.`,
+            400,
+          );
+        }
+        const discount = coupon ? calculateCouponDiscount(coupon, subtotal) : 0;
+
         const delivery =
           body?.["delivery"] && typeof body["delivery"] === "object"
             ? (body["delivery"] as Record<string, unknown>)
@@ -84,20 +111,20 @@ export const Route = createFileRoute("/api/inventory/purchase")({
         }
 
         let orders;
+        let orderNumber;
         try {
           orders = await getOrderCollection();
+          orderNumber = await allocateOrderNumber();
         } catch (error) {
           console.error("Order database unavailable", error);
           return jsonError("Orders are temporarily unavailable. Please try again shortly.", 503);
         }
 
         const order = {
+          orderNumber,
           customerId: customer._id.toHexString(),
           items,
-          couponCode:
-            typeof body?.["couponCode"] === "string"
-              ? body["couponCode"].trim().slice(0, 40)
-              : undefined,
+          couponCode: coupon?.code,
           delivery: {
             name,
             email,
@@ -105,10 +132,11 @@ export const Route = createFileRoute("/api/inventory/purchase")({
             address,
           },
           pricing: {
-            subtotal: null,
-            shipping: null,
-            total: null,
-            status: "request_price",
+            subtotal,
+            shipping: 0,
+            discount,
+            total: subtotal - discount,
+            status: "priced",
           },
           status: "pending_confirmation",
           createdAt: new Date(),
@@ -116,7 +144,11 @@ export const Route = createFileRoute("/api/inventory/purchase")({
         };
         const result = await orders.insertOne(order);
         return Response.json(
-          { ok: true, orderId: result.insertedId.toHexString() },
+          {
+            ok: true,
+            orderId: result.insertedId.toHexString(),
+            orderNumber: formatOrderNumber(orderNumber),
+          },
           { status: 201 },
         );
       },

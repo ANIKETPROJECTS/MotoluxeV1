@@ -17,6 +17,7 @@ import { useWishlist } from "@/components/WishlistContext";
 
 type AccountOrder = {
   id: string;
+  number: string;
   status: string;
   createdAt: string;
   itemCount: number;
@@ -311,7 +312,7 @@ function ProfilePage() {
                       <div>
                         <span className="eyebrow text-primary">Order reference</span>
                         <p className="mt-1 break-all font-display text-sm tracking-[0.08em] text-foreground">
-                          {order.id}
+                          {order.number}
                         </p>
                       </div>
                       <div className="text-right">

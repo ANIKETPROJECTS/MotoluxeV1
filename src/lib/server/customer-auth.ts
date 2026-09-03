@@ -7,6 +7,7 @@ import {
   getRequiredEnvironment,
   MOTOLUXE_COLLECTIONS,
 } from "@/lib/server/mongodb";
+import { ensureLegacyOrderNumbers, formatOrderNumber } from "@/lib/server/order-number";
 
 const SESSION_COOKIE = "motoluxe_customer";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
@@ -46,6 +47,7 @@ type OrderItemDocument = {
 
 type OrderDocument = {
   _id?: ObjectId;
+  orderNumber?: number;
   customerId: string;
   items?: OrderItemDocument[];
   status?: string;
@@ -57,6 +59,7 @@ type OrderDocument = {
 
 export type AccountOrder = {
   id: string;
+  number: string;
   status: string;
   createdAt: string;
   itemCount: number;
@@ -307,6 +310,7 @@ export async function getAccountSnapshot(request: Request): Promise<AccountSnaps
   const customer = await getAuthenticatedCustomer(request);
   if (!customer) return null;
 
+  await ensureLegacyOrderNumbers();
   const { orders } = await getCollections();
   const orderDocuments = await orders
     .find({ customerId: customer._id.toHexString() })
@@ -325,6 +329,7 @@ export async function getAccountSnapshot(request: Request): Promise<AccountSnaps
       }));
       return {
         id: order._id?.toHexString() ?? "",
+        number: formatOrderNumber(order.orderNumber),
         status: order.status ?? "pending_confirmation",
         createdAt: order.createdAt?.toISOString() ?? new Date(0).toISOString(),
         itemCount: items.reduce((total, item) => total + item.quantity, 0),

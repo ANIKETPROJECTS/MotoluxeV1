@@ -6,9 +6,11 @@ import {
   getOrderCollection,
   normalizePhone,
 } from "@/lib/server/customer-auth";
+import { ensureLegacyOrderNumbers, formatOrderNumber } from "@/lib/server/order-number";
 
 type CustomerDocument = {
   _id?: ObjectId;
+  orderNumber?: number;
   phone: string;
   name?: string;
   email?: string;
@@ -21,6 +23,7 @@ type CustomerDocument = {
 
 type CustomerOrderDocument = {
   _id?: ObjectId;
+  orderNumber?: number;
   customerId?: string;
   items?: Array<{ productName?: string; quantity?: number }>;
   pricing?: { total?: number | string | null };
@@ -89,10 +92,6 @@ function dateValue(value: Date | undefined) {
   return value?.toISOString() ?? null;
 }
 
-function orderNumber(id: ObjectId | undefined) {
-  return id ? `MLX-${id.toHexString().slice(-8).toUpperCase()}` : "MLX-UNKNOWN";
-}
-
 function orderCustomerKey(order: CustomerOrderDocument) {
   if (order.customerId) return order.customerId;
   const phone = normalizePhone(order.delivery?.phone);
@@ -156,7 +155,7 @@ function listItem(
 function orderItem(order: CustomerOrderDocument & { _id: ObjectId }): AdminCustomerOrder {
   return {
     id: order._id.toHexString(),
-    number: orderNumber(order._id),
+    number: formatOrderNumber(order.orderNumber),
     date: order.createdAt?.toISOString() ?? new Date(0).toISOString(),
     itemCount: (order.items ?? []).reduce(
       (sum, item) => sum + (Number.isInteger(item.quantity) ? (item.quantity as number) : 0),
@@ -177,6 +176,7 @@ export async function listAdminCustomers(options: {
   sort?: string;
   direction?: string;
 }) {
+  await ensureLegacyOrderNumbers();
   const [customerDocuments, orderDocuments] = await Promise.all([
     asCustomerCollection(await getCustomerCollection())
       .find({ archivedAt: { $exists: false } })

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import type { Coupon } from "@/lib/coupon-types";
 
 export const Route = createFileRoute("/admin/settings")({
   head: () => ({
@@ -24,6 +25,7 @@ type Settings = {
   announcement: string;
   ordersEnabled: boolean;
   customerReviewsEnabled: boolean;
+  coupons: Coupon[];
   updatedAt: string | null;
 };
 
@@ -37,6 +39,7 @@ const defaults: Settings = {
   announcement: "",
   ordersEnabled: true,
   customerReviewsEnabled: true,
+  coupons: [],
   updatedAt: null,
 };
 
@@ -72,6 +75,41 @@ function AdminSettingsPage() {
 
   function update<K extends keyof Settings>(key: K, value: Settings[K]) {
     setSettings((current) => ({ ...current, [key]: value }));
+  }
+
+  function updateCoupon(index: number, patch: Partial<Coupon>) {
+    setSettings((current) => ({
+      ...current,
+      coupons: current.coupons.map((coupon, couponIndex) =>
+        couponIndex === index ? { ...coupon, ...patch } : coupon,
+      ),
+    }));
+  }
+
+  function addCoupon() {
+    setSettings((current) => ({
+      ...current,
+      coupons: [
+        ...current.coupons,
+        {
+          id: `coupon-${Date.now()}`,
+          code: "",
+          description: "",
+          discountType: "percentage",
+          discountValue: 10,
+          minimumOrderValue: 399,
+          expiresAt: null,
+          active: true,
+        },
+      ],
+    }));
+  }
+
+  function removeCoupon(index: number) {
+    setSettings((current) => ({
+      ...current,
+      coupons: current.coupons.filter((_, couponIndex) => couponIndex !== index),
+    }));
   }
 
   async function save(event: FormEvent<HTMLFormElement>) {
@@ -226,6 +264,141 @@ function AdminSettingsPage() {
               title="Accept customer reviews"
               description="Keep this enabled to let customers submit reviews from their order history for moderation."
             />
+          </div>
+        </section>
+
+        <section className="border border-border bg-card p-5 sm:p-7">
+          <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-5">
+            <div>
+              <span className="eyebrow text-accent">Coupons & offers</span>
+              <h2 className="mt-2 text-2xl font-medium">Reward the right basket.</h2>
+              <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
+                Active coupons appear in the customer cart and are checked again when an order is
+                placed.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={addCoupon}
+              className="border border-accent px-4 py-3 font-display text-xs uppercase tracking-[0.14em] text-accent hover:bg-accent hover:text-accent-foreground"
+            >
+              Add coupon
+            </button>
+          </div>
+          <div className="mt-6 grid gap-4">
+            {settings.coupons.length === 0 ? (
+              <div className="border border-dashed border-border px-5 py-8 text-sm text-muted-foreground">
+                No coupons yet. Add an offer such as <span className="text-foreground">RIDE10</span>{" "}
+                for 10% off orders above ₹399.
+              </div>
+            ) : (
+              settings.coupons.map((coupon, index) => (
+                <div key={coupon.id} className="border border-border bg-background p-4 sm:p-5">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <span className="eyebrow text-primary">Coupon {index + 1}</span>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Customers see this offer only when it is active and not expired.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeCoupon(index)}
+                      className="text-xs text-muted-foreground hover:text-primary"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                    <label className="grid gap-2 text-xs text-muted-foreground">
+                      Code
+                      <input
+                        required
+                        value={coupon.code}
+                        onChange={(event) =>
+                          updateCoupon(index, { code: event.target.value.toUpperCase() })
+                        }
+                        placeholder="RIDE10"
+                        className={inputClass}
+                      />
+                    </label>
+                    <label className="grid gap-2 text-xs text-muted-foreground">
+                      Discount type
+                      <select
+                        value={coupon.discountType}
+                        onChange={(event) =>
+                          updateCoupon(index, {
+                            discountType: event.target.value as Coupon["discountType"],
+                          })
+                        }
+                        className={inputClass}
+                      >
+                        <option value="percentage">Percentage</option>
+                        <option value="fixed">Fixed amount</option>
+                      </select>
+                    </label>
+                    <label className="grid gap-2 text-xs text-muted-foreground">
+                      Discount value
+                      <input
+                        required
+                        type="number"
+                        min="1"
+                        max={coupon.discountType === "percentage" ? "100" : undefined}
+                        value={coupon.discountValue}
+                        onChange={(event) =>
+                          updateCoupon(index, { discountValue: Number(event.target.value) })
+                        }
+                        className={inputClass}
+                      />
+                    </label>
+                    <label className="grid gap-2 text-xs text-muted-foreground">
+                      Minimum order value
+                      <input
+                        required
+                        type="number"
+                        min="0"
+                        value={coupon.minimumOrderValue}
+                        onChange={(event) =>
+                          updateCoupon(index, { minimumOrderValue: Number(event.target.value) })
+                        }
+                        className={inputClass}
+                      />
+                    </label>
+                    <label className="grid gap-2 text-xs text-muted-foreground md:col-span-2">
+                      Customer-facing description
+                      <input
+                        value={coupon.description}
+                        onChange={(event) =>
+                          updateCoupon(index, { description: event.target.value })
+                        }
+                        placeholder="10% off your next ride-care order"
+                        className={inputClass}
+                      />
+                    </label>
+                    <label className="grid gap-2 text-xs text-muted-foreground">
+                      Expiry date
+                      <input
+                        type="date"
+                        value={coupon.expiresAt ?? ""}
+                        onChange={(event) =>
+                          updateCoupon(index, { expiresAt: event.target.value || null })
+                        }
+                        className={inputClass}
+                      />
+                    </label>
+                    <label className="flex items-center gap-3 border border-border px-4 py-3 text-xs text-foreground">
+                      <input
+                        type="checkbox"
+                        checked={coupon.active}
+                        onChange={(event) => updateCoupon(index, { active: event.target.checked })}
+                        className="h-4 w-4 accent-[var(--primary)]"
+                      />
+                      Active for customers
+                    </label>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </section>
 

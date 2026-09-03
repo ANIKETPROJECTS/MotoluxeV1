@@ -1,6 +1,7 @@
 import "@tanstack/react-start/server-only";
 
 import { getMotoluxeDatabase, MOTOLUXE_COLLECTIONS } from "@/lib/server/mongodb";
+import { couponDiscountTypes, type Coupon, type CouponDiscountType } from "@/lib/coupon-types";
 
 const SETTINGS_KEY = "storefront";
 
@@ -14,12 +15,14 @@ export type StorefrontSettings = {
   announcement: string;
   ordersEnabled: boolean;
   customerReviewsEnabled: boolean;
+  coupons: Coupon[];
   updatedAt: string | null;
 };
 
-type SettingsDocument = Omit<StorefrontSettings, "updatedAt"> & {
+type SettingsDocument = Omit<StorefrontSettings, "updatedAt" | "coupons"> & {
   _id?: string;
   key: string;
+  coupons?: Coupon[];
   updatedAt?: Date;
 };
 
@@ -33,6 +36,7 @@ const defaults: Omit<StorefrontSettings, "updatedAt"> = {
   announcement: "",
   ordersEnabled: true,
   customerReviewsEnabled: true,
+  coupons: [],
 };
 
 async function settingsCollection() {
@@ -44,6 +48,7 @@ function toSettings(document?: SettingsDocument | null): StorefrontSettings {
   return {
     ...defaults,
     ...(document ?? {}),
+    coupons: document?.coupons ?? [],
     updatedAt: document?.updatedAt?.toISOString() ?? null,
   };
 }
@@ -65,6 +70,65 @@ export function validateSettingsInput(input: Record<string, unknown>) {
   const announcement = text("announcement", 240);
   const ordersEnabled = input["ordersEnabled"] === true;
   const customerReviewsEnabled = input["customerReviewsEnabled"] === true;
+  const rawCoupons = Array.isArray(input["coupons"]) ? input["coupons"].slice(0, 30) : [];
+  const coupons: Coupon[] = [];
+  const couponCodes = new Set<string>();
+  for (const [index, rawCoupon] of rawCoupons.entries()) {
+    if (!rawCoupon || typeof rawCoupon !== "object") {
+      return { error: "Each coupon must be a valid coupon record." as const };
+    }
+    const coupon = rawCoupon as Record<string, unknown>;
+    const code = typeof coupon["code"] === "string" ? coupon["code"].trim().toUpperCase() : "";
+    const description =
+      typeof coupon["description"] === "string" ? coupon["description"].trim().slice(0, 120) : "";
+    const discountType = coupon["discountType"];
+    const discountValue =
+      typeof coupon["discountValue"] === "number"
+        ? coupon["discountValue"]
+        : Number(coupon["discountValue"]);
+    const minimumOrderValue =
+      typeof coupon["minimumOrderValue"] === "number"
+        ? coupon["minimumOrderValue"]
+        : Number(coupon["minimumOrderValue"]);
+    const expiresAt =
+      typeof coupon["expiresAt"] === "string" && coupon["expiresAt"].trim()
+        ? coupon["expiresAt"].trim()
+        : null;
+    if (!/^[A-Z0-9_-]{3,32}$/.test(code) || couponCodes.has(code)) {
+      return {
+        error: `Coupon ${index + 1} needs a unique code with 3–32 letters or numbers.` as const,
+      };
+    }
+    if (!couponDiscountTypes.includes(discountType as CouponDiscountType)) {
+      return { error: `Coupon ${code} needs a valid discount type.` as const };
+    }
+    if (!Number.isFinite(discountValue) || discountValue <= 0) {
+      return { error: `Coupon ${code} needs a discount greater than zero.` as const };
+    }
+    if (discountType === "percentage" && discountValue > 100) {
+      return { error: `Coupon ${code} cannot discount more than 100%.` as const };
+    }
+    if (!Number.isFinite(minimumOrderValue) || minimumOrderValue < 0) {
+      return { error: `Coupon ${code} needs a valid minimum order value.` as const };
+    }
+    if (expiresAt && !/^\d{4}-\d{2}-\d{2}$/.test(expiresAt)) {
+      return { error: `Coupon ${code} needs a valid expiry date.` as const };
+    }
+    couponCodes.add(code);
+    coupons.push({
+      id:
+        typeof coupon["id"] === "string" && coupon["id"].trim()
+          ? coupon["id"].trim().slice(0, 80)
+          : `coupon-${index + 1}`,
+      code,
+      description,
+      discountType: discountType as CouponDiscountType,
+      discountValue: Math.round(discountValue),
+      minimumOrderValue: Math.round(minimumOrderValue),
+      expiresAt,
+      active: coupon["active"] === true,
+    });
+  }
 
   if (!storeName) return { error: "Enter a store name." as const };
   if (!tagline) return { error: "Enter a storefront tagline." as const };
@@ -83,6 +147,7 @@ export function validateSettingsInput(input: Record<string, unknown>) {
       announcement,
       ordersEnabled,
       customerReviewsEnabled,
+      coupons,
     },
   };
 }

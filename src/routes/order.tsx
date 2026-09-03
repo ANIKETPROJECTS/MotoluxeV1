@@ -18,9 +18,20 @@ export const Route = createFileRoute("/order")({
 });
 
 function OrderPage() {
-  const { lines, itemCount, updateQuantity, removeFromCart, clearCart } = useCart();
+  const {
+    lines,
+    itemCount,
+    appliedCoupon,
+    subtotal,
+    discount,
+    total,
+    updateQuantity,
+    removeFromCart,
+    clearCart,
+  } = useCart();
   const { customer, checking, authenticated, openAuth } = useCustomerAuth();
   const [placedOrderId, setPlacedOrderId] = useState<string | null>(null);
+  const [placedOrderNumber, setPlacedOrderNumber] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -44,6 +55,7 @@ function OrderPage() {
             productId: line.product.slug,
             quantity: line.quantity,
           })),
+          couponCode: appliedCoupon?.code,
           delivery: {
             name: formData.get("name"),
             email: formData.get("email"),
@@ -53,12 +65,14 @@ function OrderPage() {
       });
       const payload = (await response.json().catch(() => ({}))) as {
         orderId?: string;
+        orderNumber?: string;
         error?: string;
       };
-      if (!response.ok || !payload.orderId) {
+      if (!response.ok || !payload.orderId || !payload.orderNumber) {
         throw new Error(payload.error ?? "We could not place your order.");
       }
       setPlacedOrderId(payload.orderId);
+      setPlacedOrderNumber(payload.orderNumber);
       clearCart();
     } catch (requestError) {
       setError(
@@ -100,7 +114,7 @@ function OrderPage() {
                 account and the Admin Orders screen.
               </p>
               <p className="mt-5 border border-accent/30 bg-accent/10 px-4 py-3 font-display text-xs uppercase tracking-[0.14em] text-accent">
-                Reference: <span>{placedOrderId}</span>
+                Reference: <span>{placedOrderNumber}</span>
               </p>
               <div className="mt-7 grid gap-3 sm:grid-cols-2">
                 <Link
@@ -324,6 +338,24 @@ function OrderPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+          {lines.length > 0 && (
+            <div className="grid gap-3 border-t border-border pt-5 text-sm">
+              <div className="flex justify-between text-muted-foreground">
+                <span>Subtotal</span>
+                <span>₹{subtotal}</span>
+              </div>
+              {appliedCoupon && discount > 0 && (
+                <div className="flex justify-between text-accent">
+                  <span>Coupon · {appliedCoupon.code}</span>
+                  <span>−₹{discount}</span>
+                </div>
+              )}
+              <div className="flex justify-between font-display text-lg text-foreground">
+                <span>Total</span>
+                <span>₹{total}</span>
+              </div>
             </div>
           )}
         </aside>
