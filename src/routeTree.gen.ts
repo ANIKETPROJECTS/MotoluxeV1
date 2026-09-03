@@ -22,6 +22,7 @@ import { Route as AdminInventoryRouteImport } from './routes/admin.inventory'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
+import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminReviewsRouteImport } from './routes/admin.reviews'
 import { Route as AdminSetupRouteImport } from './routes/admin.setup'
 import { Route as ApiReviewsRouteImport } from './routes/api/reviews'
@@ -33,6 +34,7 @@ import { Route as ApiAccountWishlistRouteImport } from './routes/api/account/wis
 import { Route as ApiAdminInventoryRouteImport } from './routes/api/admin/inventory'
 import { Route as ApiAdminOrdersRouteImport } from './routes/api/admin/orders'
 import { Route as ApiAdminOverviewRouteImport } from './routes/api/admin/overview'
+import { Route as ApiAdminReportsRouteImport } from './routes/api/admin/reports'
 import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
 import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthMeRouteImport } from './routes/api/auth/me'
@@ -123,6 +125,11 @@ const AdminProductsRoute = AdminProductsRouteImport.update({
   path: '/products',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminReviewsRoute = AdminReviewsRouteImport.update({
   id: '/reviews',
   path: '/reviews',
@@ -176,6 +183,11 @@ const ApiAdminOrdersRoute = ApiAdminOrdersRouteImport.update({
 const ApiAdminOverviewRoute = ApiAdminOverviewRouteImport.update({
   id: '/api/admin/overview',
   path: '/api/admin/overview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminReportsRoute = ApiAdminReportsRouteImport.update({
+  id: '/api/admin/reports',
+  path: '/api/admin/reports',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthLoginRoute = ApiAuthLoginRouteImport.update({
@@ -318,6 +330,7 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/reports': typeof AdminReportsRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/setup': typeof AdminSetupRoute
   '/api/reviews': typeof ApiReviewsRoute
@@ -329,6 +342,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/inventory': typeof ApiAdminInventoryRouteWithChildren
   '/api/admin/orders': typeof ApiAdminOrdersRouteWithChildren
   '/api/admin/overview': typeof ApiAdminOverviewRoute
+  '/api/admin/reports': typeof ApiAdminReportsRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
@@ -368,6 +382,7 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/reports': typeof AdminReportsRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/setup': typeof AdminSetupRoute
   '/api/reviews': typeof ApiReviewsRoute
@@ -379,6 +394,7 @@ export interface FileRoutesByTo {
   '/api/admin/inventory': typeof ApiAdminInventoryRouteWithChildren
   '/api/admin/orders': typeof ApiAdminOrdersRouteWithChildren
   '/api/admin/overview': typeof ApiAdminOverviewRoute
+  '/api/admin/reports': typeof ApiAdminReportsRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
@@ -419,6 +435,7 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/reports': typeof AdminReportsRoute
   '/admin/reviews': typeof AdminReviewsRoute
   '/admin/setup': typeof AdminSetupRoute
   '/api/reviews': typeof ApiReviewsRoute
@@ -430,6 +447,7 @@ export interface FileRoutesById {
   '/api/admin/inventory': typeof ApiAdminInventoryRouteWithChildren
   '/api/admin/orders': typeof ApiAdminOrdersRouteWithChildren
   '/api/admin/overview': typeof ApiAdminOverviewRoute
+  '/api/admin/reports': typeof ApiAdminReportsRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
@@ -471,6 +489,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/orders'
     | '/admin/products'
+    | '/admin/reports'
     | '/admin/reviews'
     | '/admin/setup'
     | '/api/reviews'
@@ -482,6 +501,7 @@ export interface FileRouteTypes {
     | '/api/admin/inventory'
     | '/api/admin/orders'
     | '/api/admin/overview'
+    | '/api/admin/reports'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
@@ -521,6 +541,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/orders'
     | '/admin/products'
+    | '/admin/reports'
     | '/admin/reviews'
     | '/admin/setup'
     | '/api/reviews'
@@ -532,6 +553,7 @@ export interface FileRouteTypes {
     | '/api/admin/inventory'
     | '/api/admin/orders'
     | '/api/admin/overview'
+    | '/api/admin/reports'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
@@ -571,6 +593,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/orders'
     | '/admin/products'
+    | '/admin/reports'
     | '/admin/reviews'
     | '/admin/setup'
     | '/api/reviews'
@@ -582,6 +605,7 @@ export interface FileRouteTypes {
     | '/api/admin/inventory'
     | '/api/admin/orders'
     | '/api/admin/overview'
+    | '/api/admin/reports'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
@@ -625,6 +649,7 @@ export interface RootRouteChildren {
   ApiAdminInventoryRoute: typeof ApiAdminInventoryRouteWithChildren
   ApiAdminOrdersRoute: typeof ApiAdminOrdersRouteWithChildren
   ApiAdminOverviewRoute: typeof ApiAdminOverviewRoute
+  ApiAdminReportsRoute: typeof ApiAdminReportsRoute
   ApiAuthLoginRoute: typeof ApiAuthLoginRoute
   ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
   ApiAuthMeRoute: typeof ApiAuthMeRoute
@@ -742,6 +767,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProductsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/reviews': {
       id: '/admin/reviews'
       path: '/reviews'
@@ -817,6 +849,13 @@ declare module '@tanstack/react-router' {
       path: '/api/admin/overview'
       fullPath: '/api/admin/overview'
       preLoaderRoute: typeof ApiAdminOverviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/reports': {
+      id: '/api/admin/reports'
+      path: '/api/admin/reports'
+      fullPath: '/api/admin/reports'
+      preLoaderRoute: typeof ApiAdminReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/login': {
@@ -997,6 +1036,7 @@ interface AdminRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminProductsRoute: typeof AdminProductsRoute
+  AdminReportsRoute: typeof AdminReportsRoute
   AdminReviewsRoute: typeof AdminReviewsRoute
   AdminSetupRoute: typeof AdminSetupRoute
 }
@@ -1008,6 +1048,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminProductsRoute: AdminProductsRoute,
+  AdminReportsRoute: AdminReportsRoute,
   AdminReviewsRoute: AdminReviewsRoute,
   AdminSetupRoute: AdminSetupRoute,
 }
@@ -1054,6 +1095,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminInventoryRoute: ApiAdminInventoryRouteWithChildren,
   ApiAdminOrdersRoute: ApiAdminOrdersRouteWithChildren,
   ApiAdminOverviewRoute: ApiAdminOverviewRoute,
+  ApiAdminReportsRoute: ApiAdminReportsRoute,
   ApiAuthLoginRoute: ApiAuthLoginRoute,
   ApiAuthLogoutRoute: ApiAuthLogoutRoute,
   ApiAuthMeRoute: ApiAuthMeRoute,

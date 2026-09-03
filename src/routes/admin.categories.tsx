@@ -1167,7 +1167,9 @@ function CloudinaryImageField({
       }
       onChange(result.asset.secureUrl);
     } catch (uploadError) {
-      setError(uploadError instanceof Error ? uploadError.message : "We could not upload the image.");
+      setError(
+        uploadError instanceof Error ? uploadError.message : "We could not upload the image.",
+      );
     } finally {
       setUploading(false);
     }
