@@ -9,7 +9,7 @@ import {
   RefreshCw,
   Trash2,
 } from "lucide-react";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { categories, type CategorySlug } from "@/data/catalog";
 import type { AdminCatalogProduct } from "@/lib/server/admin-catalog";
 
@@ -561,8 +561,43 @@ function ProductEditor({
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onCancel: () => void;
 }) {
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+
   function update<K extends keyof ProductForm>(key: K, value: ProductForm[K]) {
     onChange({ ...form, [key]: value });
+  }
+
+  async function uploadImage(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    setUploadingImage(true);
+    setUploadError("");
+    try {
+      const payload = new FormData();
+      payload.append("file", file);
+      payload.append("kind", "product");
+      payload.append("section", form.category);
+      if (form.slug.trim()) payload.append("publicId", form.slug.trim());
+      const response = await fetch("/api/admin/media/upload", {
+        method: "POST",
+        credentials: "same-origin",
+        body: payload,
+      });
+      const result = (await response.json().catch(() => ({}))) as {
+        asset?: { secureUrl?: string };
+        error?: string;
+      };
+      if (!response.ok || !result.asset?.secureUrl) {
+        throw new Error(result.error ?? "We could not upload the image.");
+      }
+      update("image", result.asset.secureUrl);
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "We could not upload the image.");
+    } finally {
+      setUploadingImage(false);
+    }
   }
 
   return (
@@ -641,14 +676,32 @@ function ProductEditor({
             className={inputClass}
           />
         </Field>
-        <Field label="Image path or URL">
-          <input
-            required
-            value={form.image}
-            onChange={(event) => update("image", event.target.value)}
-            className={inputClass}
-          />
-        </Field>
+        <div className="grid gap-2">
+          <label className="text-xs text-muted-foreground">Product image</label>
+          <div className="flex flex-wrap gap-3">
+            <input
+              required
+              value={form.image}
+              onChange={(event) => update("image", event.target.value)}
+              placeholder="Cloudinary secure URL"
+              className={`${inputClass} min-w-0 flex-1`}
+            />
+            <label className="inline-flex cursor-pointer items-center border border-accent/40 bg-accent/10 px-3 py-2 text-xs text-accent hover:bg-accent/20">
+              {uploadingImage ? "Uploading…" : "Upload to Cloudinary"}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                onChange={uploadImage}
+                disabled={uploadingImage}
+                className="sr-only"
+              />
+            </label>
+          </div>
+          <p className="text-[11px] text-muted-foreground">
+            Stored in Cloudinary under Motoluxe / Products / {form.category || "uncategorized"}.
+          </p>
+          {uploadError && <p className="text-xs text-primary">{uploadError}</p>}
+        </div>
         <Field label="Badge (optional)">
           <input
             value={form.badge}
@@ -720,7 +773,7 @@ function ProductEditor({
           </button>
           <button
             type="submit"
-            disabled={working}
+            disabled={working || uploadingImage}
             className="inline-flex items-center gap-2 bg-primary px-5 py-3 font-display text-xs uppercase tracking-[0.16em] text-primary-foreground disabled:opacity-60"
           >
             {working && <LoaderCircle className="h-3.5 w-3.5 animate-spin" />}

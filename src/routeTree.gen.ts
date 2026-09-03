@@ -51,6 +51,7 @@ import { Route as ApiAdminCategoriesReorderRouteImport } from './routes/api/admi
 import { Route as ApiAdminCustomersIndexRouteImport } from './routes/api/admin/customers/index'
 import { Route as ApiAdminCustomersCustomerIdRouteImport } from './routes/api/admin/customers/$customerId'
 import { Route as ApiAdminInventoryMovementIdRouteImport } from './routes/api/admin/inventory/$movementId'
+import { Route as ApiAdminMediaUploadRouteImport } from './routes/api/admin/media/upload'
 import { Route as ApiAdminOrdersOrderIdRouteImport } from './routes/api/admin/orders/$orderId'
 import { Route as ApiAdminProductsIndexRouteImport } from './routes/api/admin/products/index'
 import { Route as ApiAdminProductsProductIdRouteImport } from './routes/api/admin/products/$productId'
@@ -271,6 +272,11 @@ const ApiAdminInventoryMovementIdRoute =
     path: '/$movementId',
     getParentRoute: () => ApiAdminInventoryRoute,
   } as any)
+const ApiAdminMediaUploadRoute = ApiAdminMediaUploadRouteImport.update({
+  id: '/api/admin/media/upload',
+  path: '/api/admin/media/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminOrdersOrderIdRoute = ApiAdminOrdersOrderIdRouteImport.update({
   id: '/$orderId',
   path: '/$orderId',
@@ -338,6 +344,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/categories/reorder': typeof ApiAdminCategoriesReorderRoute
   '/api/admin/customers/$customerId': typeof ApiAdminCustomersCustomerIdRoute
   '/api/admin/inventory/$movementId': typeof ApiAdminInventoryMovementIdRoute
+  '/api/admin/media/upload': typeof ApiAdminMediaUploadRoute
   '/api/admin/orders/$orderId': typeof ApiAdminOrdersOrderIdRoute
   '/api/admin/products/$productId': typeof ApiAdminProductsProductIdRoute
   '/api/admin/reviews/$reviewId': typeof ApiAdminReviewsReviewIdRoute
@@ -387,6 +394,7 @@ export interface FileRoutesByTo {
   '/api/admin/categories/reorder': typeof ApiAdminCategoriesReorderRoute
   '/api/admin/customers/$customerId': typeof ApiAdminCustomersCustomerIdRoute
   '/api/admin/inventory/$movementId': typeof ApiAdminInventoryMovementIdRoute
+  '/api/admin/media/upload': typeof ApiAdminMediaUploadRoute
   '/api/admin/orders/$orderId': typeof ApiAdminOrdersOrderIdRoute
   '/api/admin/products/$productId': typeof ApiAdminProductsProductIdRoute
   '/api/admin/reviews/$reviewId': typeof ApiAdminReviewsReviewIdRoute
@@ -437,6 +445,7 @@ export interface FileRoutesById {
   '/api/admin/categories/reorder': typeof ApiAdminCategoriesReorderRoute
   '/api/admin/customers/$customerId': typeof ApiAdminCustomersCustomerIdRoute
   '/api/admin/inventory/$movementId': typeof ApiAdminInventoryMovementIdRoute
+  '/api/admin/media/upload': typeof ApiAdminMediaUploadRoute
   '/api/admin/orders/$orderId': typeof ApiAdminOrdersOrderIdRoute
   '/api/admin/products/$productId': typeof ApiAdminProductsProductIdRoute
   '/api/admin/reviews/$reviewId': typeof ApiAdminReviewsReviewIdRoute
@@ -488,6 +497,7 @@ export interface FileRouteTypes {
     | '/api/admin/categories/reorder'
     | '/api/admin/customers/$customerId'
     | '/api/admin/inventory/$movementId'
+    | '/api/admin/media/upload'
     | '/api/admin/orders/$orderId'
     | '/api/admin/products/$productId'
     | '/api/admin/reviews/$reviewId'
@@ -537,6 +547,7 @@ export interface FileRouteTypes {
     | '/api/admin/categories/reorder'
     | '/api/admin/customers/$customerId'
     | '/api/admin/inventory/$movementId'
+    | '/api/admin/media/upload'
     | '/api/admin/orders/$orderId'
     | '/api/admin/products/$productId'
     | '/api/admin/reviews/$reviewId'
@@ -586,6 +597,7 @@ export interface FileRouteTypes {
     | '/api/admin/categories/reorder'
     | '/api/admin/customers/$customerId'
     | '/api/admin/inventory/$movementId'
+    | '/api/admin/media/upload'
     | '/api/admin/orders/$orderId'
     | '/api/admin/products/$productId'
     | '/api/admin/reviews/$reviewId'
@@ -627,6 +639,7 @@ export interface RootRouteChildren {
   ApiAdminCategoriesCategoryIdRoute: typeof ApiAdminCategoriesCategoryIdRoute
   ApiAdminCategoriesReorderRoute: typeof ApiAdminCategoriesReorderRoute
   ApiAdminCustomersCustomerIdRoute: typeof ApiAdminCustomersCustomerIdRoute
+  ApiAdminMediaUploadRoute: typeof ApiAdminMediaUploadRoute
   ApiAdminProductsProductIdRoute: typeof ApiAdminProductsProductIdRoute
   ApiAdminReviewsReviewIdRoute: typeof ApiAdminReviewsReviewIdRoute
   ApiAdminBrandsIndexRoute: typeof ApiAdminBrandsIndexRoute
@@ -932,6 +945,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminInventoryMovementIdRouteImport
       parentRoute: typeof ApiAdminInventoryRoute
     }
+    '/api/admin/media/upload': {
+      id: '/api/admin/media/upload'
+      path: '/api/admin/media/upload'
+      fullPath: '/api/admin/media/upload'
+      preLoaderRoute: typeof ApiAdminMediaUploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/orders/$orderId': {
       id: '/api/admin/orders/$orderId'
       path: '/$orderId'
@@ -1048,6 +1068,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminCategoriesCategoryIdRoute: ApiAdminCategoriesCategoryIdRoute,
   ApiAdminCategoriesReorderRoute: ApiAdminCategoriesReorderRoute,
   ApiAdminCustomersCustomerIdRoute: ApiAdminCustomersCustomerIdRoute,
+  ApiAdminMediaUploadRoute: ApiAdminMediaUploadRoute,
   ApiAdminProductsProductIdRoute: ApiAdminProductsProductIdRoute,
   ApiAdminReviewsReviewIdRoute: ApiAdminReviewsReviewIdRoute,
   ApiAdminBrandsIndexRoute: ApiAdminBrandsIndexRoute,
