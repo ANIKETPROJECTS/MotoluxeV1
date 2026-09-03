@@ -87,7 +87,13 @@ async function getDatabase() {
   if (globals.__motoluxeTaxonomyMongoDb) return globals.__motoluxeTaxonomyMongoDb;
 
   const uri = getRequiredEnvironment("MONGODB_URI");
-  const client = globals.__motoluxeTaxonomyMongoClient ?? new MongoClient(uri, { maxPoolSize: 10 });
+  const client =
+    globals.__motoluxeTaxonomyMongoClient ??
+    new MongoClient(uri, {
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 8000,
+      connectTimeoutMS: 8000,
+    });
   if (!globals.__motoluxeTaxonomyMongoClient) {
     await client.connect();
     globals.__motoluxeTaxonomyMongoClient = client;

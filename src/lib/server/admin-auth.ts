@@ -51,7 +51,13 @@ async function getDatabase() {
   if (globals.__motoluxeAdminMongoDb) return globals.__motoluxeAdminMongoDb;
 
   const uri = getRequiredEnvironment("MONGODB_URI");
-  const client = globals.__motoluxeAdminMongoClient ?? new MongoClient(uri, { maxPoolSize: 10 });
+  const client =
+    globals.__motoluxeAdminMongoClient ??
+    new MongoClient(uri, {
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 8000,
+      connectTimeoutMS: 8000,
+    });
   if (!globals.__motoluxeAdminMongoClient) {
     await client.connect();
     globals.__motoluxeAdminMongoClient = client;

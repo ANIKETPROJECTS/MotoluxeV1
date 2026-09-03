@@ -93,7 +93,12 @@ async function getDatabase() {
 
   const uri = getRequiredEnvironment("MONGODB_URI");
   const client =
-    globals.__motoluxeInventoryMongoClient ?? new MongoClient(uri, { maxPoolSize: 10 });
+    globals.__motoluxeInventoryMongoClient ??
+    new MongoClient(uri, {
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 8000,
+      connectTimeoutMS: 8000,
+    });
   if (!globals.__motoluxeInventoryMongoClient) {
     await client.connect();
     globals.__motoluxeInventoryMongoClient = client;
