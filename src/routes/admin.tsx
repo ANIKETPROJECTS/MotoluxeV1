@@ -203,7 +203,7 @@ function AdminShell({
           </button>
         </aside>
 
-        <div className="min-h-0 min-w-0 flex-1 overflow-y-auto">
+        <div className="admin-content-scroll min-h-0 min-w-0 flex-1 overflow-y-auto">
           <div className="flex items-center justify-between border-b border-border bg-card px-5 py-4 lg:hidden">
             <span className="font-display text-sm uppercase tracking-[0.14em]">Motoluxe Admin</span>
             <button
@@ -215,7 +215,7 @@ function AdminShell({
               {mobileOpen ? "Close menu" : "Menu"}
             </button>
           </div>
-          {children}
+          <main className="px-5 py-8 sm:px-8 lg:px-10">{children}</main>
         </div>
       </div>
     </section>

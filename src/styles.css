@@ -116,6 +116,10 @@
   display: none;
 }
 
+.admin-theme .admin-content-scroll {
+  scrollbar-gutter: stable;
+}
+
 .admin-theme h1,
 .admin-theme h2,
 .admin-theme h3,

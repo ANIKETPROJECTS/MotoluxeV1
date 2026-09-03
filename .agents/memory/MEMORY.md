@@ -1,1 +1,2 @@
 - [Workspace tooling](workspace-tooling.md) — target source files for formatting and linting because generated dependency caches are present in the workspace.
+- [MongoDB organization](mongodb-organization.md) — keep Motoluxe persistence in one shared database and avoid unsupported partial-index expressions.
