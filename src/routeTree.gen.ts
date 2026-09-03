@@ -11,9 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as OrderRouteImport } from './routes/order'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminSetupRouteImport } from './routes/admin.setup'
 import { Route as CategoryCategoryRouteImport } from './routes/category.$category'
 import { Route as ProductProductRouteImport } from './routes/product.$product'
 import { Route as ApiAccountMeRouteImport } from './routes/api/account/me'
@@ -24,6 +27,11 @@ import { Route as ApiAuthProfileRouteImport } from './routes/api/auth/profile'
 import { Route as ApiAuthSendOtpRouteImport } from './routes/api/auth/send-otp'
 import { Route as ApiAuthVerifyRouteImport } from './routes/api/auth/verify'
 import { Route as ApiInventoryPurchaseRouteImport } from './routes/api/inventory/purchase'
+import { Route as ApiAdminAuthLoginRouteImport } from './routes/api/admin/auth/login'
+import { Route as ApiAdminAuthLogoutRouteImport } from './routes/api/admin/auth/logout'
+import { Route as ApiAdminAuthMeRouteImport } from './routes/api/admin/auth/me'
+import { Route as ApiAdminAuthSetupRouteImport } from './routes/api/admin/auth/setup'
+import { Route as ApiAdminAuthStatusRouteImport } from './routes/api/admin/auth/status'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -33,6 +41,11 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -49,6 +62,16 @@ const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSetupRoute = AdminSetupRouteImport.update({
+  id: '/setup',
+  path: '/setup',
+  getParentRoute: () => AdminRoute,
 } as any)
 const CategoryCategoryRoute = CategoryCategoryRouteImport.update({
   id: '/category/$category',
@@ -100,13 +123,41 @@ const ApiInventoryPurchaseRoute = ApiInventoryPurchaseRouteImport.update({
   path: '/api/inventory/purchase',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminAuthLoginRoute = ApiAdminAuthLoginRouteImport.update({
+  id: '/api/admin/auth/login',
+  path: '/api/admin/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminAuthLogoutRoute = ApiAdminAuthLogoutRouteImport.update({
+  id: '/api/admin/auth/logout',
+  path: '/api/admin/auth/logout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminAuthMeRoute = ApiAdminAuthMeRouteImport.update({
+  id: '/api/admin/auth/me',
+  path: '/api/admin/auth/me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminAuthSetupRoute = ApiAdminAuthSetupRouteImport.update({
+  id: '/api/admin/auth/setup',
+  path: '/api/admin/auth/setup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminAuthStatusRoute = ApiAdminAuthStatusRouteImport.update({
+  id: '/api/admin/auth/status',
+  path: '/api/admin/auth/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
   '/order': typeof OrderRoute
   '/profile': typeof ProfileRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/setup': typeof AdminSetupRoute
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$product': typeof ProductProductRoute
   '/api/account/me': typeof ApiAccountMeRoute
@@ -117,13 +168,21 @@ export interface FileRoutesByFullPath {
   '/api/auth/send-otp': typeof ApiAuthSendOtpRoute
   '/api/auth/verify': typeof ApiAuthVerifyRoute
   '/api/inventory/purchase': typeof ApiInventoryPurchaseRoute
+  '/api/admin/auth/login': typeof ApiAdminAuthLoginRoute
+  '/api/admin/auth/logout': typeof ApiAdminAuthLogoutRoute
+  '/api/admin/auth/me': typeof ApiAdminAuthMeRoute
+  '/api/admin/auth/setup': typeof ApiAdminAuthSetupRoute
+  '/api/admin/auth/status': typeof ApiAdminAuthStatusRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
   '/order': typeof OrderRoute
   '/profile': typeof ProfileRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/setup': typeof AdminSetupRoute
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$product': typeof ProductProductRoute
   '/api/account/me': typeof ApiAccountMeRoute
@@ -134,14 +193,22 @@ export interface FileRoutesByTo {
   '/api/auth/send-otp': typeof ApiAuthSendOtpRoute
   '/api/auth/verify': typeof ApiAuthVerifyRoute
   '/api/inventory/purchase': typeof ApiInventoryPurchaseRoute
+  '/api/admin/auth/login': typeof ApiAdminAuthLoginRoute
+  '/api/admin/auth/logout': typeof ApiAdminAuthLogoutRoute
+  '/api/admin/auth/me': typeof ApiAdminAuthMeRoute
+  '/api/admin/auth/setup': typeof ApiAdminAuthSetupRoute
+  '/api/admin/auth/status': typeof ApiAdminAuthStatusRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
   '/order': typeof OrderRoute
   '/profile': typeof ProfileRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/setup': typeof AdminSetupRoute
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$product': typeof ProductProductRoute
   '/api/account/me': typeof ApiAccountMeRoute
@@ -152,15 +219,23 @@ export interface FileRoutesById {
   '/api/auth/send-otp': typeof ApiAuthSendOtpRoute
   '/api/auth/verify': typeof ApiAuthVerifyRoute
   '/api/inventory/purchase': typeof ApiInventoryPurchaseRoute
+  '/api/admin/auth/login': typeof ApiAdminAuthLoginRoute
+  '/api/admin/auth/logout': typeof ApiAdminAuthLogoutRoute
+  '/api/admin/auth/me': typeof ApiAdminAuthMeRoute
+  '/api/admin/auth/setup': typeof ApiAdminAuthSetupRoute
+  '/api/admin/auth/status': typeof ApiAdminAuthStatusRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+    | '/admin'
     | '/contact'
     | '/order'
     | '/profile'
+    | '/admin/login'
+    | '/admin/setup'
     | '/category/$category'
     | '/product/$product'
     | '/api/account/me'
@@ -171,13 +246,21 @@ export interface FileRouteTypes {
     | '/api/auth/send-otp'
     | '/api/auth/verify'
     | '/api/inventory/purchase'
+    | '/api/admin/auth/login'
+    | '/api/admin/auth/logout'
+    | '/api/admin/auth/me'
+    | '/api/admin/auth/setup'
+    | '/api/admin/auth/status'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/admin'
     | '/contact'
     | '/order'
     | '/profile'
+    | '/admin/login'
+    | '/admin/setup'
     | '/category/$category'
     | '/product/$product'
     | '/api/account/me'
@@ -188,13 +271,21 @@ export interface FileRouteTypes {
     | '/api/auth/send-otp'
     | '/api/auth/verify'
     | '/api/inventory/purchase'
+    | '/api/admin/auth/login'
+    | '/api/admin/auth/logout'
+    | '/api/admin/auth/me'
+    | '/api/admin/auth/setup'
+    | '/api/admin/auth/status'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/admin'
     | '/contact'
     | '/order'
     | '/profile'
+    | '/admin/login'
+    | '/admin/setup'
     | '/category/$category'
     | '/product/$product'
     | '/api/account/me'
@@ -205,11 +296,17 @@ export interface FileRouteTypes {
     | '/api/auth/send-otp'
     | '/api/auth/verify'
     | '/api/inventory/purchase'
+    | '/api/admin/auth/login'
+    | '/api/admin/auth/logout'
+    | '/api/admin/auth/me'
+    | '/api/admin/auth/setup'
+    | '/api/admin/auth/status'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRouteWithChildren
   ContactRoute: typeof ContactRoute
   OrderRoute: typeof OrderRoute
   ProfileRoute: typeof ProfileRoute
@@ -223,6 +320,11 @@ export interface RootRouteChildren {
   ApiAuthSendOtpRoute: typeof ApiAuthSendOtpRoute
   ApiAuthVerifyRoute: typeof ApiAuthVerifyRoute
   ApiInventoryPurchaseRoute: typeof ApiInventoryPurchaseRoute
+  ApiAdminAuthLoginRoute: typeof ApiAdminAuthLoginRoute
+  ApiAdminAuthLogoutRoute: typeof ApiAdminAuthLogoutRoute
+  ApiAdminAuthMeRoute: typeof ApiAdminAuthMeRoute
+  ApiAdminAuthSetupRoute: typeof ApiAdminAuthSetupRoute
+  ApiAdminAuthStatusRoute: typeof ApiAdminAuthStatusRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -239,6 +341,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -261,6 +370,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/setup': {
+      id: '/admin/setup'
+      path: '/setup'
+      fullPath: '/admin/setup'
+      preLoaderRoute: typeof AdminSetupRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/category/$category': {
       id: '/category/$category'
@@ -332,12 +455,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiInventoryPurchaseRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/auth/login': {
+      id: '/api/admin/auth/login'
+      path: '/api/admin/auth/login'
+      fullPath: '/api/admin/auth/login'
+      preLoaderRoute: typeof ApiAdminAuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/auth/logout': {
+      id: '/api/admin/auth/logout'
+      path: '/api/admin/auth/logout'
+      fullPath: '/api/admin/auth/logout'
+      preLoaderRoute: typeof ApiAdminAuthLogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/auth/me': {
+      id: '/api/admin/auth/me'
+      path: '/api/admin/auth/me'
+      fullPath: '/api/admin/auth/me'
+      preLoaderRoute: typeof ApiAdminAuthMeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/auth/setup': {
+      id: '/api/admin/auth/setup'
+      path: '/api/admin/auth/setup'
+      fullPath: '/api/admin/auth/setup'
+      preLoaderRoute: typeof ApiAdminAuthSetupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/auth/status': {
+      id: '/api/admin/auth/status'
+      path: '/api/admin/auth/status'
+      fullPath: '/api/admin/auth/status'
+      preLoaderRoute: typeof ApiAdminAuthStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
+
+interface AdminRouteChildren {
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminSetupRoute: typeof AdminSetupRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminLoginRoute: AdminLoginRoute,
+  AdminSetupRoute: AdminSetupRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRouteWithChildren,
   ContactRoute: ContactRoute,
   OrderRoute: OrderRoute,
   ProfileRoute: ProfileRoute,
@@ -351,6 +522,11 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAuthSendOtpRoute: ApiAuthSendOtpRoute,
   ApiAuthVerifyRoute: ApiAuthVerifyRoute,
   ApiInventoryPurchaseRoute: ApiInventoryPurchaseRoute,
+  ApiAdminAuthLoginRoute: ApiAdminAuthLoginRoute,
+  ApiAdminAuthLogoutRoute: ApiAdminAuthLogoutRoute,
+  ApiAdminAuthMeRoute: ApiAdminAuthMeRoute,
+  ApiAdminAuthSetupRoute: ApiAdminAuthSetupRoute,
+  ApiAdminAuthStatusRoute: ApiAdminAuthStatusRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
