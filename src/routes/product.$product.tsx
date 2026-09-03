@@ -57,10 +57,18 @@ export const Route = createFileRoute("/product/$product")({
 
 function ProductPage() {
   const { product, category, related } = Route.useLoaderData();
-  const { addToCart } = useCart();
+  const { addToCart, removeFromCart } = useCart();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const frames = ["center", "top", "bottom"];
+
+  function decreaseQuantity() {
+    if (qty === 1) {
+      removeFromCart(product.slug);
+      setAdded(false);
+    }
+    setQty((value) => Math.max(0, value - 1));
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-5 py-10 lg:py-14">
@@ -148,7 +156,8 @@ function ProductPage() {
               <button
                 type="button"
                 aria-label="Decrease quantity"
-                onClick={() => setQty((value) => Math.max(1, value - 1))}
+                onClick={decreaseQuantity}
+                disabled={qty === 0}
                 className="grid h-full w-11 place-items-center transition-colors hover:bg-surface-raised"
               >
                 <Minus className="h-4 w-4" />
@@ -165,11 +174,12 @@ function ProductPage() {
             </div>
             <button
               type="button"
+              disabled={qty === 0}
               onClick={() => {
                 addToCart(product, qty);
                 setAdded(true);
               }}
-              className={`inline-flex min-h-12 flex-1 items-center justify-center gap-2 px-7 py-4 font-display text-sm uppercase tracking-[0.2em] transition-all sm:flex-none ${
+              className={`inline-flex min-h-12 flex-1 items-center justify-center gap-2 px-7 py-4 font-display text-sm uppercase tracking-[0.2em] transition-all disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none ${
                 added
                   ? "bg-accent text-accent-foreground"
                   : "bg-primary text-primary-foreground hover:shadow-[0_16px_40px_-16px_rgba(230,30,35,0.95)]"

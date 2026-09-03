@@ -5,20 +5,20 @@ import { Mail, Phone, MapPin, Clock, Send, CheckCircle2 } from "lucide-react";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact Motoluxe — Technical & Bulk Enquiries" },
+      { title: "Contact Motoluxe — Help & Support" },
       {
         name: "description",
         content:
-          "Reach the Motoluxe technical team for product application advice, compatibility questions, distributor and bulk supply enquiries.",
+          "Reach the Motoluxe team for product questions, application advice, compatibility help, or support with an issue.",
       },
       {
         property: "og:title",
-        content: "Contact Motoluxe — Technical & Bulk Enquiries",
+        content: "Contact Motoluxe — Help & Support",
       },
       {
         property: "og:description",
         content:
-          "Talk to the Motoluxe team about application advice, compatibility and bulk supply.",
+          "Talk to the Motoluxe team about product questions, compatibility, or support.",
       },
     ],
   }),
@@ -54,11 +54,11 @@ function ContactPage() {
         Contact Us
       </span>
       <h1 className="mt-4 max-w-2xl text-5xl font-bold sm:text-6xl">
-        Tell Us What You're Running
+        How Can We Help?
       </h1>
       <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
-        Application questions, compatibility checks, distributor enquiries — our
-        technical team answers within one working day.
+        Have a product question, compatibility problem, or another issue? Send
+        us the details and our team will respond within one working day.
       </p>
 
       <div className="mt-14 grid gap-10 lg:grid-cols-5">
@@ -69,7 +69,7 @@ function ContactPage() {
               <h2 className="mt-6 text-3xl font-bold">Message Logged</h2>
               <p className="mt-3 max-w-sm text-sm text-muted-foreground">
                 This is a UI demo — nothing was sent. In production our team
-                replies within one working day.
+                reviews your message and replies within one working day.
               </p>
               <button
                 type="button"
@@ -124,7 +124,7 @@ function ContactPage() {
                   name="message"
                   required
                   rows={6}
-                  placeholder="Bike or car model, product in question, and what you'd like to know."
+                   placeholder="Tell us about your question or problem, including the product and vehicle model if relevant."
                   className={`${inputClass} resize-none`}
                 />
               </div>

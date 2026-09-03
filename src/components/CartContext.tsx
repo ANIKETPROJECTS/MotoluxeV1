@@ -105,18 +105,18 @@ export function CartPanel() {
           type="button"
           aria-label="Close cart"
           onClick={closeCart}
-          className="fixed inset-0 z-[60] cursor-default bg-black/70 backdrop-blur-[2px]"
+          className="fixed inset-0 z-[60] cursor-default bg-background"
         />
       )}
       <aside
         aria-label="Shopping cart"
         aria-hidden={!isOpen}
-        className={`fixed right-0 top-0 z-[70] flex h-full w-full max-w-md flex-col border-l border-border bg-background shadow-2xl transition-transform duration-300 ${
-          isOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed inset-y-0 right-0 z-[70] flex h-dvh w-full max-w-none flex-col overflow-hidden border-l border-border bg-background shadow-2xl transition-transform duration-300 sm:w-[32rem] ${
+          isOpen ? "translate-x-0" : "pointer-events-none translate-x-full"
         }`}
       >
         <div className="hazard-stripes h-1 shrink-0" />
-        <header className="flex items-center justify-between border-b border-border px-5 py-5">
+        <header className="flex shrink-0 items-center justify-between border-b border-border px-5 py-5">
           <div>
             <span className="eyebrow text-primary">Your selection</span>
             <h2 className="mt-2 text-2xl font-semibold">Cart</h2>
@@ -131,7 +131,7 @@ export function CartPanel() {
           </button>
         </header>
 
-        <div className="flex-1 overflow-y-auto px-5 py-5">
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
           {lines.length === 0 ? (
             <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
               <div className="grid h-16 w-16 place-items-center border border-primary/30 bg-primary/10 text-primary">
@@ -153,6 +153,12 @@ export function CartPanel() {
             </div>
           ) : (
             <div className="space-y-4">
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <span className="eyebrow text-primary">Products added</span>
+                <span className="font-display text-xs uppercase tracking-[0.12em] text-muted-foreground">
+                  {itemCount} item{itemCount === 1 ? "" : "s"}
+                </span>
+              </div>
               {lines.map((line) => (
                 <div
                   key={line.product.slug}
@@ -238,7 +244,7 @@ export function CartPanel() {
         </div>
 
         {lines.length > 0 && (
-          <footer className="border-t border-border bg-surface px-5 py-5">
+          <footer className="shrink-0 border-t border-border bg-surface px-5 py-5">
             <form
               onSubmit={(event) => {
                 event.preventDefault();
@@ -275,7 +281,7 @@ export function CartPanel() {
               {couponApplied && (
                 <p className="mt-2 flex items-center gap-2 text-xs text-accent">
                   <Check className="h-3.5 w-3.5" />
-                  Code saved for enquiry review.
+                  Coupon saved for your order.
                 </p>
               )}
             </form>
@@ -284,19 +290,18 @@ export function CartPanel() {
                 {itemCount} item{itemCount === 1 ? "" : "s"} selected
               </span>
               <span className="font-display text-sm uppercase tracking-[0.12em] text-accent">
-                Price on enquiry
+                Order ready
               </span>
             </div>
             <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-              Send this selection to Motoluxe for current availability and
-              dealer pricing.
+              Review this selection before placing your order.
             </p>
             <Link
               to="/contact"
               onClick={closeCart}
               className="group mt-5 flex items-center justify-center gap-2 bg-primary px-5 py-4 font-display text-xs uppercase tracking-[0.2em] text-primary-foreground"
             >
-              Continue to enquiry
+              Place order
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </footer>
