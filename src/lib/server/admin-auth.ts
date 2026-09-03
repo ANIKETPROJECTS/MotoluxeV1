@@ -1,6 +1,11 @@
 import "@tanstack/react-start/server-only";
 
-import { MongoClient, type Db, type ObjectId } from "mongodb";
+import { type ObjectId } from "mongodb";
+import {
+  getMotoluxeDatabase,
+  getRequiredEnvironment,
+  MOTOLUXE_COLLECTIONS,
+} from "@/lib/server/mongodb";
 
 const ADMIN_SESSION_COOKIE = "motoluxe_admin";
 const ADMIN_SESSION_MAX_AGE_SECONDS = 60 * 60 * 8;
@@ -35,45 +40,11 @@ type AdminSessionDocument = {
   expiresAt: Date;
 };
 
-type AdminDatabaseGlobals = typeof globalThis & {
-  __motoluxeAdminMongoClient?: MongoClient;
-  __motoluxeAdminMongoDb?: Db;
-};
-
-function getRequiredEnvironment(name: string) {
-  const value = process.env[name];
-  if (!value) throw new Error(`${name} is not configured`);
-  return value;
-}
-
-async function getDatabase() {
-  const globals = globalThis as AdminDatabaseGlobals;
-  if (globals.__motoluxeAdminMongoDb) return globals.__motoluxeAdminMongoDb;
-
-  const uri = getRequiredEnvironment("MONGODB_URI");
-  const client =
-    globals.__motoluxeAdminMongoClient ??
-    new MongoClient(uri, {
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 8000,
-      connectTimeoutMS: 8000,
-    });
-  if (!globals.__motoluxeAdminMongoClient) {
-    await client.connect();
-    globals.__motoluxeAdminMongoClient = client;
-  }
-
-  const dbName = new URL(uri).pathname.replace(/^\//, "") || "motoluxe";
-  const db = client.db(dbName);
-  globals.__motoluxeAdminMongoDb = db;
-  return db;
-}
-
 async function getCollections() {
-  const db = await getDatabase();
+  const { db } = await getMotoluxeDatabase();
   return {
-    admins: db.collection<AdminDocument>("admin"),
-    sessions: db.collection<AdminSessionDocument>("admin_sessions"),
+    admins: db.collection<AdminDocument>(MOTOLUXE_COLLECTIONS.admins),
+    sessions: db.collection<AdminSessionDocument>(MOTOLUXE_COLLECTIONS.adminSessions),
   };
 }
 

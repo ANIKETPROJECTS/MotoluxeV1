@@ -1,7 +1,8 @@
 import "@tanstack/react-start/server-only";
 
-import { MongoClient, ObjectId, type Db } from "mongodb";
+import { ObjectId } from "mongodb";
 import { categories as starterCategories } from "@/data/catalog";
+import { getMotoluxeDatabase, MOTOLUXE_COLLECTIONS } from "@/lib/server/mongodb";
 
 export type AdminCategory = {
   id: string;
@@ -70,59 +71,24 @@ type BrandDocument = Omit<AdminBrand, "id" | "productCount" | "createdAt" | "upd
   updatedAt: Date;
 };
 
-type TaxonomyDatabaseGlobals = typeof globalThis & {
-  __motoluxeTaxonomyMongoClient?: MongoClient;
-  __motoluxeTaxonomyMongoDb?: Db;
-  __motoluxeTaxonomyIndexesReady?: boolean;
-};
-
-function getRequiredEnvironment(name: string) {
-  const value = process.env[name];
-  if (!value) throw new Error(`${name} is not configured`);
-  return value;
-}
-
 async function getDatabase() {
-  const globals = globalThis as TaxonomyDatabaseGlobals;
-  if (globals.__motoluxeTaxonomyMongoDb) return globals.__motoluxeTaxonomyMongoDb;
-
-  const uri = getRequiredEnvironment("MONGODB_URI");
-  const client =
-    globals.__motoluxeTaxonomyMongoClient ??
-    new MongoClient(uri, {
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 8000,
-      connectTimeoutMS: 8000,
-    });
-  if (!globals.__motoluxeTaxonomyMongoClient) {
-    await client.connect();
-    globals.__motoluxeTaxonomyMongoClient = client;
-  }
-
-  const dbName = new URL(uri).pathname.replace(/^\//, "") || "motoluxe";
-  const db = client.db(dbName);
-  globals.__motoluxeTaxonomyMongoDb = db;
-  return db;
+  return (await getMotoluxeDatabase()).db;
 }
 
 async function getCollections() {
   const db = await getDatabase();
   const collections = {
-    categories: db.collection<CategoryDocument>("categories"),
-    brands: db.collection<BrandDocument>("brands"),
-    products: db.collection<{ category?: string; brandId?: string }>("products"),
+    categories: db.collection<CategoryDocument>(MOTOLUXE_COLLECTIONS.categories),
+    brands: db.collection<BrandDocument>(MOTOLUXE_COLLECTIONS.brands),
+    products: db.collection<{ category?: string; brandId?: string }>(MOTOLUXE_COLLECTIONS.products),
   };
 
-  const globals = globalThis as TaxonomyDatabaseGlobals;
-  if (!globals.__motoluxeTaxonomyIndexesReady) {
-    await Promise.all([
-      collections.categories.createIndex({ slug: 1 }, { unique: true }),
-      collections.brands.createIndex({ slug: 1 }, { unique: true }),
-      collections.categories.createIndex({ parentId: 1, displayOrder: 1 }),
-      collections.brands.createIndex({ displayOrder: 1 }),
-    ]);
-    globals.__motoluxeTaxonomyIndexesReady = true;
-  }
+  await Promise.all([
+    collections.categories.createIndex({ slug: 1 }, { unique: true }),
+    collections.brands.createIndex({ slug: 1 }, { unique: true }),
+    collections.categories.createIndex({ parentId: 1, displayOrder: 1 }),
+    collections.brands.createIndex({ displayOrder: 1 }),
+  ]);
 
   return collections;
 }

@@ -77,7 +77,7 @@ export const Route = createFileRoute("/api/admin/overview")({
             getOrderCollection(),
           ]);
           const [customerCount, orderDocuments] = await Promise.all([
-            customers.countDocuments(),
+            customers.countDocuments({ archivedAt: { $exists: false } }),
             orders.find({}).sort({ createdAt: -1 }).limit(250).toArray() as Promise<
               OverviewOrder[]
             >,

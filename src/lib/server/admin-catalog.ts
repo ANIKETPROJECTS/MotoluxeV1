@@ -1,12 +1,13 @@
 import "@tanstack/react-start/server-only";
 
-import { MongoClient, ObjectId, type Db, type Filter } from "mongodb";
+import { ObjectId, type Filter } from "mongodb";
 import {
   categories,
   products as starterProducts,
   type CategorySlug,
   type Product,
 } from "@/data/catalog";
+import { getMotoluxeDatabase, MOTOLUXE_COLLECTIONS } from "@/lib/server/mongodb";
 
 export type AdminCatalogProduct = Product & {
   id: string;
@@ -40,43 +41,13 @@ type CatalogProductDocument = Omit<AdminCatalogProduct, "id" | "createdAt" | "up
   updatedAt: Date;
 };
 
-type CatalogDatabaseGlobals = typeof globalThis & {
-  __motoluxeCatalogMongoClient?: MongoClient;
-  __motoluxeCatalogMongoDb?: Db;
-};
-
-function getRequiredEnvironment(name: string) {
-  const value = process.env[name];
-  if (!value) throw new Error(`${name} is not configured`);
-  return value;
-}
-
 async function getDatabase() {
-  const globals = globalThis as CatalogDatabaseGlobals;
-  if (globals.__motoluxeCatalogMongoDb) return globals.__motoluxeCatalogMongoDb;
-
-  const uri = getRequiredEnvironment("MONGODB_URI");
-  const client =
-    globals.__motoluxeCatalogMongoClient ??
-    new MongoClient(uri, {
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 8000,
-      connectTimeoutMS: 8000,
-    });
-  if (!globals.__motoluxeCatalogMongoClient) {
-    await client.connect();
-    globals.__motoluxeCatalogMongoClient = client;
-  }
-
-  const dbName = new URL(uri).pathname.replace(/^\//, "") || "motoluxe";
-  const db = client.db(dbName);
-  globals.__motoluxeCatalogMongoDb = db;
-  return db;
+  return (await getMotoluxeDatabase()).db;
 }
 
 async function getCollection() {
   const db = await getDatabase();
-  return db.collection<CatalogProductDocument>("products");
+  return db.collection<CatalogProductDocument>(MOTOLUXE_COLLECTIONS.products);
 }
 
 function toProduct(document: CatalogProductDocument): AdminCatalogProduct {

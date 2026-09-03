@@ -1,6 +1,7 @@
 import "@tanstack/react-start/server-only";
 
-import { MongoClient, ObjectId, type ClientSession, type Db, type Filter } from "mongodb";
+import { ObjectId, type ClientSession, type Filter } from "mongodb";
+import { getMotoluxeDatabase, MOTOLUXE_COLLECTIONS } from "@/lib/server/mongodb";
 
 export const inventoryEventTypes = [
   "purchase",
@@ -70,60 +71,21 @@ type InventoryMovementDocument = Omit<
   updatedAt: Date;
 };
 
-type InventoryDatabaseGlobals = typeof globalThis & {
-  __motoluxeInventoryMongoClient?: MongoClient;
-  __motoluxeInventoryMongoDb?: Db;
-  __motoluxeInventoryIndexesReady?: boolean;
-};
-
-function getRequiredEnvironment(name: string) {
-  const value = process.env[name];
-  if (!value) throw new Error(`${name} is not configured`);
-  return value;
-}
-
 async function getDatabase() {
-  const globals = globalThis as InventoryDatabaseGlobals;
-  if (globals.__motoluxeInventoryMongoDb) {
-    return {
-      client: globals.__motoluxeInventoryMongoClient as MongoClient,
-      db: globals.__motoluxeInventoryMongoDb,
-    };
-  }
-
-  const uri = getRequiredEnvironment("MONGODB_URI");
-  const client =
-    globals.__motoluxeInventoryMongoClient ??
-    new MongoClient(uri, {
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 8000,
-      connectTimeoutMS: 8000,
-    });
-  if (!globals.__motoluxeInventoryMongoClient) {
-    await client.connect();
-    globals.__motoluxeInventoryMongoClient = client;
-  }
-  const dbName = new URL(uri).pathname.replace(/^\//, "") || "motoluxe";
-  const db = client.db(dbName);
-  globals.__motoluxeInventoryMongoDb = db;
-  return { client, db };
+  return getMotoluxeDatabase();
 }
 
 async function getCollections() {
   const { client, db } = await getDatabase();
   const collections = {
-    products: db.collection<InventoryProductDocument>("products"),
-    movements: db.collection<InventoryMovementDocument>("inventory_movements"),
+    products: db.collection<InventoryProductDocument>(MOTOLUXE_COLLECTIONS.products),
+    movements: db.collection<InventoryMovementDocument>(MOTOLUXE_COLLECTIONS.inventoryMovements),
   };
-  const globals = globalThis as InventoryDatabaseGlobals;
-  if (!globals.__motoluxeInventoryIndexesReady) {
-    await Promise.all([
-      collections.movements.createIndex({ createdAt: -1 }),
-      collections.movements.createIndex({ productId: 1, createdAt: -1 }),
-      collections.movements.createIndex({ eventType: 1, createdAt: -1 }),
-    ]);
-    globals.__motoluxeInventoryIndexesReady = true;
-  }
+  await Promise.all([
+    collections.movements.createIndex({ createdAt: -1 }),
+    collections.movements.createIndex({ productId: 1, createdAt: -1 }),
+    collections.movements.createIndex({ eventType: 1, createdAt: -1 }),
+  ]);
   return { client, ...collections };
 }
 

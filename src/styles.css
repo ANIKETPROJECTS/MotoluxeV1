@@ -89,31 +89,40 @@
 
 /* The control room uses a brighter operational workspace than the storefront. */
 .admin-theme {
-  --background: oklch(0.97 0.006 260);
-  --foreground: oklch(0.18 0.012 260);
-  --surface: oklch(1 0 0);
-  --surface-raised: oklch(0.985 0.004 260);
-  --card: oklch(1 0 0);
+  --background: oklch(0.93 0.008 260);
+  --foreground: oklch(0.22 0.012 260);
+  --surface: oklch(0.97 0.004 260);
+  --surface-raised: oklch(0.985 0.003 260);
+  --card: oklch(0.975 0.003 260);
   --card-foreground: oklch(0.18 0.012 260);
-  --popover: oklch(1 0 0);
+  --popover: oklch(0.975 0.003 260);
   --popover-foreground: oklch(0.18 0.012 260);
   --primary: oklch(0.56 0.235 27.5);
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.94 0.008 260);
+  --secondary: oklch(0.9 0.01 260);
   --secondary-foreground: oklch(0.18 0.012 260);
-  --muted: oklch(0.94 0.008 260);
+  --muted: oklch(0.9 0.01 260);
   --muted-foreground: oklch(0.46 0.018 260);
   --accent: oklch(0.84 0.18 94);
   --accent-foreground: oklch(0.18 0.012 260);
   --destructive: oklch(0.56 0.235 27.5);
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.86 0.012 260);
-  --input: oklch(0.9 0.01 260);
+  --border: oklch(0.8 0.014 260);
+  --input: oklch(0.86 0.012 260);
   --ring: oklch(0.56 0.235 27.5);
 }
 
 .admin-theme svg {
   display: none;
+}
+
+.admin-theme h1,
+.admin-theme h2,
+.admin-theme h3,
+.admin-theme h4,
+.admin-theme .font-bold,
+.admin-theme .font-semibold {
+  font-weight: 500;
 }
 
 @layer base {

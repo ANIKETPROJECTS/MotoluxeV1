@@ -9,6 +9,7 @@ const navigation = [
   { label: "Inventory", to: "/admin/inventory" },
   { label: "Orders", to: "/admin/orders" },
   { label: "Customers", to: "/admin/customers" },
+  { label: "Reviews & questions", to: "/admin/reviews" },
   { label: "Reports & exports" },
   { label: "Settings" },
 ];
@@ -72,7 +73,7 @@ function AdminPage() {
             <div className="flex flex-wrap items-start justify-between gap-5">
               <div>
                 <span className="eyebrow text-primary">Admin overview</span>
-                <h1 className="mt-2 text-4xl font-bold sm:text-5xl">Control room.</h1>
+                <h1 className="mt-2 text-3xl font-medium sm:text-4xl">Control room.</h1>
                 <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
                   Your secure foundation for managing Motoluxe products, customers, and orders.
                 </p>
@@ -119,8 +120,8 @@ function AdminShell({
   }, [collapsed]);
 
   return (
-    <section className="admin-theme min-h-screen bg-background text-foreground">
-      <div className="relative mx-auto flex min-h-screen max-w-[1600px]">
+    <section className="admin-theme h-screen overflow-hidden bg-background text-foreground">
+      <div className="relative mx-auto flex h-full max-w-[1600px] overflow-hidden">
         {mobileOpen && (
           <button
             type="button"
@@ -130,7 +131,7 @@ function AdminShell({
           />
         )}
         <aside
-          className={`z-30 shrink-0 border-r border-border bg-card p-5 transition-[width,transform] duration-200 lg:static lg:block ${
+          className={`z-30 h-full shrink-0 overflow-y-auto border-r border-border bg-card p-5 transition-[width,transform] duration-200 lg:static lg:block ${
             mobileOpen ? "fixed inset-y-0 left-0 block w-64 shadow-2xl" : "hidden lg:block"
           } ${collapsed ? "lg:w-20 lg:px-3" : "w-64"}`}
         >
@@ -202,7 +203,7 @@ function AdminShell({
           </button>
         </aside>
 
-        <div className="min-w-0 flex-1">
+        <div className="min-h-0 min-w-0 flex-1 overflow-y-auto">
           <div className="flex items-center justify-between border-b border-border bg-card px-5 py-4 lg:hidden">
             <span className="font-display text-sm uppercase tracking-[0.14em]">Motoluxe Admin</span>
             <button

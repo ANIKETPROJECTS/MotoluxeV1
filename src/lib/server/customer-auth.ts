@@ -1,7 +1,12 @@
 import "@tanstack/react-start/server-only";
 
-import { MongoClient, type Db, type ObjectId } from "mongodb";
+import { type ObjectId } from "mongodb";
 import { getProduct } from "@/data/catalog";
+import {
+  getMotoluxeDatabase,
+  getRequiredEnvironment,
+  MOTOLUXE_COLLECTIONS,
+} from "@/lib/server/mongodb";
 
 const SESSION_COOKIE = "motoluxe_customer";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
@@ -67,48 +72,16 @@ export type AccountSnapshot = {
   wishlistSlugs: string[];
 };
 
-type DatabaseGlobals = typeof globalThis & {
-  __motoluxeMongoClient?: MongoClient;
-  __motoluxeMongoDb?: Db;
-};
-
-function getRequiredEnvironment(name: string) {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`${name} is not configured`);
-  }
-  return value;
-}
-
 async function getDatabase() {
-  const globals = globalThis as DatabaseGlobals;
-  if (globals.__motoluxeMongoDb) return globals.__motoluxeMongoDb;
-
-  const uri = getRequiredEnvironment("MONGODB_URI");
-  const client =
-    globals.__motoluxeMongoClient ??
-    new MongoClient(uri, {
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 8000,
-      connectTimeoutMS: 8000,
-    });
-  if (!globals.__motoluxeMongoClient) {
-    await client.connect();
-    globals.__motoluxeMongoClient = client;
-  }
-
-  const dbName = new URL(uri).pathname.replace(/^\//, "") || "motoluxe";
-  const db = client.db(dbName);
-  globals.__motoluxeMongoDb = db;
-  return db;
+  return (await getMotoluxeDatabase()).db;
 }
 
 async function getCollections() {
   const db = await getDatabase();
   return {
-    customers: db.collection<CustomerDocument>("customers"),
-    sessions: db.collection<SessionDocument>("customer_sessions"),
-    orders: db.collection<OrderDocument>("orders"),
+    customers: db.collection<CustomerDocument>(MOTOLUXE_COLLECTIONS.customers),
+    sessions: db.collection<SessionDocument>(MOTOLUXE_COLLECTIONS.customerSessions),
+    orders: db.collection<OrderDocument>(MOTOLUXE_COLLECTIONS.orders),
   };
 }
 
