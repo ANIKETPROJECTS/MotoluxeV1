@@ -13,6 +13,7 @@ import {
   Wrench,
 } from "lucide-react";
 import heroImg from "@/assets/hero-banner.jpg";
+import heroVideo from "@/assets/motoluxe-chain-hero.mp4";
 import { categories, featuredProducts, products } from "@/data/catalog";
 import { ProductCard } from "@/components/ProductCard";
 
@@ -85,14 +86,25 @@ function Home() {
   return (
     <>
       <section className="relative isolate min-h-[calc(100svh-6.5rem)] overflow-hidden border-b border-border">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster={heroImg}
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover motion-reduce:hidden"
+        >
+          <source src={heroVideo} type="video/mp4" />
+        </video>
         <img
           src={heroImg}
           alt="Motorcycle chain being treated with Motoluxe chain lubricant"
           width={1920}
           height={720}
-          className="absolute inset-0 h-full w-full object-cover object-center"
+          className="absolute inset-0 -z-10 h-full w-full object-cover object-center"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,9,11,0.98)_0%,rgba(8,9,11,0.86)_38%,rgba(8,9,11,0.2)_100%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(8,9,11,0.94)_0%,rgba(8,9,11,0.74)_40%,rgba(8,9,11,0.22)_100%)]" />
         <div className="absolute inset-0 grid-lines opacity-20" />
 
         <div className="relative mx-auto grid min-h-[calc(100svh-6.5rem)] max-w-7xl items-end gap-12 px-5 pb-14 pt-20 lg:grid-cols-[1fr_320px] lg:items-center lg:pb-20">
@@ -100,14 +112,10 @@ function Home() {
             <span className="slash-tag inline-block bg-primary px-3.5 py-1.5 pr-7 font-display text-[11px] uppercase tracking-[0.28em] text-primary-foreground">
               Motoluxe autocare
             </span>
-            <h1 className="mt-7 max-w-3xl text-6xl font-bold leading-[0.88] sm:text-8xl lg:text-[7.4rem]">
-              Care for the
+            <h1 className="mt-7 max-w-2xl font-sans text-5xl font-medium normal-case leading-[0.98] tracking-[-0.045em] sm:text-6xl lg:text-7xl">
+              Care for the <span className="text-primary">machine.</span>
               <br />
-              <span className="text-primary">machine.</span>
-              <br />
-              Respect the
-              <br />
-              <span className="text-accent">miles.</span>
+              Respect the <span className="text-accent">miles.</span>
             </h1>
             <p className="mt-7 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
               Purpose-built care essentials for riders, workshops and dealers
