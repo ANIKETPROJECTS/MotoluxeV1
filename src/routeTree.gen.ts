@@ -14,6 +14,12 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as OrderRouteImport } from './routes/order'
 import { Route as CategoryCategoryRouteImport } from './routes/category.$category'
 import { Route as ProductProductRouteImport } from './routes/product.$product'
+import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
+import { Route as ApiAuthMeRouteImport } from './routes/api/auth/me'
+import { Route as ApiAuthProfileRouteImport } from './routes/api/auth/profile'
+import { Route as ApiAuthSendOtpRouteImport } from './routes/api/auth/send-otp'
+import { Route as ApiAuthVerifyRouteImport } from './routes/api/auth/verify'
+import { Route as ApiInventoryPurchaseRouteImport } from './routes/api/inventory/purchase'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +46,36 @@ const ProductProductRoute = ProductProductRouteImport.update({
   path: '/product/$product',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAuthLogoutRoute = ApiAuthLogoutRouteImport.update({
+  id: '/api/auth/logout',
+  path: '/api/auth/logout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthMeRoute = ApiAuthMeRouteImport.update({
+  id: '/api/auth/me',
+  path: '/api/auth/me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthProfileRoute = ApiAuthProfileRouteImport.update({
+  id: '/api/auth/profile',
+  path: '/api/auth/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthSendOtpRoute = ApiAuthSendOtpRouteImport.update({
+  id: '/api/auth/send-otp',
+  path: '/api/auth/send-otp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthVerifyRoute = ApiAuthVerifyRouteImport.update({
+  id: '/api/auth/verify',
+  path: '/api/auth/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiInventoryPurchaseRoute = ApiInventoryPurchaseRouteImport.update({
+  id: '/api/inventory/purchase',
+  path: '/api/inventory/purchase',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +83,12 @@ export interface FileRoutesByFullPath {
   '/order': typeof OrderRoute
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$product': typeof ProductProductRoute
+  '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/api/auth/me': typeof ApiAuthMeRoute
+  '/api/auth/profile': typeof ApiAuthProfileRoute
+  '/api/auth/send-otp': typeof ApiAuthSendOtpRoute
+  '/api/auth/verify': typeof ApiAuthVerifyRoute
+  '/api/inventory/purchase': typeof ApiInventoryPurchaseRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +96,12 @@ export interface FileRoutesByTo {
   '/order': typeof OrderRoute
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$product': typeof ProductProductRoute
+  '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/api/auth/me': typeof ApiAuthMeRoute
+  '/api/auth/profile': typeof ApiAuthProfileRoute
+  '/api/auth/send-otp': typeof ApiAuthSendOtpRoute
+  '/api/auth/verify': typeof ApiAuthVerifyRoute
+  '/api/inventory/purchase': typeof ApiInventoryPurchaseRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +110,40 @@ export interface FileRoutesById {
   '/order': typeof OrderRoute
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$product': typeof ProductProductRoute
+  '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/api/auth/me': typeof ApiAuthMeRoute
+  '/api/auth/profile': typeof ApiAuthProfileRoute
+  '/api/auth/send-otp': typeof ApiAuthSendOtpRoute
+  '/api/auth/verify': typeof ApiAuthVerifyRoute
+  '/api/inventory/purchase': typeof ApiInventoryPurchaseRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/contact' | '/order' | '/category/$category' | '/product/$product'
+    | '/'
+    | '/contact'
+    | '/order'
+    | '/category/$category'
+    | '/product/$product'
+    | '/api/auth/logout'
+    | '/api/auth/me'
+    | '/api/auth/profile'
+    | '/api/auth/send-otp'
+    | '/api/auth/verify'
+    | '/api/inventory/purchase'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/contact' | '/order' | '/category/$category' | '/product/$product'
+  to:
+    | '/'
+    | '/contact'
+    | '/order'
+    | '/category/$category'
+    | '/product/$product'
+    | '/api/auth/logout'
+    | '/api/auth/me'
+    | '/api/auth/profile'
+    | '/api/auth/send-otp'
+    | '/api/auth/verify'
+    | '/api/inventory/purchase'
   id:
     | '__root__'
     | '/'
@@ -76,6 +151,12 @@ export interface FileRouteTypes {
     | '/order'
     | '/category/$category'
     | '/product/$product'
+    | '/api/auth/logout'
+    | '/api/auth/me'
+    | '/api/auth/profile'
+    | '/api/auth/send-otp'
+    | '/api/auth/verify'
+    | '/api/inventory/purchase'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -84,6 +165,12 @@ export interface RootRouteChildren {
   OrderRoute: typeof OrderRoute
   CategoryCategoryRoute: typeof CategoryCategoryRoute
   ProductProductRoute: typeof ProductProductRoute
+  ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
+  ApiAuthMeRoute: typeof ApiAuthMeRoute
+  ApiAuthProfileRoute: typeof ApiAuthProfileRoute
+  ApiAuthSendOtpRoute: typeof ApiAuthSendOtpRoute
+  ApiAuthVerifyRoute: typeof ApiAuthVerifyRoute
+  ApiInventoryPurchaseRoute: typeof ApiInventoryPurchaseRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -123,6 +210,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductProductRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/auth/logout': {
+      id: '/api/auth/logout'
+      path: '/api/auth/logout'
+      fullPath: '/api/auth/logout'
+      preLoaderRoute: typeof ApiAuthLogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/me': {
+      id: '/api/auth/me'
+      path: '/api/auth/me'
+      fullPath: '/api/auth/me'
+      preLoaderRoute: typeof ApiAuthMeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/profile': {
+      id: '/api/auth/profile'
+      path: '/api/auth/profile'
+      fullPath: '/api/auth/profile'
+      preLoaderRoute: typeof ApiAuthProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/send-otp': {
+      id: '/api/auth/send-otp'
+      path: '/api/auth/send-otp'
+      fullPath: '/api/auth/send-otp'
+      preLoaderRoute: typeof ApiAuthSendOtpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/verify': {
+      id: '/api/auth/verify'
+      path: '/api/auth/verify'
+      fullPath: '/api/auth/verify'
+      preLoaderRoute: typeof ApiAuthVerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/inventory/purchase': {
+      id: '/api/inventory/purchase'
+      path: '/api/inventory/purchase'
+      fullPath: '/api/inventory/purchase'
+      preLoaderRoute: typeof ApiInventoryPurchaseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -132,6 +261,12 @@ const rootRouteChildren: RootRouteChildren = {
   OrderRoute: OrderRoute,
   CategoryCategoryRoute: CategoryCategoryRoute,
   ProductProductRoute: ProductProductRoute,
+  ApiAuthLogoutRoute: ApiAuthLogoutRoute,
+  ApiAuthMeRoute: ApiAuthMeRoute,
+  ApiAuthProfileRoute: ApiAuthProfileRoute,
+  ApiAuthSendOtpRoute: ApiAuthSendOtpRoute,
+  ApiAuthVerifyRoute: ApiAuthVerifyRoute,
+  ApiInventoryPurchaseRoute: ApiInventoryPurchaseRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

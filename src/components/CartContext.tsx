@@ -1,16 +1,8 @@
-import {
-  ArrowRight,
-  Check,
-  Tag,
-  Minus,
-  Plus,
-  ShoppingBag,
-  Trash2,
-  X,
-} from "lucide-react";
+import { ArrowRight, Check, Tag, Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import type { Product } from "@/data/catalog";
+import { useCustomerAuth } from "./CustomerAuthContext";
 
 type CartLine = {
   product: Product;
@@ -24,6 +16,7 @@ type CartContextValue = {
   addToCart: (product: Product, quantity?: number) => void;
   updateQuantity: (slug: string, quantity: number) => void;
   removeFromCart: (slug: string) => void;
+  clearCart: () => void;
   openCart: () => void;
   closeCart: () => void;
 };
@@ -41,9 +34,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       isOpen,
       addToCart: (product, quantity = 1) => {
         setLines((currentLines) => {
-          const existingLine = currentLines.find(
-            (line) => line.product.slug === product.slug,
-          );
+          const existingLine = currentLines.find((line) => line.product.slug === product.slug);
           if (!existingLine) {
             return [...currentLines, { product, quantity }];
           }
@@ -58,17 +49,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
       updateQuantity: (slug, quantity) => {
         setLines((currentLines) =>
           currentLines.map((line) =>
-            line.product.slug === slug
-              ? { ...line, quantity: Math.max(1, quantity) }
-              : line,
+            line.product.slug === slug ? { ...line, quantity: Math.max(1, quantity) } : line,
           ),
         );
       },
       removeFromCart: (slug) => {
-        setLines((currentLines) =>
-          currentLines.filter((line) => line.product.slug !== slug),
-        );
+        setLines((currentLines) => currentLines.filter((line) => line.product.slug !== slug));
       },
+      clearCart: () => setLines([]),
       openCart: () => setIsOpen(true),
       closeCart: () => setIsOpen(false),
     }),
@@ -87,14 +75,9 @@ export function useCart() {
 }
 
 export function CartPanel() {
-  const {
-    lines,
-    itemCount,
-    isOpen,
-    updateQuantity,
-    removeFromCart,
-    closeCart,
-  } = useCart();
+  const { lines, itemCount, isOpen, updateQuantity, removeFromCart, closeCart } = useCart();
+  const navigate = useNavigate();
+  const { openAuth } = useCustomerAuth();
   const [couponCode, setCouponCode] = useState("");
   const [couponApplied, setCouponApplied] = useState(false);
 
@@ -139,8 +122,7 @@ export function CartPanel() {
               </div>
               <h3 className="mt-6 text-2xl font-semibold">Your cart is empty</h3>
               <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
-                Add a Motoluxe essential from any product page and it will
-                appear here.
+                Add a Motoluxe essential from any product page and it will appear here.
               </p>
               <Link
                 to="/category/$category"
@@ -160,10 +142,7 @@ export function CartPanel() {
                 </span>
               </div>
               {lines.map((line) => (
-                <div
-                  key={line.product.slug}
-                  className="border border-border bg-card p-3"
-                >
+                <div key={line.product.slug} className="border border-border bg-card p-3">
                   <div className="flex gap-3">
                     <img
                       src={line.product.image}
@@ -175,12 +154,8 @@ export function CartPanel() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <span className="eyebrow text-primary">
-                            Motoluxe
-                          </span>
-                          <h3 className="mt-1 text-lg font-semibold">
-                            {line.product.name}
-                          </h3>
+                          <span className="eyebrow text-primary">Motoluxe</span>
+                          <h3 className="mt-1 text-lg font-semibold">{line.product.name}</h3>
                         </div>
                         <button
                           type="button"
@@ -204,10 +179,7 @@ export function CartPanel() {
                               if (line.quantity === 1) {
                                 removeFromCart(line.product.slug);
                               } else {
-                                updateQuantity(
-                                  line.product.slug,
-                                  line.quantity - 1,
-                                );
+                                updateQuantity(line.product.slug, line.quantity - 1);
                               }
                             }}
                             className="grid h-8 w-8 place-items-center transition-colors hover:bg-surface-raised"
@@ -220,12 +192,7 @@ export function CartPanel() {
                           <button
                             type="button"
                             aria-label={`Increase ${line.product.name} quantity`}
-                            onClick={() =>
-                              updateQuantity(
-                                line.product.slug,
-                                line.quantity + 1,
-                              )
-                            }
+                            onClick={() => updateQuantity(line.product.slug, line.quantity + 1)}
                             className="grid h-8 w-8 place-items-center transition-colors hover:bg-surface-raised"
                           >
                             <Plus className="h-3.5 w-3.5" />
@@ -296,14 +263,19 @@ export function CartPanel() {
             <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
               Review this selection before placing your order.
             </p>
-            <Link
-              to="/order"
-              onClick={closeCart}
+            <button
+              type="button"
+              onClick={() => {
+                closeCart();
+                openAuth(() => {
+                  void navigate({ to: "/order" });
+                });
+              }}
               className="group mt-5 flex items-center justify-center gap-2 bg-primary px-5 py-4 font-display text-xs uppercase tracking-[0.2em] text-primary-foreground"
             >
               Place order
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
+            </button>
           </footer>
         )}
       </aside>
