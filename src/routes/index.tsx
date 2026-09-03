@@ -184,6 +184,51 @@ function Home() {
         </div>
       </section>
 
+      <section className="border-b border-border bg-background">
+        <div className="mx-auto max-w-7xl px-5 py-14">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <span className="eyebrow text-primary">Shop the essentials</span>
+              <h2 className="mt-3 text-2xl font-semibold sm:text-3xl">
+                Pick your product
+              </h2>
+            </div>
+            <span className="text-sm text-muted-foreground">
+              Tap any product to view details and add it to your cart.
+            </span>
+          </div>
+          <div className="mt-9 grid grid-cols-2 gap-7 sm:grid-cols-5 sm:gap-5">
+            {products.map((product) => (
+              <Link
+                key={product.slug}
+                to="/product/$product"
+                params={{ product: product.slug }}
+                className="group flex flex-col items-center text-center"
+              >
+                <span className="relative grid h-28 w-28 place-items-center overflow-hidden rounded-full border border-border bg-surface p-1 transition-all duration-500 group-hover:scale-105 group-hover:border-primary group-hover:shadow-[0_14px_35px_-18px_rgba(230,30,35,0.9)] sm:h-32 sm:w-32">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    loading="lazy"
+                    width={256}
+                    height={256}
+                    className="h-full w-full rounded-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <span className="absolute inset-0 rounded-full bg-linear-to-t from-black/50 via-transparent to-transparent" />
+                  <ArrowUpRight className="absolute bottom-3 right-3 h-4 w-4 text-white opacity-0 transition-opacity group-hover:opacity-100" />
+                </span>
+                <span className="mt-4 max-w-[9rem] font-display text-sm uppercase tracking-[0.08em] text-foreground transition-colors group-hover:text-primary">
+                  {product.name}
+                </span>
+                <span className="mt-1 text-xs text-muted-foreground">
+                  View product
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="mx-auto max-w-7xl px-5 py-24 lg:py-32">
         <div className="grid gap-12 lg:grid-cols-[0.7fr_1.3fr] lg:items-end">
           <SectionHead

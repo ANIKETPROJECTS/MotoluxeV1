@@ -17,6 +17,7 @@ import {
   getProductsByCategory,
 } from "@/data/catalog";
 import { ProductCard } from "@/components/ProductCard";
+import { useCart } from "@/components/CartContext";
 
 export const Route = createFileRoute("/product/$product")({
   loader: ({ params }) => {
@@ -56,6 +57,7 @@ export const Route = createFileRoute("/product/$product")({
 
 function ProductPage() {
   const { product, category, related } = Route.useLoaderData();
+  const { addToCart } = useCart();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const frames = ["center", "top", "bottom"];
@@ -163,7 +165,10 @@ function ProductPage() {
             </div>
             <button
               type="button"
-              onClick={() => setAdded(true)}
+              onClick={() => {
+                addToCart(product, qty);
+                setAdded(true);
+              }}
               className={`inline-flex min-h-12 flex-1 items-center justify-center gap-2 px-7 py-4 font-display text-sm uppercase tracking-[0.2em] transition-all sm:flex-none ${
                 added
                   ? "bg-accent text-accent-foreground"

@@ -2,11 +2,14 @@ import { ArrowUpRight, ShoppingCart } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { categories } from "@/data/catalog";
 import { Logo } from "./Logo";
+import { CartPanel, useCart } from "./CartContext";
 
 const linkBase =
   "shrink-0 font-display uppercase tracking-[0.16em] text-[11px] text-muted-foreground transition-colors hover:text-foreground";
 
 export function SiteHeader() {
+  const { itemCount, openCart } = useCart();
+
   const nav = (
     <>
       <Link
@@ -75,12 +78,13 @@ export function SiteHeader() {
           </Link>
           <button
             type="button"
-            aria-label="Cart — available after enquiry"
+            aria-label={`Open cart, ${itemCount} item${itemCount === 1 ? "" : "s"}`}
+            onClick={openCart}
             className="relative grid h-10 w-10 place-items-center border border-border bg-surface text-foreground transition-colors hover:border-primary hover:text-primary"
           >
             <ShoppingCart className="h-4 w-4" />
             <span className="absolute -right-1.5 -top-1.5 grid h-4 w-4 place-items-center bg-accent font-display text-[10px] text-accent-foreground">
-              0
+              {itemCount}
             </span>
           </button>
         </div>
@@ -91,6 +95,7 @@ export function SiteHeader() {
           {nav}
         </nav>
       </div>
+      <CartPanel />
     </header>
   );
 }
