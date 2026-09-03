@@ -22,7 +22,7 @@ const navigation = [
   { label: "Products & catalog", icon: PackageSearch, to: "/admin/products" },
   { label: "Categories & brands", icon: Tags, to: "/admin/categories" },
   { label: "Inventory", icon: Boxes, to: "/admin/inventory" },
-  { label: "Orders", icon: ClipboardList },
+  { label: "Orders", icon: ClipboardList, to: "/admin/orders" },
   { label: "Customers", icon: Users },
   { label: "Reports & exports", icon: BarChart3 },
   { label: "Settings", icon: Settings },
