@@ -13,7 +13,8 @@ export const Route = createFileRoute("/api/admin/products/")({
     handlers: {
       GET: async ({ request }) => {
         try {
-          if (!(await findAdminFromRequest(request))) return jsonError("Admin authentication required.", 401);
+          if (!(await findAdminFromRequest(request)))
+            return jsonError("Admin authentication required.", 401);
           const url = new URL(request.url);
           const products = await listCatalogProducts(
             url.searchParams.get("search") ?? "",
@@ -28,7 +29,8 @@ export const Route = createFileRoute("/api/admin/products/")({
       },
       POST: async ({ request }) => {
         try {
-          if (!(await findAdminFromRequest(request))) return jsonError("Admin authentication required.", 401);
+          if (!(await findAdminFromRequest(request)))
+            return jsonError("Admin authentication required.", 401);
           const body = await readJson(request);
           if (body?.["action"] === "seed") {
             const imported = await seedStarterCatalog();

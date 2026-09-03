@@ -12,7 +12,8 @@ export const Route = createFileRoute("/api/admin/products/$productId")({
     handlers: {
       PUT: async ({ request, params }) => {
         try {
-          if (!(await findAdminFromRequest(request))) return jsonError("Admin authentication required.", 401);
+          if (!(await findAdminFromRequest(request)))
+            return jsonError("Admin authentication required.", 401);
           const parsed = validateCatalogInput((await readJson(request)) as Record<string, unknown>);
           if ("error" in parsed) return jsonError(parsed.error, 400);
           const product = await updateCatalogProduct(params.productId, parsed.input);
@@ -28,7 +29,8 @@ export const Route = createFileRoute("/api/admin/products/$productId")({
       },
       DELETE: async ({ request, params }) => {
         try {
-          if (!(await findAdminFromRequest(request))) return jsonError("Admin authentication required.", 401);
+          if (!(await findAdminFromRequest(request)))
+            return jsonError("Admin authentication required.", 401);
           const deleted = await deleteCatalogProduct(params.productId);
           if (!deleted) return jsonError("Product not found.", 404);
           return Response.json({ ok: true });

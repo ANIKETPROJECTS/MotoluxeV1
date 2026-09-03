@@ -87,7 +87,8 @@ function AdminPage() {
           <nav className="mt-6 grid gap-1" aria-label="Admin navigation">
             {navigation.map((item) => {
               const Icon = item.icon;
-              const active = item.to === pathname || (item.to === "/admin" && pathname === "/admin/");
+              const active =
+                item.to === pathname || (item.to === "/admin" && pathname === "/admin/");
               const className = `flex items-center gap-3 px-3 py-3 text-xs ${
                 active ? "bg-primary/10 font-medium text-primary" : "text-muted-foreground"
               }`;
