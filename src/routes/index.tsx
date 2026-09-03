@@ -371,7 +371,7 @@ function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 py-24 lg:py-28">
+      <section className="mx-auto max-w-7xl px-5 pb-10 pt-24 lg:pb-12 lg:pt-28">
         <SectionHead eyebrow="Why Motoluxe" title="Made for the real routine." />
         <div className="mt-12 grid gap-px border border-border bg-border md:grid-cols-3">
           {trust.map((item) => (
