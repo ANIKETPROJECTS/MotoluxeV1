@@ -117,7 +117,7 @@ function ProfilePage() {
           <span className="eyebrow mt-6 block text-accent">Motoluxe customer account</span>
           <h1 className="mt-3 text-4xl font-bold">Your profile is waiting.</h1>
           <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
-            Sign in with your phone number to view your details, orders and saved products.
+            Sign in with your name and phone number to view your details, orders and saved products.
           </p>
           <button
             type="button"

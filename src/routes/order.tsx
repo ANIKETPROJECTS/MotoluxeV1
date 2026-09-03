@@ -141,8 +141,8 @@ function OrderPage() {
             <div className="mt-10 border border-border bg-card p-8">
               <h2 className="text-2xl font-semibold">Sign in to place your order</h2>
               <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
-                Your selection is saved. Sign in with your phone number to continue to delivery
-                details.
+                Your selection is saved. Sign in with your name and phone number to continue to
+                delivery details.
               </p>
               <button
                 type="button"
@@ -167,36 +167,20 @@ function OrderPage() {
                   className="w-full border border-input bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary"
                 />
               </div>
-              <div className="grid gap-6 sm:grid-cols-2">
-                <div>
-                  <label htmlFor="order-email" className="eyebrow mb-2 block text-muted-foreground">
-                    Email
-                  </label>
-                  <input
-                    id="order-email"
-                    name="email"
-                    type="email"
-                    required
-                    defaultValue={customer?.email ?? ""}
-                    placeholder="you@example.com"
-                    className="w-full border border-input bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="order-phone" className="eyebrow mb-2 block text-muted-foreground">
-                    Phone
-                  </label>
-                  <input
-                    id="order-phone"
-                    name="phone"
-                    type="tel"
-                    required
-                    placeholder="+91"
-                    defaultValue={customer ? `+91 ${customer.phone}` : ""}
-                    readOnly
-                    className="w-full border border-input bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary"
-                  />
-                </div>
+              <div>
+                <label htmlFor="order-phone" className="eyebrow mb-2 block text-muted-foreground">
+                  Phone
+                </label>
+                <input
+                  id="order-phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  placeholder="+91"
+                  defaultValue={customer ? `+91 ${customer.phone}` : ""}
+                  readOnly
+                  className="w-full border border-input bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary"
+                />
               </div>
               <div>
                 <label htmlFor="order-address" className="eyebrow mb-2 block text-muted-foreground">

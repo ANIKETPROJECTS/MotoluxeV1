@@ -177,11 +177,7 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
               <div>
                 <span className="eyebrow text-primary">Motoluxe customer account</span>
                 <h2 id="customer-auth-title" className="mt-2 text-2xl font-semibold">
-                  {step === "phone"
-                    ? "Sign in to continue"
-                    : step === "otp"
-                      ? "Enter your code"
-                      : "Complete your account"}
+                  {step === "phone" ? "Sign in to continue" : "Enter your code"}
                 </h2>
               </div>
               <button
@@ -298,7 +294,7 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
                     }}
                     className="mx-auto flex items-center gap-2 text-xs text-muted-foreground transition-colors hover:text-primary"
                   >
-                    <ArrowLeft className="h-3.5 w-3.5" /> Use a different number
+                    <ArrowLeft className="h-3.5 w-3.5" /> Edit name or number
                   </button>
                 </form>
               )}

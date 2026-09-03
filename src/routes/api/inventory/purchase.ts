@@ -60,8 +60,12 @@ export const Route = createFileRoute("/api/inventory/purchase")({
           typeof delivery?.["email"] === "string"
             ? delivery["email"].trim().toLowerCase()
             : (customer.email ?? "");
-        if (name.length < 2 || name.length > 100 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-          return jsonError("Enter a valid name and email for your order.", 400);
+        if (
+          name.length < 2 ||
+          name.length > 100 ||
+          (email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+        ) {
+          return jsonError("Enter a valid name for your order.", 400);
         }
 
         let orders;
