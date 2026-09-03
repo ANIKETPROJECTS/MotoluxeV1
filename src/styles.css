@@ -80,19 +80,40 @@
     oklch(0.1 0.005 260 / 0.82) 42%,
     oklch(0.1 0.005 260 / 0.25) 100%
   );
-  --gradient-ember: linear-gradient(
-    135deg,
-    oklch(0.56 0.235 27.5),
-    oklch(0.42 0.19 20)
-  );
-  --gradient-gloss: linear-gradient(
-    160deg,
-    oklch(1 0 0 / 0.07) 0%,
-    oklch(1 0 0 / 0) 45%
-  );
+  --gradient-ember: linear-gradient(135deg, oklch(0.56 0.235 27.5), oklch(0.42 0.19 20));
+  --gradient-gloss: linear-gradient(160deg, oklch(1 0 0 / 0.07) 0%, oklch(1 0 0 / 0) 45%);
   --shadow-ember: 0 18px 45px -18px oklch(0.56 0.235 27.5 / 0.75);
   --shadow-hard: 0 24px 60px -30px oklch(0 0 0 / 0.9);
   --tr-snap: 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* The control room uses a brighter operational workspace than the storefront. */
+.admin-theme {
+  --background: oklch(0.97 0.006 260);
+  --foreground: oklch(0.18 0.012 260);
+  --surface: oklch(1 0 0);
+  --surface-raised: oklch(0.985 0.004 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.012 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.012 260);
+  --primary: oklch(0.56 0.235 27.5);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.94 0.008 260);
+  --secondary-foreground: oklch(0.18 0.012 260);
+  --muted: oklch(0.94 0.008 260);
+  --muted-foreground: oklch(0.46 0.018 260);
+  --accent: oklch(0.84 0.18 94);
+  --accent-foreground: oklch(0.18 0.012 260);
+  --destructive: oklch(0.56 0.235 27.5);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.86 0.012 260);
+  --input: oklch(0.9 0.01 260);
+  --ring: oklch(0.56 0.235 27.5);
+}
+
+.admin-theme svg {
+  display: none;
 }
 
 @layer base {
@@ -159,11 +180,7 @@
 }
 
 @utility hazard-stripes {
-  background-image: repeating-linear-gradient(
-    -45deg,
-    var(--accent) 0 10px,
-    transparent 10px 20px
-  );
+  background-image: repeating-linear-gradient(-45deg, var(--accent) 0 10px, transparent 10px 20px);
 }
 
 @utility no-scrollbar {

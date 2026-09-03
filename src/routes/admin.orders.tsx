@@ -656,7 +656,7 @@ function OrderDetailPanel({
           aria-label="Close order details"
           className="text-muted-foreground hover:text-primary"
         >
-          <X className="h-5 w-5" />
+          Close
         </button>
       </div>
 

@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Check, Eye, EyeOff, LoaderCircle, ShieldCheck } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 
 export const Route = createFileRoute("/admin/setup")({
@@ -81,8 +80,8 @@ function AdminSetupPage() {
       <div className="w-full max-w-md border border-border bg-card shadow-2xl">
         <div className="hazard-stripes h-1" />
         <div className="p-7 sm:p-10">
-          <div className="flex h-12 w-12 items-center justify-center bg-primary/15 text-primary">
-            {created ? <Check className="h-6 w-6" /> : <ShieldCheck className="h-6 w-6" />}
+          <div className="flex h-12 w-12 items-center justify-center bg-primary/15 font-display text-xs uppercase tracking-[0.12em] text-primary">
+            {created ? "OK" : "ML"}
           </div>
           <span className="eyebrow mt-7 block text-primary">One-time owner setup</span>
           <h1 className="mt-3 text-4xl font-bold">
@@ -99,8 +98,7 @@ function AdminSetupPage() {
                 to="/admin/login"
                 className="group mt-8 inline-flex items-center gap-2 bg-primary px-6 py-4 font-display text-xs uppercase tracking-[0.2em] text-primary-foreground"
               >
-                Continue to login{" "}
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                Continue to login
               </Link>
             </>
           ) : hasAdmin ? (
@@ -112,7 +110,7 @@ function AdminSetupPage() {
                 to="/admin/login"
                 className="group mt-8 inline-flex items-center gap-2 bg-primary px-6 py-4 font-display text-xs uppercase tracking-[0.2em] text-primary-foreground"
               >
-                Go to admin login <ArrowRight className="h-4 w-4" />
+                Go to admin login
               </Link>
             </>
           ) : (
@@ -163,13 +161,9 @@ function AdminSetupPage() {
                     aria-label={showPassword ? "Hide password" : "Show password"}
                     aria-pressed={showPassword}
                     onClick={() => setShowPassword((visible) => !visible)}
-                    className="absolute inset-y-0 right-0 grid w-11 place-items-center text-muted-foreground transition-colors hover:text-foreground"
+                    className="absolute inset-y-0 right-0 w-14 text-[10px] uppercase tracking-[0.1em] text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" aria-hidden="true" />
-                    ) : (
-                      <Eye className="h-4 w-4" aria-hidden="true" />
-                    )}
+                    {showPassword ? "Hide" : "Show"}
                   </button>
                 </div>
               </div>
@@ -199,13 +193,9 @@ function AdminSetupPage() {
                     }
                     aria-pressed={showConfirmation}
                     onClick={() => setShowConfirmation((visible) => !visible)}
-                    className="absolute inset-y-0 right-0 grid w-11 place-items-center text-muted-foreground transition-colors hover:text-foreground"
+                    className="absolute inset-y-0 right-0 w-14 text-[10px] uppercase tracking-[0.1em] text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    {showConfirmation ? (
-                      <EyeOff className="h-4 w-4" aria-hidden="true" />
-                    ) : (
-                      <Eye className="h-4 w-4" aria-hidden="true" />
-                    )}
+                    {showConfirmation ? "Hide" : "Show"}
                   </button>
                 </div>
               </div>
@@ -214,11 +204,7 @@ function AdminSetupPage() {
                 disabled={loading}
                 className="group flex w-full items-center justify-center gap-2 bg-primary px-5 py-4 font-display text-xs uppercase tracking-[0.2em] text-primary-foreground disabled:cursor-wait disabled:opacity-60"
               >
-                {loading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : null}
                 {loading ? "Creating account" : "Create owner account"}
-                {!loading && (
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                )}
               </button>
               {error && (
                 <p

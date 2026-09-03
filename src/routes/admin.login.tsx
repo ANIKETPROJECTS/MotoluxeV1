@@ -1,5 +1,4 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, LoaderCircle, ShieldCheck } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { useAdminAuth } from "@/components/AdminAuthContext";
 
@@ -42,7 +41,9 @@ function AdminLoginPage() {
   if (admin) {
     return (
       <section className="flex min-h-[75vh] items-center justify-center px-5 py-20">
-        <LoaderCircle className="h-5 w-5 animate-spin text-primary" />
+        <span className="font-display text-xs uppercase tracking-[0.16em] text-primary">
+          Opening control room…
+        </span>
       </section>
     );
   }
@@ -52,8 +53,8 @@ function AdminLoginPage() {
       <div className="w-full max-w-md border border-border bg-card shadow-2xl">
         <div className="hazard-stripes h-1" />
         <div className="p-7 sm:p-10">
-          <div className="flex h-12 w-12 items-center justify-center bg-primary/15 text-primary">
-            <ShieldCheck className="h-6 w-6" />
+          <div className="flex h-12 w-12 items-center justify-center bg-primary/15 font-display text-xs uppercase tracking-[0.12em] text-primary">
+            ML
           </div>
           <span className="eyebrow mt-7 block text-primary">Motoluxe control room</span>
           <h1 className="mt-3 text-4xl font-bold">Admin sign in</h1>
@@ -97,11 +98,7 @@ function AdminLoginPage() {
               disabled={loading}
               className="group flex w-full items-center justify-center gap-2 bg-primary px-5 py-4 font-display text-xs uppercase tracking-[0.2em] text-primary-foreground disabled:cursor-wait disabled:opacity-60"
             >
-              {loading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : null}
               {loading ? "Signing in" : "Sign in securely"}
-              {!loading && (
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              )}
             </button>
             {error && (
               <p

@@ -1,31 +1,16 @@
 import { Outlet, createFileRoute, Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import {
-  BarChart3,
-  Boxes,
-  ClipboardList,
-  LayoutDashboard,
-  LoaderCircle,
-  LogOut,
-  PackageSearch,
-  RefreshCw,
-  Settings,
-  ShieldCheck,
-  Store,
-  Users,
-  Tags,
-} from "lucide-react";
 import { useEffect, useState } from "react";
 import { AdminAuthProvider, useAdminAuth } from "@/components/AdminAuthContext";
 
 const navigation = [
-  { label: "Overview", icon: LayoutDashboard, to: "/admin" },
-  { label: "Products & catalog", icon: PackageSearch, to: "/admin/products" },
-  { label: "Categories & brands", icon: Tags, to: "/admin/categories" },
-  { label: "Inventory", icon: Boxes, to: "/admin/inventory" },
-  { label: "Orders", icon: ClipboardList, to: "/admin/orders" },
-  { label: "Customers", icon: Users },
-  { label: "Reports & exports", icon: BarChart3 },
-  { label: "Settings", icon: Settings },
+  { label: "Overview", to: "/admin" },
+  { label: "Products & catalog", to: "/admin/products" },
+  { label: "Categories & brands", to: "/admin/categories" },
+  { label: "Inventory", to: "/admin/inventory" },
+  { label: "Orders", to: "/admin/orders" },
+  { label: "Customers" },
+  { label: "Reports & exports" },
+  { label: "Settings" },
 ];
 
 export const Route = createFileRoute("/admin")({
@@ -60,49 +45,54 @@ function AdminPage() {
   if (pathname !== "/admin" && pathname !== "/admin/") {
     if (!isPublicAdminPath && (checking || !admin)) {
       return (
-        <section className="flex min-h-[75vh] items-center justify-center px-5 py-20">
-          <ShieldCheck className="h-5 w-5 animate-pulse text-primary" />
+        <section className="admin-theme flex min-h-[75vh] items-center justify-center bg-background px-5 py-20 text-foreground">
+          <span className="font-display text-xs uppercase tracking-[0.16em] text-primary">
+            Checking access
+          </span>
         </section>
       );
     }
-    return <Outlet />;
+    return (
+      <section className="admin-theme min-h-screen bg-background text-foreground">
+        <Outlet />
+      </section>
+    );
   }
 
   if (checking || !admin) {
     return (
-      <section className="flex min-h-[75vh] items-center justify-center px-5 py-20">
-        <ShieldCheck className="h-5 w-5 animate-pulse text-primary" />
+      <section className="admin-theme flex min-h-[75vh] items-center justify-center bg-background px-5 py-20 text-foreground">
+        <span className="font-display text-xs uppercase tracking-[0.16em] text-primary">
+          Checking access
+        </span>
       </section>
     );
   }
 
   return (
-    <section className="min-h-screen bg-background">
+    <section className="admin-theme min-h-screen bg-background text-foreground">
       <div className="mx-auto flex max-w-[1600px]">
         <aside className="hidden w-64 shrink-0 border-r border-border bg-card p-5 lg:block">
-          <Link to="/" className="flex items-center gap-2 border-b border-border pb-6">
-            <Store className="h-5 w-5 text-primary" />
+          <Link to="/" className="block border-b border-border pb-6">
             <span className="font-display text-sm uppercase tracking-[0.14em]">Motoluxe Admin</span>
+            <span className="mt-2 block h-1 w-12 bg-primary" />
           </Link>
           <nav className="mt-6 grid gap-1" aria-label="Admin navigation">
             {navigation.map((item) => {
-              const Icon = item.icon;
               const active =
                 item.to === pathname || (item.to === "/admin" && pathname === "/admin/");
-              const className = `flex items-center gap-3 px-3 py-3 text-xs ${
+              const className = `flex items-center justify-between px-3 py-3 text-xs ${
                 active ? "bg-primary/10 font-medium text-primary" : "text-muted-foreground"
               }`;
               if (item.to) {
                 return (
                   <Link key={item.label} to={item.to} className={className}>
-                    <Icon className="h-4 w-4" />
                     {item.label}
                   </Link>
                 );
               }
               return (
                 <div key={item.label} className={className}>
-                  <Icon className="h-4 w-4" />
                   {item.label}
                   <span className="ml-auto text-[9px] uppercase tracking-wider">Next</span>
                 </div>
@@ -110,23 +100,18 @@ function AdminPage() {
             })}
           </nav>
           <div className="mt-8 border-t border-border pt-5">
-            <div className="flex items-center gap-3">
-              <div className="grid h-9 w-9 place-items-center bg-primary/15 text-primary">
-                <ShieldCheck className="h-4 w-4" />
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-sm text-foreground">{admin.username}</p>
-                <p className="font-display text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
-                  {admin.role.replaceAll("_", " ")}
-                </p>
-              </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm text-foreground">{admin.username}</p>
+              <p className="mt-1 font-display text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                {admin.role.replaceAll("_", " ")}
+              </p>
             </div>
             <button
               type="button"
               onClick={() => void logout().then(() => navigate({ to: "/admin/login" }))}
-              className="mt-5 inline-flex items-center gap-2 text-xs text-muted-foreground transition-colors hover:text-primary"
+              className="mt-5 text-xs text-muted-foreground transition-colors hover:text-primary"
             >
-              <LogOut className="h-3.5 w-3.5" /> Sign out
+              Sign out
             </button>
           </div>
         </aside>
@@ -237,8 +222,7 @@ function AdminOverview() {
     return (
       <div className="flex min-h-[360px] items-center justify-center border border-border bg-card">
         <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          <LoaderCircle className="h-5 w-5 animate-spin text-primary" />
-          Loading live store data
+          Loading live store data…
         </div>
       </div>
     );
@@ -255,9 +239,9 @@ function AdminOverview() {
         <button
           type="button"
           onClick={() => void loadOverview()}
-          className="mt-6 inline-flex items-center gap-2 border border-primary px-4 py-3 font-display text-xs uppercase tracking-[0.16em] text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+          className="mt-6 border border-primary px-4 py-3 font-display text-xs uppercase tracking-[0.16em] text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
         >
-          <RefreshCw className="h-3.5 w-3.5" /> Try again
+          Try again
         </button>
       </div>
     );
