@@ -13,17 +13,19 @@ export const Route = createFileRoute("/admin/setup")({
 });
 
 function AdminSetupPage() {
-  const [hasAdmin, setHasAdmin] = useState<boolean | null>(null);
+  const [hasAdmin, setHasAdmin] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
-  const [setupKey, setSetupKey] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [created, setCreated] = useState(false);
 
   useEffect(() => {
-    fetch("/api/admin/auth/status", { credentials: "same-origin" })
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 2500);
+
+    fetch("/api/admin/auth/status", { credentials: "same-origin", signal: controller.signal })
       .then(async (response) => {
         const payload = (await response.json().catch(() => ({}))) as {
           hasAdmin?: boolean;
@@ -34,9 +36,18 @@ function AdminSetupPage() {
       })
       .then((payload) => setHasAdmin(Boolean(payload.hasAdmin)))
       .catch((statusError) => {
-        setError(statusError instanceof Error ? statusError.message : "We could not check admin setup.");
-        setHasAdmin(false);
+        setError(
+          statusError instanceof Error ? statusError.message : "We could not check admin setup.",
+        );
+      })
+      .finally(() => {
+        window.clearTimeout(timeout);
       });
+
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
   }, []);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -48,25 +59,19 @@ function AdminSetupPage() {
         method: "POST",
         headers: { "content-type": "application/json" },
         credentials: "same-origin",
-        body: JSON.stringify({ username, password, confirmation, setupKey }),
+        body: JSON.stringify({ username, password, confirmation }),
       });
       const payload = (await response.json().catch(() => ({}))) as { error?: string };
       if (!response.ok) throw new Error(payload.error ?? "We could not create the owner account.");
       setCreated(true);
       setHasAdmin(true);
     } catch (setupError) {
-      setError(setupError instanceof Error ? setupError.message : "We could not create the owner account.");
+      setError(
+        setupError instanceof Error ? setupError.message : "We could not create the owner account.",
+      );
     } finally {
       setLoading(false);
     }
-  }
-
-  if (hasAdmin === null) {
-    return (
-      <section className="flex min-h-[75vh] items-center justify-center px-5 py-20">
-        <LoaderCircle className="h-5 w-5 animate-spin text-primary" />
-      </section>
-    );
   }
 
   return (
@@ -78,18 +83,22 @@ function AdminSetupPage() {
             {created ? <Check className="h-6 w-6" /> : <ShieldCheck className="h-6 w-6" />}
           </div>
           <span className="eyebrow mt-7 block text-primary">One-time owner setup</span>
-          <h1 className="mt-3 text-4xl font-bold">{created ? "Owner account ready." : "Create admin access."}</h1>
+          <h1 className="mt-3 text-4xl font-bold">
+            {created ? "Owner account ready." : "Create admin access."}
+          </h1>
 
           {created ? (
             <>
               <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                The owner account is now stored securely. Use it to sign in to the Motoluxe control room.
+                The owner account is now stored securely. Use it to sign in to the Motoluxe control
+                room.
               </p>
               <Link
                 to="/admin/login"
                 className="group mt-8 inline-flex items-center gap-2 bg-primary px-6 py-4 font-display text-xs uppercase tracking-[0.2em] text-primary-foreground"
               >
-                Continue to login <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                Continue to login{" "}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </>
           ) : hasAdmin ? (
@@ -107,11 +116,14 @@ function AdminSetupPage() {
           ) : (
             <form onSubmit={onSubmit} className="mt-8 space-y-5">
               <p className="border border-accent/30 bg-accent/10 px-4 py-3 text-xs leading-relaxed text-accent">
-                This setup is available only until the first admin account is created. Choose a password
-                of at least 12 characters.
+                Create the owner credentials you will use to enter the control room. This setup is
+                available only until the first admin account is created.
               </p>
               <div>
-                <label htmlFor="setup-username" className="eyebrow mb-2 block text-muted-foreground">
+                <label
+                  htmlFor="setup-username"
+                  className="eyebrow mb-2 block text-muted-foreground"
+                >
                   Owner username
                 </label>
                 <input
@@ -126,7 +138,10 @@ function AdminSetupPage() {
                 />
               </div>
               <div>
-                <label htmlFor="setup-password" className="eyebrow mb-2 block text-muted-foreground">
+                <label
+                  htmlFor="setup-password"
+                  className="eyebrow mb-2 block text-muted-foreground"
+                >
                   Password
                 </label>
                 <input
@@ -142,7 +157,10 @@ function AdminSetupPage() {
                 />
               </div>
               <div>
-                <label htmlFor="setup-confirmation" className="eyebrow mb-2 block text-muted-foreground">
+                <label
+                  htmlFor="setup-confirmation"
+                  className="eyebrow mb-2 block text-muted-foreground"
+                >
                   Confirm password
                 </label>
                 <input
@@ -157,20 +175,6 @@ function AdminSetupPage() {
                   className="w-full border border-input bg-background px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
                 />
               </div>
-              <div>
-                <label htmlFor="setup-key" className="eyebrow mb-2 block text-muted-foreground">
-                  Setup key <span className="normal-case tracking-normal">(production only)</span>
-                </label>
-                <input
-                  id="setup-key"
-                  type="password"
-                  autoComplete="off"
-                  value={setupKey}
-                  onChange={(event) => setSetupKey(event.target.value)}
-                  placeholder="Leave blank in development"
-                  className="w-full border border-input bg-background px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
-                />
-              </div>
               <button
                 type="submit"
                 disabled={loading}
@@ -178,10 +182,15 @@ function AdminSetupPage() {
               >
                 {loading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : null}
                 {loading ? "Creating account" : "Create owner account"}
-                {!loading && <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />}
+                {!loading && (
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                )}
               </button>
               {error && (
-                <p role="alert" className="border border-primary/40 bg-primary/10 px-4 py-3 text-xs leading-relaxed text-primary">
+                <p
+                  role="alert"
+                  className="border border-primary/40 bg-primary/10 px-4 py-3 text-xs leading-relaxed text-primary"
+                >
                   {error}
                 </p>
               )}
@@ -189,7 +198,10 @@ function AdminSetupPage() {
           )}
 
           {!created && error && hasAdmin && (
-            <p role="alert" className="mt-5 border border-primary/40 bg-primary/10 px-4 py-3 text-xs leading-relaxed text-primary">
+            <p
+              role="alert"
+              className="mt-5 border border-primary/40 bg-primary/10 px-4 py-3 text-xs leading-relaxed text-primary"
+            >
               {error}
             </p>
           )}

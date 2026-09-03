@@ -1,8 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  adminSessionCookieHeader,
-  verifyAdminCredentials,
-} from "@/lib/server/admin-auth";
+import { adminSessionCookieHeader, verifyAdminCredentials } from "@/lib/server/admin-auth";
 import { jsonError, readJson } from "@/lib/server/http";
 
 export const Route = createFileRoute("/api/admin/auth/login")({

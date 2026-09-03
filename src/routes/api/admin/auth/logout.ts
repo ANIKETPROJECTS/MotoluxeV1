@@ -1,8 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  clearAdminSessionCookieHeader,
-  destroyAdminSession,
-} from "@/lib/server/admin-auth";
+import { clearAdminSessionCookieHeader, destroyAdminSession } from "@/lib/server/admin-auth";
 
 export const Route = createFileRoute("/api/admin/auth/logout")({
   server: {

@@ -9,22 +9,11 @@ export const Route = createFileRoute("/api/admin/auth/setup")({
         const body = await readJson(request);
         const username = typeof body?.["username"] === "string" ? body["username"] : "";
         const password = typeof body?.["password"] === "string" ? body["password"] : "";
-        const confirmation =
-          typeof body?.["confirmation"] === "string" ? body["confirmation"] : "";
+        const confirmation = typeof body?.["confirmation"] === "string" ? body["confirmation"] : "";
 
         if (password !== confirmation) {
           return jsonError("Passwords do not match.", 400);
         }
-        if (process.env["NODE_ENV"] === "production" && !process.env["ADMIN_SETUP_KEY"]) {
-          return jsonError("Admin setup is not configured for production.", 503);
-        }
-        if (
-          process.env["NODE_ENV"] === "production" &&
-          body?.["setupKey"] !== process.env["ADMIN_SETUP_KEY"]
-        ) {
-          return jsonError("That setup key is not valid.", 403);
-        }
-
         try {
           const result = await createInitialAdmin(username, password);
           if ("error" in result) return jsonError(result.error, 400);

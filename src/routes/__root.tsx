@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  useRouterState,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
@@ -15,7 +16,6 @@ import { SiteHeader } from "../components/SiteHeader";
 import { SiteFooter } from "../components/SiteFooter";
 import { CartProvider } from "../components/CartContext";
 import { CustomerAuthProvider } from "../components/CustomerAuthContext";
-import { AdminAuthProvider } from "../components/AdminAuthContext";
 import { WishlistProvider } from "../components/WishlistContext";
 
 function NotFoundComponent() {
@@ -139,24 +139,24 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
 
   return (
     <QueryClientProvider client={queryClient}>
       <CustomerAuthProvider>
-        <AdminAuthProvider>
-          <WishlistProvider>
-            <CartProvider>
-              <div className="flex min-h-screen flex-col">
-                <SiteHeader />
-                <main className="flex-1">
-                  {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-                  <Outlet />
-                </main>
-                <SiteFooter />
-              </div>
-            </CartProvider>
-          </WishlistProvider>
-        </AdminAuthProvider>
+        <WishlistProvider>
+          <CartProvider>
+            <div className="flex min-h-screen flex-col">
+              {!isAdminRoute && <SiteHeader />}
+              <main className="flex-1">
+                {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+                <Outlet />
+              </main>
+              {!isAdminRoute && <SiteFooter />}
+            </div>
+          </CartProvider>
+        </WishlistProvider>
       </CustomerAuthProvider>
     </QueryClientProvider>
   );

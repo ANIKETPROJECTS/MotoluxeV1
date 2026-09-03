@@ -31,11 +31,22 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    fetch("/api/admin/auth/me", { credentials: "same-origin" })
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 2500);
+
+    fetch("/api/admin/auth/me", { credentials: "same-origin", signal: controller.signal })
       .then(parseResponse)
       .then((payload) => setAdmin(payload.admin ?? null))
       .catch(() => setAdmin(null))
-      .finally(() => setChecking(false));
+      .finally(() => {
+        window.clearTimeout(timeout);
+        setChecking(false);
+      });
+
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
   }, []);
 
   async function login(username: string, password: string) {

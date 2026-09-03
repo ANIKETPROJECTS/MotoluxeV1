@@ -30,6 +30,10 @@ React UI. Checkout uses the server API and MongoDB:
 - The profile route reads customer details and that customer's order history from
   MongoDB. Authenticated wishlist slugs are stored on the customer record and
   synced through the account API; signed-out wishlist items remain browser-local.
+- The admin foundation is available at `/admin`. The first owner account is
+  created once at `/admin/setup`, stored in the MongoDB `admin` collection with
+  a salted password hash, and authenticated with a separate signed HttpOnly
+  admin session.
 
 The production build uses the Node Nitro preset because the MongoDB Node driver
 requires a Node server runtime.

@@ -7,12 +7,7 @@ const ADMIN_SESSION_MAX_AGE_SECONDS = 60 * 60 * 8;
 const PASSWORD_HASH_ITERATIONS = 210_000;
 
 export type AdminRole =
-  | "owner"
-  | "manager"
-  | "catalog_editor"
-  | "operations"
-  | "support"
-  | "viewer";
+  "owner" | "manager" | "catalog_editor" | "operations" | "support" | "viewer";
 
 export type Admin = {
   id: string;
@@ -22,7 +17,7 @@ export type Admin = {
 };
 
 type AdminDocument = {
-  _id: ObjectId;
+  _id?: ObjectId;
   username: string;
   usernameLower: string;
   passwordHash: string;
@@ -56,8 +51,7 @@ async function getDatabase() {
   if (globals.__motoluxeAdminMongoDb) return globals.__motoluxeAdminMongoDb;
 
   const uri = getRequiredEnvironment("MONGODB_URI");
-  const client =
-    globals.__motoluxeAdminMongoClient ?? new MongoClient(uri, { maxPoolSize: 10 });
+  const client = globals.__motoluxeAdminMongoClient ?? new MongoClient(uri, { maxPoolSize: 10 });
   if (!globals.__motoluxeAdminMongoClient) {
     await client.connect();
     globals.__motoluxeAdminMongoClient = client;
@@ -131,7 +125,7 @@ function getCookie(request: Request) {
 
 function adminFromDocument(document: AdminDocument): Admin {
   return {
-    id: document._id.toHexString(),
+    id: document._id?.toHexString() ?? "",
     username: document.username,
     role: document.role,
     active: document.active,
@@ -159,6 +153,7 @@ function constantTimeEqual(left: Uint8Array, right: Uint8Array) {
 }
 
 async function derivePassword(password: string, salt: Uint8Array, iterations: number) {
+  const saltBuffer = new Uint8Array(salt).buffer as ArrayBuffer;
   const key = await crypto.subtle.importKey(
     "raw",
     new TextEncoder().encode(password),
@@ -167,7 +162,7 @@ async function derivePassword(password: string, salt: Uint8Array, iterations: nu
     ["deriveBits"],
   );
   const bits = await crypto.subtle.deriveBits(
-    { name: "PBKDF2", salt, iterations, hash: "SHA-256" },
+    { name: "PBKDF2", salt: saltBuffer, iterations, hash: "SHA-256" },
     key,
     256,
   );
@@ -233,7 +228,7 @@ export async function findAdminFromRequest(request: Request) {
 
 export async function hasAdminUsers() {
   const { admins } = await getCollections();
-  return (await admins.countDocuments({ active: true }, { limit: 1 })) > 0;
+  return (await admins.countDocuments({}, { limit: 1 })) > 0;
 }
 
 export async function createInitialAdmin(username: string, password: string) {
@@ -279,6 +274,7 @@ export async function verifyAdminCredentials(username: string, password: string)
     { returnDocument: "after" },
   );
   if (!updated) return null;
+  if (!updated._id) return null;
   return {
     admin: adminFromDocument(updated),
     sessionCookie: await createAdminSession(updated._id),

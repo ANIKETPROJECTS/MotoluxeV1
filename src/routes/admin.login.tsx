@@ -39,7 +39,7 @@ function AdminLoginPage() {
     }
   }
 
-  if (checking || admin) {
+  if (admin) {
     return (
       <section className="flex min-h-[75vh] items-center justify-center px-5 py-20">
         <LoaderCircle className="h-5 w-5 animate-spin text-primary" />
@@ -99,10 +99,15 @@ function AdminLoginPage() {
             >
               {loading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : null}
               {loading ? "Signing in" : "Sign in securely"}
-              {!loading && <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />}
+              {!loading && (
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              )}
             </button>
             {error && (
-              <p role="alert" className="border border-primary/40 bg-primary/10 px-4 py-3 text-xs leading-relaxed text-primary">
+              <p
+                role="alert"
+                className="border border-primary/40 bg-primary/10 px-4 py-3 text-xs leading-relaxed text-primary"
+              >
                 {error}
               </p>
             )}

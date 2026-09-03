@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Outlet, createFileRoute, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Archive,
   BarChart3,
@@ -14,7 +14,7 @@ import {
   Users,
 } from "lucide-react";
 import { useEffect } from "react";
-import { useAdminAuth } from "@/components/AdminAuthContext";
+import { AdminAuthProvider, useAdminAuth } from "@/components/AdminAuthContext";
 
 const navigation = [
   { label: "Overview", icon: LayoutDashboard, active: true },
@@ -34,16 +34,30 @@ export const Route = createFileRoute("/admin")({
       { name: "description", content: "Motoluxe ecommerce administration." },
     ],
   }),
-  component: AdminPage,
+  component: AdminRouteComponent,
 });
+
+function AdminRouteComponent() {
+  return (
+    <AdminAuthProvider>
+      <AdminPage />
+    </AdminAuthProvider>
+  );
+}
 
 function AdminPage() {
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
   const { admin, checking, logout } = useAdminAuth();
 
   useEffect(() => {
+    if (pathname !== "/admin" && pathname !== "/admin/") return;
     if (!checking && !admin) void navigate({ to: "/admin/login", replace: true });
-  }, [admin, checking, navigate]);
+  }, [admin, checking, navigate, pathname]);
+
+  if (pathname !== "/admin" && pathname !== "/admin/") {
+    return <Outlet />;
+  }
 
   if (checking || !admin) {
     return (
@@ -54,7 +68,7 @@ function AdminPage() {
   }
 
   return (
-    <section className="min-h-[calc(100vh-5rem)] bg-background">
+    <section className="min-h-screen bg-background">
       <div className="mx-auto flex max-w-[1600px]">
         <aside className="hidden w-64 shrink-0 border-r border-border bg-card p-5 lg:block">
           <Link to="/" className="flex items-center gap-2 border-b border-border pb-6">
@@ -68,14 +82,14 @@ function AdminPage() {
                 <div
                   key={item.label}
                   className={`flex items-center gap-3 px-3 py-3 text-xs ${
-                    item.active
-                      ? "bg-primary/10 font-medium text-primary"
-                      : "text-muted-foreground"
+                    item.active ? "bg-primary/10 font-medium text-primary" : "text-muted-foreground"
                   }`}
                 >
                   <Icon className="h-4 w-4" />
                   {item.label}
-                  {!item.active && <span className="ml-auto text-[9px] uppercase tracking-wider">Next</span>}
+                  {!item.active && (
+                    <span className="ml-auto text-[9px] uppercase tracking-wider">Next</span>
+                  )}
                 </div>
               );
             })}
@@ -145,10 +159,12 @@ function AdminPage() {
 
             <div className="mt-8 border border-border bg-card p-6 sm:p-8">
               <span className="eyebrow text-primary">Admin build sequence</span>
-              <h2 className="mt-2 text-2xl font-semibold">Operational modules, wired one by one.</h2>
+              <h2 className="mt-2 text-2xl font-semibold">
+                Operational modules, wired one by one.
+              </h2>
               <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-                Authentication is complete. This shell is ready for live catalog and order tools without
-                changing the public Motoluxe experience.
+                Authentication is complete. This shell is ready for live catalog and order tools
+                without changing the public Motoluxe experience.
               </p>
               <div className="mt-7 grid gap-3 sm:grid-cols-2">
                 {[
@@ -160,7 +176,9 @@ function AdminPage() {
                   <div key={title} className="flex items-center gap-4 border border-border p-4">
                     <span className="font-display text-sm text-accent">{number}</span>
                     <div>
-                      <p className="font-display text-sm uppercase tracking-[0.08em] text-foreground">{title}</p>
+                      <p className="font-display text-sm uppercase tracking-[0.08em] text-foreground">
+                        {title}
+                      </p>
                       <p className="mt-1 text-xs text-muted-foreground">{description}</p>
                     </div>
                   </div>

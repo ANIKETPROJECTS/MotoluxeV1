@@ -2,15 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   ArrowUpRight,
-  BadgeCheck,
-  Beaker,
-  CarFront,
   ChevronRight,
   CircleCheck,
-  Headset,
-  ShieldCheck,
   Sparkles,
-  Wrench,
 } from "lucide-react";
 import heroImg from "@/assets/hero-banner.jpg";
 import heroVideo from "@/assets/motoluxe-chain-hero.mp4";
@@ -48,17 +42,20 @@ const highlights = [
 
 const trust = [
   {
-    icon: ShieldCheck,
+    number: "01",
+    label: "Start with clarity",
     title: "Care that earns trust",
     body: "Clear application guidance, practical formats and products selected for the way real vehicles are used.",
   },
   {
-    icon: Beaker,
+    number: "02",
+    label: "Solve the real job",
     title: "Built with purpose",
     body: "Every product has a job in the routine—from the first clean to the final presentation before handover.",
   },
   {
-    icon: Headset,
+    number: "03",
+    label: "Stay in your corner",
     title: "Support beyond the shelf",
     body: "Ask us about product use, workshop supply, dealer requirements or building a care kit for your customers.",
   },
@@ -372,27 +369,49 @@ function Home() {
       </section>
 
       <section className="mx-auto max-w-7xl px-5 pb-10 pt-24 lg:pb-12 lg:pt-28">
-        <SectionHead eyebrow="Why Motoluxe" title="Made for the real routine." />
-        <div className="mt-12 grid gap-px border border-border bg-border md:grid-cols-3">
-          {trust.map((item) => (
-            <div
-              key={item.title}
-              className="group bg-card p-8 transition-colors hover:bg-surface-raised"
+        <div className="grid gap-12 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
+          <div>
+            <SectionHead eyebrow="Why Motoluxe" title="Made for the real routine." />
+            <p className="mt-7 max-w-md text-base leading-relaxed text-muted-foreground">
+              Good care should feel less like guesswork and more like knowing
+              exactly what the machine needs next. That is the standard behind
+              every Motoluxe product.
+            </p>
+            <Link
+              to="/about"
+              className="group mt-8 inline-flex items-center gap-2 border-b border-primary pb-2 font-display text-xs uppercase tracking-[0.2em] text-primary transition-colors hover:text-accent"
             >
-              <div className="grid h-12 w-12 place-items-center border border-primary/40 bg-primary/10 text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground">
-                <item.icon className="h-5 w-5" />
-              </div>
-              <h3 className="mt-7 text-xl font-semibold">{item.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                {item.body}
-              </p>
-            </div>
-          ))}
+              Read the Motoluxe story
+              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </div>
+          <div className="grid gap-px border border-border bg-border md:grid-cols-3">
+            {trust.map((item) => (
+              <article
+                key={item.title}
+                className="group flex min-h-[270px] flex-col bg-card p-6 transition-colors hover:bg-surface-raised sm:p-8"
+              >
+                <div className="flex items-center justify-between border-b border-border pb-5">
+                  <span className="font-display text-4xl font-bold text-primary/70 transition-colors group-hover:text-primary">
+                    {item.number}
+                  </span>
+                  <span className="text-right font-display text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                    {item.label}
+                  </span>
+                </div>
+                <div className="mt-8 h-1 w-10 bg-primary transition-all duration-300 group-hover:w-20" />
+                <h3 className="mt-6 text-xl font-semibold">{item.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  {item.body}
+                </p>
+              </article>
+            ))}
+          </div>
         </div>
-        <div className="mt-5 grid gap-5 sm:grid-cols-3">
-          <MiniProof icon={BadgeCheck} text="Quality-led selection" />
-          <MiniProof icon={Wrench} text="Workshop-minded formulas" />
-          <MiniProof icon={CarFront} text="Built around real vehicles" />
+        <div className="mt-8 grid gap-3 sm:grid-cols-3">
+          <MiniProof number="A" text="Quality-led selection" />
+          <MiniProof number="B" text="Workshop-minded formulas" />
+          <MiniProof number="C" text="Built around real vehicles" />
         </div>
       </section>
     </>
@@ -400,15 +419,17 @@ function Home() {
 }
 
 function MiniProof({
-  icon: Icon,
+  number,
   text,
 }: {
-  icon: typeof BadgeCheck;
+  number: string;
   text: string;
 }) {
   return (
     <div className="flex items-center gap-3 border border-border bg-surface px-4 py-4">
-      <Icon className="h-4 w-4 text-accent" />
+      <span className="grid h-6 w-6 shrink-0 place-items-center border border-accent/50 font-display text-[10px] text-accent">
+        {number}
+      </span>
       <span className="font-display text-xs uppercase tracking-[0.16em] text-muted-foreground">
         {text}
       </span>

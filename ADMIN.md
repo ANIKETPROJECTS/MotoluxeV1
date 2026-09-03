@@ -16,6 +16,27 @@ The attached implementation blueprint remains the detailed source document:
 This file records the project-specific decisions and the implementation
 starting point for the next admin phase.
 
+## Admin foundation implemented
+
+The first admin foundation is now wired:
+
+- `/admin/login` provides username/password sign-in.
+- `/admin/setup` creates the first owner account exactly once with only a
+  username, password, and confirmation.
+- Passwords are stored as salted PBKDF2 hashes in MongoDB.
+- Admin sessions use a separate signed HttpOnly cookie and
+  `admin_sessions` collection.
+- `/admin` is protected by the admin session and redirects signed-out visitors
+  to the login screen.
+- `/api/admin/auth/*` contains login, logout, session, setup, and setup-status
+  endpoints.
+
+The initial setup form is the place to enter the owner username and password.
+No credentials belong in this file or in source control. Do not add an
+anonymous password overwrite flow: if the password is forgotten, use a
+controlled owner recovery process so a public visitor cannot take over the
+store.
+
 ## Existing storefront foundation
 
 - Framework: React + TypeScript + TanStack Start + Vite.
@@ -304,7 +325,7 @@ Before declaring the admin complete:
 
 ## Next implementation step
 
-Start with the protected `/admin/login` and `/admin` shell, then create the
-MongoDB-backed admin account setup flow. Do not request or commit credentials
-in the codebase; credentials must be entered through a secure setup or secrets
-flow.
+The protected `/admin/login` and `/admin` shell plus the MongoDB-backed
+one-time owner setup flow are now in place. Do not request or commit
+credentials in the codebase; credentials must be entered through the setup
+screen and stored only as a secure hash.
