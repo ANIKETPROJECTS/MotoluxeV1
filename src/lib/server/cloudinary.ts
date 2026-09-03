@@ -58,9 +58,7 @@ export async function uploadToCloudinary(options: {
   const apiSecret = requiredSecret("CLOUDINARY_API_SECRET");
   const timestamp = Math.floor(Date.now() / 1000).toString();
   const folder = uploadFolder(options.kind, options.section ?? "");
-  const publicId = options.publicId
-    ? safePathSegment(options.publicId, `asset-${timestamp}`)
-    : "";
+  const publicId = options.publicId ? safePathSegment(options.publicId, `asset-${timestamp}`) : "";
   const signedParams: Record<string, string> = {
     folder,
     timestamp,
@@ -68,7 +66,11 @@ export async function uploadToCloudinary(options: {
   };
 
   const form = new FormData();
-  form.append("file", new Blob([await options.file.arrayBuffer()], { type: options.file.type }), options.file.name);
+  form.append(
+    "file",
+    new Blob([await options.file.arrayBuffer()], { type: options.file.type }),
+    options.file.name,
+  );
   form.append("api_key", apiKey);
   for (const [key, value] of Object.entries(signedParams)) form.append(key, value);
   form.append("signature", signatureFor(signedParams, apiSecret));

@@ -19,15 +19,19 @@ export const Route = createFileRoute("/api/admin/media/upload")({
           const section = form.get("section");
           const publicId = form.get("publicId");
           if (!(file instanceof File)) return jsonError("Choose an image to upload.", 400);
-          if (typeof kind !== "string" || !uploadKinds.includes(kind as (typeof uploadKinds)[number])) {
+          if (
+            typeof kind !== "string" ||
+            !uploadKinds.includes(kind as (typeof uploadKinds)[number])
+          ) {
             return jsonError("Choose a valid upload section.", 400);
           }
-          const result = await uploadToCloudinary({
+          const uploadOptions = {
             file,
             kind: kind as (typeof uploadKinds)[number],
-            section: typeof section === "string" ? section : undefined,
-            publicId: typeof publicId === "string" ? publicId : undefined,
-          });
+            ...(typeof section === "string" ? { section } : {}),
+            ...(typeof publicId === "string" ? { publicId } : {}),
+          } as const;
+          const result = await uploadToCloudinary(uploadOptions);
           return Response.json({ asset: result }, { status: 201 });
         } catch (error) {
           console.error("Cloudinary media upload unavailable", error);

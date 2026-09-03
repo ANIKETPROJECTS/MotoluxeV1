@@ -9,7 +9,7 @@ import {
   RefreshCw,
   Trash2,
 } from "lucide-react";
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { categories, type CategorySlug } from "@/data/catalog";
 import type { AdminCatalogProduct } from "@/lib/server/admin-catalog";
 
@@ -117,35 +117,38 @@ function AdminProductsPage() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
-  async function loadProducts(nextSearch = search, nextCategory = category, nextStock = stock) {
-    setLoading(true);
-    setError("");
-    try {
-      const params = new URLSearchParams();
-      if (nextSearch.trim()) params.set("search", nextSearch.trim());
-      if (nextCategory) params.set("category", nextCategory);
-      if (nextStock !== "all") params.set("stock", nextStock);
-      const response = await fetch(`/api/admin/products?${params.toString()}`, {
-        credentials: "same-origin",
-      });
-      const payload = (await response.json().catch(() => ({}))) as {
-        products?: AdminCatalogProduct[];
-        needsSeed?: boolean;
-        error?: string;
-      };
-      if (!response.ok) throw new Error(payload.error ?? "We could not load products.");
-      setProducts(payload.products ?? []);
-      setNeedsSeed(Boolean(payload.needsSeed));
-    } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "We could not load products.");
-    } finally {
-      setLoading(false);
-    }
-  }
+  const loadProducts = useCallback(
+    async (nextSearch = search, nextCategory = category, nextStock = stock) => {
+      setLoading(true);
+      setError("");
+      try {
+        const params = new URLSearchParams();
+        if (nextSearch.trim()) params.set("search", nextSearch.trim());
+        if (nextCategory) params.set("category", nextCategory);
+        if (nextStock !== "all") params.set("stock", nextStock);
+        const response = await fetch(`/api/admin/products?${params.toString()}`, {
+          credentials: "same-origin",
+        });
+        const payload = (await response.json().catch(() => ({}))) as {
+          products?: AdminCatalogProduct[];
+          needsSeed?: boolean;
+          error?: string;
+        };
+        if (!response.ok) throw new Error(payload.error ?? "We could not load products.");
+        setProducts(payload.products ?? []);
+        setNeedsSeed(Boolean(payload.needsSeed));
+      } catch (loadError) {
+        setError(loadError instanceof Error ? loadError.message : "We could not load products.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [category, search, stock],
+  );
 
   useEffect(() => {
     void loadProducts();
-  }, []);
+  }, [loadProducts]);
 
   async function importStarterCatalog() {
     setWorking(true);
