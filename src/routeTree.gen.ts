@@ -17,6 +17,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as OrderRouteImport } from './routes/order'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
+import { Route as AdminInventoryRouteImport } from './routes/admin.inventory'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminSetupRouteImport } from './routes/admin.setup'
@@ -24,6 +25,7 @@ import { Route as CategoryCategoryRouteImport } from './routes/category.$categor
 import { Route as ProductProductRouteImport } from './routes/product.$product'
 import { Route as ApiAccountMeRouteImport } from './routes/api/account/me'
 import { Route as ApiAccountWishlistRouteImport } from './routes/api/account/wishlist'
+import { Route as ApiAdminInventoryRouteImport } from './routes/api/admin/inventory'
 import { Route as ApiAdminOverviewRouteImport } from './routes/api/admin/overview'
 import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
 import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
@@ -40,6 +42,7 @@ import { Route as ApiAdminBrandsBrandIdRouteImport } from './routes/api/admin/br
 import { Route as ApiAdminCategoriesIndexRouteImport } from './routes/api/admin/categories/index'
 import { Route as ApiAdminCategoriesCategoryIdRouteImport } from './routes/api/admin/categories/$categoryId'
 import { Route as ApiAdminCategoriesReorderRouteImport } from './routes/api/admin/categories/reorder'
+import { Route as ApiAdminInventoryMovementIdRouteImport } from './routes/api/admin/inventory/$movementId'
 import { Route as ApiAdminProductsIndexRouteImport } from './routes/api/admin/products/index'
 import { Route as ApiAdminProductsProductIdRouteImport } from './routes/api/admin/products/$productId'
 
@@ -83,6 +86,11 @@ const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   path: '/categories',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminInventoryRoute = AdminInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -116,6 +124,11 @@ const ApiAccountMeRoute = ApiAccountMeRouteImport.update({
 const ApiAccountWishlistRoute = ApiAccountWishlistRouteImport.update({
   id: '/api/account/wishlist',
   path: '/api/account/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminInventoryRoute = ApiAdminInventoryRouteImport.update({
+  id: '/api/admin/inventory',
+  path: '/api/admin/inventory',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAdminOverviewRoute = ApiAdminOverviewRouteImport.update({
@@ -200,6 +213,12 @@ const ApiAdminCategoriesReorderRoute =
     path: '/api/admin/categories/reorder',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiAdminInventoryMovementIdRoute =
+  ApiAdminInventoryMovementIdRouteImport.update({
+    id: '/$movementId',
+    path: '/$movementId',
+    getParentRoute: () => ApiAdminInventoryRoute,
+  } as any)
 const ApiAdminProductsIndexRoute = ApiAdminProductsIndexRouteImport.update({
   id: '/api/admin/products/',
   path: '/api/admin/products/',
@@ -221,6 +240,7 @@ export interface FileRoutesByFullPath {
   '/order': typeof OrderRoute
   '/profile': typeof ProfileRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/inventory': typeof AdminInventoryRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/setup': typeof AdminSetupRoute
@@ -228,6 +248,7 @@ export interface FileRoutesByFullPath {
   '/product/$product': typeof ProductProductRoute
   '/api/account/me': typeof ApiAccountMeRoute
   '/api/account/wishlist': typeof ApiAccountWishlistRoute
+  '/api/admin/inventory': typeof ApiAdminInventoryRouteWithChildren
   '/api/admin/overview': typeof ApiAdminOverviewRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
@@ -242,6 +263,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/brands/$brandId': typeof ApiAdminBrandsBrandIdRoute
   '/api/admin/categories/$categoryId': typeof ApiAdminCategoriesCategoryIdRoute
   '/api/admin/categories/reorder': typeof ApiAdminCategoriesReorderRoute
+  '/api/admin/inventory/$movementId': typeof ApiAdminInventoryMovementIdRoute
   '/api/admin/products/$productId': typeof ApiAdminProductsProductIdRoute
   '/api/admin/brands/': typeof ApiAdminBrandsIndexRoute
   '/api/admin/categories/': typeof ApiAdminCategoriesIndexRoute
@@ -256,6 +278,7 @@ export interface FileRoutesByTo {
   '/order': typeof OrderRoute
   '/profile': typeof ProfileRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/inventory': typeof AdminInventoryRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/setup': typeof AdminSetupRoute
@@ -263,6 +286,7 @@ export interface FileRoutesByTo {
   '/product/$product': typeof ProductProductRoute
   '/api/account/me': typeof ApiAccountMeRoute
   '/api/account/wishlist': typeof ApiAccountWishlistRoute
+  '/api/admin/inventory': typeof ApiAdminInventoryRouteWithChildren
   '/api/admin/overview': typeof ApiAdminOverviewRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
@@ -277,6 +301,7 @@ export interface FileRoutesByTo {
   '/api/admin/brands/$brandId': typeof ApiAdminBrandsBrandIdRoute
   '/api/admin/categories/$categoryId': typeof ApiAdminCategoriesCategoryIdRoute
   '/api/admin/categories/reorder': typeof ApiAdminCategoriesReorderRoute
+  '/api/admin/inventory/$movementId': typeof ApiAdminInventoryMovementIdRoute
   '/api/admin/products/$productId': typeof ApiAdminProductsProductIdRoute
   '/api/admin/brands': typeof ApiAdminBrandsIndexRoute
   '/api/admin/categories': typeof ApiAdminCategoriesIndexRoute
@@ -292,6 +317,7 @@ export interface FileRoutesById {
   '/order': typeof OrderRoute
   '/profile': typeof ProfileRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/inventory': typeof AdminInventoryRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/setup': typeof AdminSetupRoute
@@ -299,6 +325,7 @@ export interface FileRoutesById {
   '/product/$product': typeof ProductProductRoute
   '/api/account/me': typeof ApiAccountMeRoute
   '/api/account/wishlist': typeof ApiAccountWishlistRoute
+  '/api/admin/inventory': typeof ApiAdminInventoryRouteWithChildren
   '/api/admin/overview': typeof ApiAdminOverviewRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
@@ -313,6 +340,7 @@ export interface FileRoutesById {
   '/api/admin/brands/$brandId': typeof ApiAdminBrandsBrandIdRoute
   '/api/admin/categories/$categoryId': typeof ApiAdminCategoriesCategoryIdRoute
   '/api/admin/categories/reorder': typeof ApiAdminCategoriesReorderRoute
+  '/api/admin/inventory/$movementId': typeof ApiAdminInventoryMovementIdRoute
   '/api/admin/products/$productId': typeof ApiAdminProductsProductIdRoute
   '/api/admin/brands/': typeof ApiAdminBrandsIndexRoute
   '/api/admin/categories/': typeof ApiAdminCategoriesIndexRoute
@@ -329,6 +357,7 @@ export interface FileRouteTypes {
     | '/order'
     | '/profile'
     | '/admin/categories'
+    | '/admin/inventory'
     | '/admin/login'
     | '/admin/products'
     | '/admin/setup'
@@ -336,6 +365,7 @@ export interface FileRouteTypes {
     | '/product/$product'
     | '/api/account/me'
     | '/api/account/wishlist'
+    | '/api/admin/inventory'
     | '/api/admin/overview'
     | '/api/auth/login'
     | '/api/auth/logout'
@@ -350,6 +380,7 @@ export interface FileRouteTypes {
     | '/api/admin/brands/$brandId'
     | '/api/admin/categories/$categoryId'
     | '/api/admin/categories/reorder'
+    | '/api/admin/inventory/$movementId'
     | '/api/admin/products/$productId'
     | '/api/admin/brands/'
     | '/api/admin/categories/'
@@ -364,6 +395,7 @@ export interface FileRouteTypes {
     | '/order'
     | '/profile'
     | '/admin/categories'
+    | '/admin/inventory'
     | '/admin/login'
     | '/admin/products'
     | '/admin/setup'
@@ -371,6 +403,7 @@ export interface FileRouteTypes {
     | '/product/$product'
     | '/api/account/me'
     | '/api/account/wishlist'
+    | '/api/admin/inventory'
     | '/api/admin/overview'
     | '/api/auth/login'
     | '/api/auth/logout'
@@ -385,6 +418,7 @@ export interface FileRouteTypes {
     | '/api/admin/brands/$brandId'
     | '/api/admin/categories/$categoryId'
     | '/api/admin/categories/reorder'
+    | '/api/admin/inventory/$movementId'
     | '/api/admin/products/$productId'
     | '/api/admin/brands'
     | '/api/admin/categories'
@@ -399,6 +433,7 @@ export interface FileRouteTypes {
     | '/order'
     | '/profile'
     | '/admin/categories'
+    | '/admin/inventory'
     | '/admin/login'
     | '/admin/products'
     | '/admin/setup'
@@ -406,6 +441,7 @@ export interface FileRouteTypes {
     | '/product/$product'
     | '/api/account/me'
     | '/api/account/wishlist'
+    | '/api/admin/inventory'
     | '/api/admin/overview'
     | '/api/auth/login'
     | '/api/auth/logout'
@@ -420,6 +456,7 @@ export interface FileRouteTypes {
     | '/api/admin/brands/$brandId'
     | '/api/admin/categories/$categoryId'
     | '/api/admin/categories/reorder'
+    | '/api/admin/inventory/$movementId'
     | '/api/admin/products/$productId'
     | '/api/admin/brands/'
     | '/api/admin/categories/'
@@ -438,6 +475,7 @@ export interface RootRouteChildren {
   ProductProductRoute: typeof ProductProductRoute
   ApiAccountMeRoute: typeof ApiAccountMeRoute
   ApiAccountWishlistRoute: typeof ApiAccountWishlistRoute
+  ApiAdminInventoryRoute: typeof ApiAdminInventoryRouteWithChildren
   ApiAdminOverviewRoute: typeof ApiAdminOverviewRoute
   ApiAuthLoginRoute: typeof ApiAuthLoginRoute
   ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
@@ -516,6 +554,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/inventory': {
+      id: '/admin/inventory'
+      path: '/inventory'
+      fullPath: '/admin/inventory'
+      preLoaderRoute: typeof AdminInventoryRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/login'
@@ -563,6 +608,13 @@ declare module '@tanstack/react-router' {
       path: '/api/account/wishlist'
       fullPath: '/api/account/wishlist'
       preLoaderRoute: typeof ApiAccountWishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/inventory': {
+      id: '/api/admin/inventory'
+      path: '/api/admin/inventory'
+      fullPath: '/api/admin/inventory'
+      preLoaderRoute: typeof ApiAdminInventoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/overview': {
@@ -677,6 +729,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminCategoriesReorderRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/inventory/$movementId': {
+      id: '/api/admin/inventory/$movementId'
+      path: '/$movementId'
+      fullPath: '/api/admin/inventory/$movementId'
+      preLoaderRoute: typeof ApiAdminInventoryMovementIdRouteImport
+      parentRoute: typeof ApiAdminInventoryRoute
+    }
     '/api/admin/products/': {
       id: '/api/admin/products/'
       path: '/api/admin/products'
@@ -696,6 +755,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminCategoriesRoute: typeof AdminCategoriesRoute
+  AdminInventoryRoute: typeof AdminInventoryRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminProductsRoute: typeof AdminProductsRoute
   AdminSetupRoute: typeof AdminSetupRoute
@@ -703,12 +763,24 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminCategoriesRoute: AdminCategoriesRoute,
+  AdminInventoryRoute: AdminInventoryRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminProductsRoute: AdminProductsRoute,
   AdminSetupRoute: AdminSetupRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface ApiAdminInventoryRouteChildren {
+  ApiAdminInventoryMovementIdRoute: typeof ApiAdminInventoryMovementIdRoute
+}
+
+const ApiAdminInventoryRouteChildren: ApiAdminInventoryRouteChildren = {
+  ApiAdminInventoryMovementIdRoute: ApiAdminInventoryMovementIdRoute,
+}
+
+const ApiAdminInventoryRouteWithChildren =
+  ApiAdminInventoryRoute._addFileChildren(ApiAdminInventoryRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -722,6 +794,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductProductRoute: ProductProductRoute,
   ApiAccountMeRoute: ApiAccountMeRoute,
   ApiAccountWishlistRoute: ApiAccountWishlistRoute,
+  ApiAdminInventoryRoute: ApiAdminInventoryRouteWithChildren,
   ApiAdminOverviewRoute: ApiAdminOverviewRoute,
   ApiAuthLoginRoute: ApiAuthLoginRoute,
   ApiAuthLogoutRoute: ApiAuthLogoutRoute,

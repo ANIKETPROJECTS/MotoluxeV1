@@ -21,7 +21,7 @@ const navigation = [
   { label: "Overview", icon: LayoutDashboard, to: "/admin" },
   { label: "Products & catalog", icon: PackageSearch, to: "/admin/products" },
   { label: "Categories & brands", icon: Tags, to: "/admin/categories" },
-  { label: "Inventory", icon: Boxes },
+  { label: "Inventory", icon: Boxes, to: "/admin/inventory" },
   { label: "Orders", icon: ClipboardList },
   { label: "Customers", icon: Users },
   { label: "Reports & exports", icon: BarChart3 },
