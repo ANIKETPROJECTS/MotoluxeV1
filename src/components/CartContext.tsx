@@ -1,5 +1,7 @@
 import {
   ArrowRight,
+  Check,
+  Tag,
   Minus,
   Plus,
   ShoppingBag,
@@ -93,6 +95,8 @@ export function CartPanel() {
     removeFromCart,
     closeCart,
   } = useCart();
+  const [couponCode, setCouponCode] = useState("");
+  const [couponApplied, setCouponApplied] = useState(false);
 
   return (
     <>
@@ -185,13 +189,21 @@ export function CartPanel() {
                         <div className="flex items-center border border-border bg-surface">
                           <button
                             type="button"
-                            aria-label={`Decrease ${line.product.name} quantity`}
-                            onClick={() =>
-                              updateQuantity(
-                                line.product.slug,
-                                line.quantity - 1,
-                              )
+                            aria-label={
+                              line.quantity === 1
+                                ? `Remove ${line.product.name}`
+                                : `Decrease ${line.product.name} quantity`
                             }
+                            onClick={() => {
+                              if (line.quantity === 1) {
+                                removeFromCart(line.product.slug);
+                              } else {
+                                updateQuantity(
+                                  line.product.slug,
+                                  line.quantity - 1,
+                                );
+                              }
+                            }}
                             className="grid h-8 w-8 place-items-center transition-colors hover:bg-surface-raised"
                           >
                             <Minus className="h-3.5 w-3.5" />
@@ -227,6 +239,46 @@ export function CartPanel() {
 
         {lines.length > 0 && (
           <footer className="border-t border-border bg-surface px-5 py-5">
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (couponCode.trim()) setCouponApplied(true);
+              }}
+              className="mb-5 border-b border-border pb-5"
+            >
+              <label
+                htmlFor="cart-coupon"
+                className="flex items-center gap-2 font-display text-xs uppercase tracking-[0.16em] text-muted-foreground"
+              >
+                <Tag className="h-3.5 w-3.5 text-accent" />
+                Have a coupon?
+              </label>
+              <div className="mt-3 flex gap-2">
+                <input
+                  id="cart-coupon"
+                  value={couponCode}
+                  onChange={(event) => {
+                    setCouponCode(event.target.value);
+                    setCouponApplied(false);
+                  }}
+                  placeholder="Enter code"
+                  className="min-w-0 flex-1 border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
+                />
+                <button
+                  type="submit"
+                  disabled={!couponCode.trim()}
+                  className="border border-border px-4 py-2 font-display text-[10px] uppercase tracking-[0.16em] text-foreground transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Apply
+                </button>
+              </div>
+              {couponApplied && (
+                <p className="mt-2 flex items-center gap-2 text-xs text-accent">
+                  <Check className="h-3.5 w-3.5" />
+                  Code saved for enquiry review.
+                </p>
+              )}
+            </form>
             <div className="flex items-center justify-between">
               <span className="eyebrow text-muted-foreground">
                 {itemCount} item{itemCount === 1 ? "" : "s"} selected
