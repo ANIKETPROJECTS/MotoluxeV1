@@ -1,11 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  ArrowUpRight,
-  ChevronRight,
-  CircleCheck,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight, ArrowUpRight, ChevronRight, CircleCheck, Sparkles } from "lucide-react";
 import heroImg from "@/assets/hero-banner.jpg";
 import heroVideo from "@/assets/motoluxe-chain-hero.mp4";
 import { categories, featuredProducts, products } from "@/data/catalog";
@@ -26,8 +20,7 @@ export const Route = createFileRoute("/")({
       },
       {
         property: "og:description",
-        content:
-          "Five dependable care essentials for riders, detailers, workshops and dealers.",
+        content: "Five dependable care essentials for riders, detailers, workshops and dealers.",
       },
     ],
   }),
@@ -115,8 +108,8 @@ function Home() {
               Respect the <span className="text-accent">miles.</span>
             </h1>
             <p className="mt-7 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Purpose-built care essentials for riders, workshops and dealers
-              who know that the details show up in every mile.
+              Purpose-built care essentials for riders, workshops and dealers who know that the
+              details show up in every mile.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
               <Link
@@ -173,9 +166,7 @@ function Home() {
               <span className="font-display text-4xl font-bold text-primary">
                 {highlight.value}
               </span>
-              <span className="eyebrow text-muted-foreground">
-                {highlight.label}
-              </span>
+              <span className="eyebrow text-muted-foreground">{highlight.label}</span>
             </div>
           ))}
         </div>
@@ -186,9 +177,7 @@ function Home() {
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <span className="eyebrow text-primary">Shop the essentials</span>
-              <h2 className="mt-3 text-2xl font-semibold sm:text-3xl">
-                Pick your product
-              </h2>
+              <h2 className="mt-3 text-2xl font-semibold sm:text-3xl">Pick your product</h2>
             </div>
             <span className="text-sm text-muted-foreground">
               Tap any product to view details and add it to your cart.
@@ -217,9 +206,7 @@ function Home() {
                 <span className="mt-4 max-w-[9rem] font-display text-sm uppercase tracking-[0.08em] text-foreground transition-colors group-hover:text-primary">
                   {product.name}
                 </span>
-                <span className="mt-1 text-xs text-muted-foreground">
-                  View product
-                </span>
+                <span className="mt-1 text-xs text-muted-foreground">View product</span>
               </Link>
             ))}
           </div>
@@ -228,14 +215,10 @@ function Home() {
 
       <section className="mx-auto max-w-7xl px-5 py-24 lg:py-32">
         <div className="grid gap-12 lg:grid-cols-[0.7fr_1.3fr] lg:items-end">
-          <SectionHead
-            eyebrow="Shop by need"
-            title="One standard. Every surface."
-          />
+          <SectionHead eyebrow="Shop by need" title="One standard. Every surface." />
           <p className="max-w-xl text-base leading-relaxed text-muted-foreground lg:justify-self-end">
-            From the chain under load to the upholstery your customer touches,
-            Motoluxe makes it easier to build a consistent care routine. Start
-            with the job in front of you.
+            From the chain under load to the upholstery your customer touches, Motoluxe makes it
+            easier to build a consistent care routine. Start with the job in front of you.
           </p>
         </div>
 
@@ -278,10 +261,7 @@ function Home() {
       <section className="border-y border-border bg-surface py-24 lg:py-28">
         <div className="mx-auto max-w-7xl px-5">
           <div className="flex flex-wrap items-end justify-between gap-5">
-            <SectionHead
-              eyebrow="The five essentials"
-              title="The Motoluxe range"
-            />
+            <SectionHead eyebrow="The five essentials" title="The Motoluxe range" />
             <Link
               to="/contact"
               className="group inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.2em] text-accent"
@@ -304,9 +284,8 @@ function Home() {
           <div>
             <SectionHead eyebrow="The care routine" title="Small steps. Better ownership." />
             <p className="mt-7 max-w-md text-base leading-relaxed text-muted-foreground">
-              Good maintenance is not complicated. It is consistent. Build a
-              routine that protects the machine and makes every handover feel
-              considered.
+              Good maintenance is not complicated. It is consistent. Build a routine that protects
+              the machine and makes every handover feel considered.
             </p>
             <Link
               to="/contact"
@@ -353,9 +332,8 @@ function Home() {
           </div>
           <div className="lg:justify-self-end">
             <p className="max-w-md text-sm leading-relaxed text-primary-foreground/75">
-              Looking for bulk supply, product guidance or a care range for
-              your dealership? Tell us what you work on and we will point you
-              to the right starting line.
+              Looking for bulk supply, product guidance or a care range for your dealership? Tell us
+              what you work on and we will point you to the right starting line.
             </p>
             <Link
               to="/contact"
@@ -373,9 +351,8 @@ function Home() {
           <div>
             <SectionHead eyebrow="Why Motoluxe" title="Made for the real routine." />
             <p className="mt-7 max-w-md text-base leading-relaxed text-muted-foreground">
-              Good care should feel less like guesswork and more like knowing
-              exactly what the machine needs next. That is the standard behind
-              every Motoluxe product.
+              Good care should feel less like guesswork and more like knowing exactly what the
+              machine needs next. That is the standard behind every Motoluxe product.
             </p>
             <Link
               to="/about"
@@ -401,9 +378,7 @@ function Home() {
                 </div>
                 <div className="mt-8 h-1 w-10 bg-primary transition-all duration-300 group-hover:w-20" />
                 <h3 className="mt-6 text-xl font-semibold">{item.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                  {item.body}
-                </p>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.body}</p>
               </article>
             ))}
           </div>
@@ -418,13 +393,7 @@ function Home() {
   );
 }
 
-function MiniProof({
-  number,
-  text,
-}: {
-  number: string;
-  text: string;
-}) {
+function MiniProof({ number, text }: { number: string; text: string }) {
   return (
     <div className="flex items-center gap-3 border border-border bg-surface px-4 py-4">
       <span className="grid h-6 w-6 shrink-0 place-items-center border border-accent/50 font-display text-[10px] text-accent">
@@ -437,13 +406,7 @@ function MiniProof({
   );
 }
 
-export function SectionHead({
-  eyebrow,
-  title,
-}: {
-  eyebrow: string;
-  title: string;
-}) {
+export function SectionHead({ eyebrow, title }: { eyebrow: string; title: string }) {
   return (
     <div>
       <span className="eyebrow flex items-center gap-3 text-primary">

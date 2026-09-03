@@ -21,11 +21,10 @@ import { Route as CategoryCategoryRouteImport } from './routes/category.$categor
 import { Route as ProductProductRouteImport } from './routes/product.$product'
 import { Route as ApiAccountMeRouteImport } from './routes/api/account/me'
 import { Route as ApiAccountWishlistRouteImport } from './routes/api/account/wishlist'
+import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
 import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthMeRouteImport } from './routes/api/auth/me'
 import { Route as ApiAuthProfileRouteImport } from './routes/api/auth/profile'
-import { Route as ApiAuthSendOtpRouteImport } from './routes/api/auth/send-otp'
-import { Route as ApiAuthVerifyRouteImport } from './routes/api/auth/verify'
 import { Route as ApiInventoryPurchaseRouteImport } from './routes/api/inventory/purchase'
 import { Route as ApiAdminAuthLoginRouteImport } from './routes/api/admin/auth/login'
 import { Route as ApiAdminAuthLogoutRouteImport } from './routes/api/admin/auth/logout'
@@ -93,6 +92,11 @@ const ApiAccountWishlistRoute = ApiAccountWishlistRouteImport.update({
   path: '/api/account/wishlist',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAuthLoginRoute = ApiAuthLoginRouteImport.update({
+  id: '/api/auth/login',
+  path: '/api/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthLogoutRoute = ApiAuthLogoutRouteImport.update({
   id: '/api/auth/logout',
   path: '/api/auth/logout',
@@ -106,16 +110,6 @@ const ApiAuthMeRoute = ApiAuthMeRouteImport.update({
 const ApiAuthProfileRoute = ApiAuthProfileRouteImport.update({
   id: '/api/auth/profile',
   path: '/api/auth/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAuthSendOtpRoute = ApiAuthSendOtpRouteImport.update({
-  id: '/api/auth/send-otp',
-  path: '/api/auth/send-otp',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAuthVerifyRoute = ApiAuthVerifyRouteImport.update({
-  id: '/api/auth/verify',
-  path: '/api/auth/verify',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiInventoryPurchaseRoute = ApiInventoryPurchaseRouteImport.update({
@@ -162,11 +156,10 @@ export interface FileRoutesByFullPath {
   '/product/$product': typeof ProductProductRoute
   '/api/account/me': typeof ApiAccountMeRoute
   '/api/account/wishlist': typeof ApiAccountWishlistRoute
+  '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/profile': typeof ApiAuthProfileRoute
-  '/api/auth/send-otp': typeof ApiAuthSendOtpRoute
-  '/api/auth/verify': typeof ApiAuthVerifyRoute
   '/api/inventory/purchase': typeof ApiInventoryPurchaseRoute
   '/api/admin/auth/login': typeof ApiAdminAuthLoginRoute
   '/api/admin/auth/logout': typeof ApiAdminAuthLogoutRoute
@@ -187,11 +180,10 @@ export interface FileRoutesByTo {
   '/product/$product': typeof ProductProductRoute
   '/api/account/me': typeof ApiAccountMeRoute
   '/api/account/wishlist': typeof ApiAccountWishlistRoute
+  '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/profile': typeof ApiAuthProfileRoute
-  '/api/auth/send-otp': typeof ApiAuthSendOtpRoute
-  '/api/auth/verify': typeof ApiAuthVerifyRoute
   '/api/inventory/purchase': typeof ApiInventoryPurchaseRoute
   '/api/admin/auth/login': typeof ApiAdminAuthLoginRoute
   '/api/admin/auth/logout': typeof ApiAdminAuthLogoutRoute
@@ -213,11 +205,10 @@ export interface FileRoutesById {
   '/product/$product': typeof ProductProductRoute
   '/api/account/me': typeof ApiAccountMeRoute
   '/api/account/wishlist': typeof ApiAccountWishlistRoute
+  '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/profile': typeof ApiAuthProfileRoute
-  '/api/auth/send-otp': typeof ApiAuthSendOtpRoute
-  '/api/auth/verify': typeof ApiAuthVerifyRoute
   '/api/inventory/purchase': typeof ApiInventoryPurchaseRoute
   '/api/admin/auth/login': typeof ApiAdminAuthLoginRoute
   '/api/admin/auth/logout': typeof ApiAdminAuthLogoutRoute
@@ -240,11 +231,10 @@ export interface FileRouteTypes {
     | '/product/$product'
     | '/api/account/me'
     | '/api/account/wishlist'
+    | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/profile'
-    | '/api/auth/send-otp'
-    | '/api/auth/verify'
     | '/api/inventory/purchase'
     | '/api/admin/auth/login'
     | '/api/admin/auth/logout'
@@ -265,11 +255,10 @@ export interface FileRouteTypes {
     | '/product/$product'
     | '/api/account/me'
     | '/api/account/wishlist'
+    | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/profile'
-    | '/api/auth/send-otp'
-    | '/api/auth/verify'
     | '/api/inventory/purchase'
     | '/api/admin/auth/login'
     | '/api/admin/auth/logout'
@@ -290,11 +279,10 @@ export interface FileRouteTypes {
     | '/product/$product'
     | '/api/account/me'
     | '/api/account/wishlist'
+    | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/profile'
-    | '/api/auth/send-otp'
-    | '/api/auth/verify'
     | '/api/inventory/purchase'
     | '/api/admin/auth/login'
     | '/api/admin/auth/logout'
@@ -314,11 +302,10 @@ export interface RootRouteChildren {
   ProductProductRoute: typeof ProductProductRoute
   ApiAccountMeRoute: typeof ApiAccountMeRoute
   ApiAccountWishlistRoute: typeof ApiAccountWishlistRoute
+  ApiAuthLoginRoute: typeof ApiAuthLoginRoute
   ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
   ApiAuthMeRoute: typeof ApiAuthMeRoute
   ApiAuthProfileRoute: typeof ApiAuthProfileRoute
-  ApiAuthSendOtpRoute: typeof ApiAuthSendOtpRoute
-  ApiAuthVerifyRoute: typeof ApiAuthVerifyRoute
   ApiInventoryPurchaseRoute: typeof ApiInventoryPurchaseRoute
   ApiAdminAuthLoginRoute: typeof ApiAdminAuthLoginRoute
   ApiAdminAuthLogoutRoute: typeof ApiAdminAuthLogoutRoute
@@ -413,6 +400,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAccountWishlistRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/auth/login': {
+      id: '/api/auth/login'
+      path: '/api/auth/login'
+      fullPath: '/api/auth/login'
+      preLoaderRoute: typeof ApiAuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/logout': {
       id: '/api/auth/logout'
       path: '/api/auth/logout'
@@ -432,20 +426,6 @@ declare module '@tanstack/react-router' {
       path: '/api/auth/profile'
       fullPath: '/api/auth/profile'
       preLoaderRoute: typeof ApiAuthProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/auth/send-otp': {
-      id: '/api/auth/send-otp'
-      path: '/api/auth/send-otp'
-      fullPath: '/api/auth/send-otp'
-      preLoaderRoute: typeof ApiAuthSendOtpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/auth/verify': {
-      id: '/api/auth/verify'
-      path: '/api/auth/verify'
-      fullPath: '/api/auth/verify'
-      preLoaderRoute: typeof ApiAuthVerifyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/inventory/purchase': {
@@ -516,11 +496,10 @@ const rootRouteChildren: RootRouteChildren = {
   ProductProductRoute: ProductProductRoute,
   ApiAccountMeRoute: ApiAccountMeRoute,
   ApiAccountWishlistRoute: ApiAccountWishlistRoute,
+  ApiAuthLoginRoute: ApiAuthLoginRoute,
   ApiAuthLogoutRoute: ApiAuthLogoutRoute,
   ApiAuthMeRoute: ApiAuthMeRoute,
   ApiAuthProfileRoute: ApiAuthProfileRoute,
-  ApiAuthSendOtpRoute: ApiAuthSendOtpRoute,
-  ApiAuthVerifyRoute: ApiAuthVerifyRoute,
   ApiInventoryPurchaseRoute: ApiInventoryPurchaseRoute,
   ApiAdminAuthLoginRoute: ApiAdminAuthLoginRoute,
   ApiAdminAuthLogoutRoute: ApiAdminAuthLogoutRoute,

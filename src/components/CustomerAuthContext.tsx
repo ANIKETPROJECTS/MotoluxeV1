@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, LoaderCircle, UserRound, X } from "lucide-react";
+import { ArrowRight, LoaderCircle, UserRound, X } from "lucide-react";
 import {
   createContext,
   useContext,
@@ -28,7 +28,6 @@ type AuthContextValue = {
 type AuthResponse = {
   customer?: Customer | null;
   error?: string;
-  developmentOtp?: string;
 };
 
 const CustomerAuthContext = createContext<AuthContextValue | null>(null);
@@ -45,11 +44,8 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [checking, setChecking] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
-  const [step, setStep] = useState<"phone" | "otp">("phone");
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
   const [name, setName] = useState("");
-  const [developmentOtp, setDevelopmentOtp] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const pendingAction = useRef<(() => void) | undefined>(undefined);
@@ -71,8 +67,6 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
     setError("");
     setName("");
     setPhone("");
-    setOtp("");
-    setStep("phone");
     setIsOpen(true);
   }
 
@@ -91,48 +85,23 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
     callback?.();
   }
 
-  async function requestOtp(event: FormEvent<HTMLFormElement>) {
+  async function signIn(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("/api/auth/send-otp", {
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "content-type": "application/json" },
         credentials: "same-origin",
         body: JSON.stringify({ name, phone }),
       });
       const payload = await parseResponse(response);
-      setDevelopmentOtp(payload.developmentOtp ?? "");
-      setOtp("");
-      setStep("otp");
+      const signedInCustomer = payload.customer;
+      if (!signedInCustomer) throw new Error("We could not sign you in.");
+      completeAuthentication(signedInCustomer);
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "We could not send a code.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function verifyOtp(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setLoading(true);
-    setError("");
-    try {
-      const response = await fetch("/api/auth/verify", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        credentials: "same-origin",
-        body: JSON.stringify({ name, phone, otp }),
-      });
-      const payload = await parseResponse(response);
-      const verifiedCustomer = payload.customer;
-      if (!verifiedCustomer) throw new Error("We could not sign you in.");
-
-      completeAuthentication(verifiedCustomer);
-    } catch (requestError) {
-      setError(
-        requestError instanceof Error ? requestError.message : "We could not verify that code.",
-      );
+      setError(requestError instanceof Error ? requestError.message : "We could not sign you in.");
     } finally {
       setLoading(false);
     }
@@ -177,7 +146,7 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
               <div>
                 <span className="eyebrow text-primary">Motoluxe customer account</span>
                 <h2 id="customer-auth-title" className="mt-2 text-2xl font-semibold">
-                  {step === "phone" ? "Sign in to continue" : "Enter your code"}
+                  Sign in to continue
                 </h2>
               </div>
               <button
@@ -191,113 +160,52 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
             </header>
 
             <div className="px-6 py-6">
-              {step === "phone" && (
-                <form onSubmit={requestOtp} className="space-y-5">
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    Enter your name and phone number to create or access your Motoluxe customer
-                    account.
-                  </p>
-                  <div>
-                    <label htmlFor="auth-name" className="eyebrow mb-2 block text-muted-foreground">
-                      Full name
-                    </label>
-                    <input
-                      id="auth-name"
-                      autoFocus
-                      required
-                      minLength={2}
-                      value={name}
-                      onChange={(event) => setName(event.target.value)}
-                      placeholder="Your full name"
-                      className="w-full border border-input bg-background px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="auth-phone"
-                      className="eyebrow mb-2 block text-muted-foreground"
-                    >
-                      Phone number
-                    </label>
-                    <input
-                      id="auth-phone"
-                      required
-                      type="tel"
-                      value={phone}
-                      onChange={(event) => setPhone(event.target.value)}
-                      placeholder="+91 98765 43210"
-                      className="w-full border border-input bg-background px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="group flex w-full items-center justify-center gap-2 bg-primary px-5 py-4 font-display text-xs uppercase tracking-[0.2em] text-primary-foreground disabled:cursor-wait disabled:opacity-60"
-                  >
-                    {loading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : null}
-                    Send one-time code
-                    {!loading && (
-                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    )}
-                  </button>
-                </form>
-              )}
-
-              {step === "otp" && (
-                <form onSubmit={verifyOtp} className="space-y-5">
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    Enter the six-digit code sent to the number ending in{" "}
-                    <strong className="text-foreground">
-                      {phone.replace(/\D/g, "").slice(-4)}
-                    </strong>
-                    .
-                  </p>
-                  {developmentOtp && (
-                    <div className="border border-accent/40 bg-accent/10 px-4 py-3 text-xs leading-relaxed text-accent">
-                      Development-only code:{" "}
-                      <strong className="font-display tracking-[0.18em]">{developmentOtp}</strong>
-                    </div>
+              <form onSubmit={signIn} className="space-y-5">
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  Enter your name and phone number to create or access your Motoluxe customer
+                  account.
+                </p>
+                <div>
+                  <label htmlFor="auth-name" className="eyebrow mb-2 block text-muted-foreground">
+                    Full name
+                  </label>
+                  <input
+                    id="auth-name"
+                    autoFocus
+                    required
+                    minLength={2}
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                    placeholder="Your full name"
+                    className="w-full border border-input bg-background px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="auth-phone" className="eyebrow mb-2 block text-muted-foreground">
+                    Phone number
+                  </label>
+                  <input
+                    id="auth-phone"
+                    required
+                    type="tel"
+                    value={phone}
+                    onChange={(event) => setPhone(event.target.value)}
+                    placeholder="+91 98765 43210"
+                    className="w-full border border-input bg-background px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="group flex w-full items-center justify-center gap-2 bg-primary px-5 py-4 font-display text-xs uppercase tracking-[0.2em] text-primary-foreground disabled:cursor-wait disabled:opacity-60"
+                >
+                  {loading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : null}
+                  Continue to account
+                  {!loading && (
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   )}
-                  <div>
-                    <label htmlFor="auth-otp" className="eyebrow mb-2 block text-muted-foreground">
-                      One-time code
-                    </label>
-                    <input
-                      id="auth-otp"
-                      autoFocus
-                      required
-                      inputMode="numeric"
-                      pattern="[0-9]{6}"
-                      maxLength={6}
-                      value={otp}
-                      onChange={(event) => setOtp(event.target.value.replace(/\D/g, ""))}
-                      placeholder="000000"
-                      className="w-full border border-input bg-background px-4 py-3 font-display text-lg tracking-[0.35em] text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="group flex w-full items-center justify-center gap-2 bg-primary px-5 py-4 font-display text-xs uppercase tracking-[0.2em] text-primary-foreground disabled:cursor-wait disabled:opacity-60"
-                  >
-                    {loading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : null}
-                    Verify and continue
-                    {!loading && (
-                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setError("");
-                      setStep("phone");
-                    }}
-                    className="mx-auto flex items-center gap-2 text-xs text-muted-foreground transition-colors hover:text-primary"
-                  >
-                    <ArrowLeft className="h-3.5 w-3.5" /> Edit name or number
-                  </button>
-                </form>
-              )}
+                </button>
+              </form>
 
               {error && (
                 <p

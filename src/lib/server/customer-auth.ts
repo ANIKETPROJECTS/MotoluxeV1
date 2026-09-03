@@ -5,8 +5,6 @@ import { getProduct } from "@/data/catalog";
 
 const SESSION_COOKIE = "motoluxe_customer";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
-const OTP_TTL_MS = 10 * 60 * 1000;
-const OTP_COOLDOWN_MS = 30 * 1000;
 
 export type Customer = {
   id: string;
@@ -24,15 +22,6 @@ type CustomerDocument = {
   createdAt: Date;
   updatedAt: Date;
   lastLoginAt?: Date;
-};
-
-type OtpDocument = {
-  phone: string;
-  name: string;
-  otpHash: string;
-  createdAt: Date;
-  expiresAt: Date;
-  attempts: number;
 };
 
 type SessionDocument = {
@@ -111,7 +100,6 @@ async function getCollections() {
   const db = await getDatabase();
   return {
     customers: db.collection<CustomerDocument>("customers"),
-    otps: db.collection<OtpDocument>("customer_otps"),
     sessions: db.collection<SessionDocument>("customer_sessions"),
     orders: db.collection<OrderDocument>("orders"),
   };
@@ -265,67 +253,8 @@ export async function destroyCustomerSession(request: Request) {
   await sessions.deleteOne({ sessionId });
 }
 
-function createOtp() {
-  const values = new Uint32Array(1);
-  crypto.getRandomValues(values);
-  return String((values[0] ?? 0) % 1_000_000).padStart(6, "0");
-}
-
-async function hash(value: string) {
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
-  return base64UrlEncode(new Uint8Array(digest));
-}
-
-export async function issueOtp(phone: string, name: string) {
-  const { otps } = await getCollections();
-  const now = new Date();
-  const recentOtp = await otps.findOne({
-    phone,
-    createdAt: { $gt: new Date(now.getTime() - OTP_COOLDOWN_MS) },
-  });
-  if (recentOtp) {
-    return { cooldown: true, developmentOtp: undefined };
-  }
-
-  const otp = createOtp();
-  await otps.deleteMany({ phone });
-  await otps.insertOne({
-    phone,
-    name,
-    otpHash: await hash(otp),
-    createdAt: now,
-    expiresAt: new Date(now.getTime() + OTP_TTL_MS),
-    attempts: 0,
-  });
-
-  return {
-    cooldown: false,
-    developmentOtp: process.env["NODE_ENV"] === "production" ? undefined : otp,
-  };
-}
-
-export async function verifyOtp(phone: string, otp: string, submittedName?: string) {
-  const { otps, customers } = await getCollections();
-  const record = await otps.findOne({ phone });
-  if (!record || record.expiresAt.getTime() <= Date.now()) {
-    return { error: "That code has expired. Request a new one." as const };
-  }
-  if (record.attempts >= 5) {
-    return { error: "Too many attempts. Request a new code." as const };
-  }
-
-  const matches = (await hash(otp)) === record.otpHash;
-  if (!matches) {
-    await otps.updateOne({ _id: record._id }, { $inc: { attempts: 1 } });
-    return { error: "That code is not correct. Try again." as const };
-  }
-
-  const name = (record.name ?? submittedName ?? "").trim();
-  if (name.length < 2 || name.length > 100) {
-    return { error: "Enter your full name before signing in." as const };
-  }
-
-  await otps.deleteOne({ _id: record._id });
+export async function loginCustomer(phone: string, name: string) {
+  const { customers } = await getCollections();
   const now = new Date();
   const existing = await customers.findOneAndUpdate(
     { phone },

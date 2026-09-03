@@ -138,7 +138,8 @@ function AboutPage() {
           </p>
           <p>
             We are not interested in adding more bottles to the shelf. We are interested in making
-            the next job clearer: what to use, where to use it and how to keep the result consistent.
+            the next job clearer: what to use, where to use it and how to keep the result
+            consistent.
           </p>
         </div>
         <div className="grid grid-cols-2 gap-px border border-border bg-border sm:grid-cols-4 lg:col-span-2">
@@ -200,7 +201,10 @@ function AboutPage() {
           </div>
           <div className="border-l border-primary/40 pl-6 lg:pl-12">
             {routine.map((step) => (
-              <article key={step.number} className="group grid gap-4 border-b border-border py-6 sm:grid-cols-[80px_1fr]">
+              <article
+                key={step.number}
+                className="group grid gap-4 border-b border-border py-6 sm:grid-cols-[80px_1fr]"
+              >
                 <span className="font-display text-4xl font-bold text-primary/45 transition-colors group-hover:text-primary">
                   {step.number}
                 </span>
