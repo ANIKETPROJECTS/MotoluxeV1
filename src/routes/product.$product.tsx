@@ -181,7 +181,7 @@ function ProductPage() {
                 </>
               ) : (
                 <>
-                  <ShoppingCart className="h-4 w-4" /> Add to enquiry
+                  <ShoppingCart className="h-4 w-4" /> Add to cart
                 </>
               )}
             </button>
