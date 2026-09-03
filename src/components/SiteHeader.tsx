@@ -32,8 +32,8 @@ function CategoriesMenu() {
         }
       }}
     >
-      <button
-        type="button"
+      <Link
+        to="/categories"
         className={`${linkBase} inline-flex items-center gap-1 py-6`}
         aria-expanded={open}
         aria-haspopup="true"
@@ -41,18 +41,13 @@ function CategoriesMenu() {
           setOpen(true);
           setActiveCategory((current) => current ?? "chain-care");
         }}
-        onClick={() => {
-          const nextOpen = !open;
-          setOpen(nextOpen);
-          setActiveCategory(nextOpen ? (activeCategory ?? "chain-care") : null);
-        }}
       >
         Categories
         <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} />
-      </button>
+      </Link>
 
       <div
-        className={`absolute left-1/2 top-full z-50 w-[min(40rem,calc(100vw-2rem))] -translate-x-1/2 border border-border bg-surface/95 p-3 shadow-2xl backdrop-blur-xl transition-all duration-200 ${
+        className={`absolute left-2 top-full z-50 w-[min(35rem,calc(100vw-2rem))] border border-border bg-surface/95 p-2 shadow-2xl backdrop-blur-xl transition-all duration-200 ${
           open
             ? "pointer-events-auto visible translate-y-0 opacity-100"
             : "invisible pointer-events-none translate-y-2 opacity-0"

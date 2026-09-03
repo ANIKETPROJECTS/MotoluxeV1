@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Check, LoaderCircle, ShieldCheck } from "lucide-react";
+import { ArrowRight, Check, Eye, EyeOff, LoaderCircle, ShieldCheck } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 
 export const Route = createFileRoute("/admin/setup")({
@@ -17,6 +17,8 @@ function AdminSetupPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [created, setCreated] = useState(false);
@@ -144,17 +146,32 @@ function AdminSetupPage() {
                 >
                   Password
                 </label>
-                <input
-                  id="setup-password"
-                  required
-                  minLength={12}
-                  type="password"
-                  autoComplete="new-password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="At least 12 characters"
-                  className="w-full border border-input bg-background px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
-                />
+                <div className="relative">
+                  <input
+                    id="setup-password"
+                    required
+                    minLength={12}
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="new-password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder="At least 12 characters"
+                    className="w-full border border-input bg-background px-4 py-3 pr-12 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
+                  />
+                  <button
+                    type="button"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-pressed={showPassword}
+                    onClick={() => setShowPassword((visible) => !visible)}
+                    className="absolute inset-y-0 right-0 grid w-11 place-items-center text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" aria-hidden="true" />
+                    ) : (
+                      <Eye className="h-4 w-4" aria-hidden="true" />
+                    )}
+                  </button>
+                </div>
               </div>
               <div>
                 <label
@@ -163,17 +180,34 @@ function AdminSetupPage() {
                 >
                   Confirm password
                 </label>
-                <input
-                  id="setup-confirmation"
-                  required
-                  minLength={12}
-                  type="password"
-                  autoComplete="new-password"
-                  value={confirmation}
-                  onChange={(event) => setConfirmation(event.target.value)}
-                  placeholder="Repeat the password"
-                  className="w-full border border-input bg-background px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
-                />
+                <div className="relative">
+                  <input
+                    id="setup-confirmation"
+                    required
+                    minLength={12}
+                    type={showConfirmation ? "text" : "password"}
+                    autoComplete="new-password"
+                    value={confirmation}
+                    onChange={(event) => setConfirmation(event.target.value)}
+                    placeholder="Repeat the password"
+                    className="w-full border border-input bg-background px-4 py-3 pr-12 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
+                  />
+                  <button
+                    type="button"
+                    aria-label={
+                      showConfirmation ? "Hide password confirmation" : "Show password confirmation"
+                    }
+                    aria-pressed={showConfirmation}
+                    onClick={() => setShowConfirmation((visible) => !visible)}
+                    className="absolute inset-y-0 right-0 grid w-11 place-items-center text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {showConfirmation ? (
+                      <EyeOff className="h-4 w-4" aria-hidden="true" />
+                    ) : (
+                      <Eye className="h-4 w-4" aria-hidden="true" />
+                    )}
+                  </button>
+                </div>
               </div>
               <button
                 type="submit"

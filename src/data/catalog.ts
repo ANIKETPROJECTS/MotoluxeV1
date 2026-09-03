@@ -8,10 +8,7 @@ import catChain from "@/assets/cat-chain-care.jpg";
 import catGarage from "@/assets/cat-engine-care.jpg";
 import catInterior from "@/assets/cat-body-detailing.jpg";
 
-export type CategorySlug =
-  | "chain-care"
-  | "garage-protection"
-  | "interior-care";
+export type CategorySlug = "chain-care" | "garage-protection" | "interior-care";
 
 export type Product = {
   slug: string;
@@ -32,6 +29,7 @@ export type Category = {
   name: string;
   short: string;
   blurb: string;
+  details: string[];
   image: string;
   index: string;
 };
@@ -43,6 +41,11 @@ export const categories: Category[] = [
     short: "Clean. Lube. Ride.",
     blurb:
       "The essential two-step system for a smoother, quieter and better-protected motorcycle chain.",
+    details: [
+      "Reset the chain before fresh lubrication",
+      "Keep friction, road film and abrasive dust in check",
+      "Build a repeatable care routine at home or in the workshop",
+    ],
     image: catChain,
     index: "01",
   },
@@ -52,6 +55,11 @@ export const categories: Category[] = [
     short: "Defend every bay.",
     blurb:
       "Smart protection for the machines, storage spaces and workshop surfaces that keep you moving.",
+    details: [
+      "Release surface rust before it becomes a bigger repair",
+      "Make parked vehicles less inviting to rodents",
+      "Protect the tools, hardware and spaces behind every ride",
+    ],
     image: catGarage,
     index: "02",
   },
@@ -61,6 +69,11 @@ export const categories: Category[] = [
     short: "Fresh, ready, professional.",
     blurb:
       "Restore the clean, cared-for finish customers notice first, from seats to cabin touch points.",
+    details: [
+      "Lift everyday marks from upholstery and interior surfaces",
+      "Prepare vehicles for handover, display or the next drive",
+      "Keep the finish consistent across home and professional care",
+    ],
     image: catInterior,
     index: "03",
   },
@@ -189,13 +202,11 @@ export const products: Product[] = [
   },
 ];
 
-export const getCategory = (slug: string) =>
-  categories.find((category) => category.slug === slug);
+export const getCategory = (slug: string) => categories.find((category) => category.slug === slug);
 
 export const getProductsByCategory = (slug: string) =>
   products.filter((product) => product.category === slug);
 
-export const getProduct = (slug: string) =>
-  products.find((product) => product.slug === slug);
+export const getProduct = (slug: string) => products.find((product) => product.slug === slug);
 
 export const featuredProducts = products;
