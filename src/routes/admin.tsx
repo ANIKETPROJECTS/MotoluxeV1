@@ -10,7 +10,6 @@ const navigation = [
   { label: "Orders", to: "/admin/orders" },
   { label: "Customers", to: "/admin/customers" },
   { label: "Reviews & questions", to: "/admin/reviews" },
-  { label: "Media library", to: "/admin/media" },
   { label: "Reports & exports" },
   { label: "Settings" },
 ];

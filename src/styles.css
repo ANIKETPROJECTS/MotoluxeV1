@@ -87,28 +87,28 @@
   --tr-snap: 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* The control room uses a restrained charcoal workspace with a darker navigation rail. */
+/* The control room uses a soft white workspace with a darker navigation rail. */
 .admin-theme {
-  --background: oklch(0.22 0.008 260);
-  --foreground: oklch(0.92 0.004 260);
-  --surface: oklch(0.255 0.008 260);
-  --surface-raised: oklch(0.29 0.009 260);
-  --card: oklch(0.275 0.009 260);
-  --card-foreground: oklch(0.92 0.004 260);
-  --popover: oklch(0.29 0.009 260);
-  --popover-foreground: oklch(0.92 0.004 260);
+  --background: oklch(0.89 0.008 260);
+  --foreground: oklch(0.22 0.012 260);
+  --surface: oklch(0.92 0.006 260);
+  --surface-raised: oklch(0.95 0.004 260);
+  --card: oklch(0.94 0.004 260);
+  --card-foreground: oklch(0.18 0.012 260);
+  --popover: oklch(0.95 0.004 260);
+  --popover-foreground: oklch(0.18 0.012 260);
   --primary: oklch(0.56 0.235 27.5);
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.31 0.01 260);
-  --secondary-foreground: oklch(0.92 0.004 260);
-  --muted: oklch(0.31 0.01 260);
-  --muted-foreground: oklch(0.7 0.01 260);
+  --secondary: oklch(0.85 0.01 260);
+  --secondary-foreground: oklch(0.18 0.012 260);
+  --muted: oklch(0.85 0.01 260);
+  --muted-foreground: oklch(0.46 0.018 260);
   --accent: oklch(0.84 0.18 94);
   --accent-foreground: oklch(0.14 0.01 260);
   --destructive: oklch(0.56 0.235 27.5);
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.38 0.012 260);
-  --input: oklch(0.34 0.012 260);
+  --border: oklch(0.76 0.014 260);
+  --input: oklch(0.81 0.012 260);
   --ring: oklch(0.56 0.235 27.5);
 }
 

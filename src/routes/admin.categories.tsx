@@ -13,7 +13,7 @@ import {
   Tags,
   Trash2,
 } from "lucide-react";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 
 export const Route = createFileRoute("/admin/categories")({
   head: () => ({
@@ -984,14 +984,15 @@ function CategoryEditor({
             className={inputClass}
           />
         </Field>
-        <Field label="Image path or URL">
-          <input
-            required
-            value={form.image}
-            onChange={(event) => update("image", event.target.value)}
-            className={inputClass}
-          />
-        </Field>
+        <CloudinaryImageField
+          label="Category image"
+          kind="category"
+          section={form.slug || form.name}
+          publicId={form.slug}
+          value={form.image}
+          required
+          onChange={(value) => update("image", value)}
+        />
         <Field label="Description" wide>
           <textarea
             required
@@ -1071,13 +1072,14 @@ function BrandEditor({
             className={inputClass}
           />
         </Field>
-        <Field label="Logo path or URL">
-          <input
-            value={form.logo}
-            onChange={(event) => update("logo", event.target.value)}
-            className={inputClass}
-          />
-        </Field>
+        <CloudinaryImageField
+          label="Brand logo"
+          kind="brand"
+          section="brand-logos"
+          publicId={form.slug}
+          value={form.logo}
+          onChange={(value) => update("logo", value)}
+        />
         <Field label="Website (optional)">
           <input
             type="url"
@@ -1116,6 +1118,88 @@ function BrandEditor({
         <EditorActions working={working} editing={editing} onCancel={onCancel} label="brand" />
       </form>
     </section>
+  );
+}
+
+function CloudinaryImageField({
+  label,
+  kind,
+  section,
+  publicId,
+  value,
+  required = false,
+  onChange,
+}: {
+  label: string;
+  kind: "category" | "brand";
+  section: string;
+  publicId: string;
+  value: string;
+  required?: boolean;
+  onChange: (value: string) => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function upload(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    setUploading(true);
+    setError("");
+    try {
+      const payload = new FormData();
+      payload.append("file", file);
+      payload.append("kind", kind);
+      payload.append("section", section);
+      if (publicId.trim()) payload.append("publicId", publicId.trim());
+      const response = await fetch("/api/admin/media/upload", {
+        method: "POST",
+        credentials: "same-origin",
+        body: payload,
+      });
+      const result = (await response.json().catch(() => ({}))) as {
+        asset?: { secureUrl?: string };
+        error?: string;
+      };
+      if (!response.ok || !result.asset?.secureUrl) {
+        throw new Error(result.error ?? "We could not upload the image.");
+      }
+      onChange(result.asset.secureUrl);
+    } catch (uploadError) {
+      setError(uploadError instanceof Error ? uploadError.message : "We could not upload the image.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <div className="grid gap-2">
+      <label className="text-xs text-muted-foreground">{label}</label>
+      <div className="flex flex-wrap gap-3">
+        <input
+          required={required}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder="Cloudinary secure URL"
+          className={`${inputClass} min-w-0 flex-1`}
+        />
+        <label className="inline-flex cursor-pointer items-center border border-accent/40 bg-accent/10 px-3 py-2 text-xs text-accent hover:bg-accent/20">
+          {uploading ? "Uploading…" : "Upload to Cloudinary"}
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            onChange={upload}
+            disabled={uploading}
+            className="sr-only"
+          />
+        </label>
+      </div>
+      <p className="text-[11px] text-muted-foreground">
+        The uploaded image URL will be saved with this {kind} in MongoDB.
+      </p>
+      {error && <p className="text-xs text-primary">{error}</p>}
+    </div>
   );
 }
 
