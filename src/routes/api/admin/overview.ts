@@ -3,9 +3,11 @@ import { categories, getProduct, products } from "@/data/catalog";
 import { findAdminFromRequest, type Admin } from "@/lib/server/admin-auth";
 import { getCustomerCollection, getOrderCollection } from "@/lib/server/customer-auth";
 import { jsonError } from "@/lib/server/http";
+import { formatOrderNumber } from "@/lib/server/order-number";
 
 type OverviewOrder = {
   _id?: { toHexString(): string };
+  orderNumber?: number;
   customerId?: string;
   items?: Array<{
     productId?: string;
@@ -21,8 +23,10 @@ type OverviewOrder = {
 
 function numericValue(value: unknown) {
   if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value !== "string") return null;
-  const numeric = Number(value.replace(/[^0-9.-]/g, ""));
+  if (typeof value !== "string" || !value.trim()) return null;
+  const normalized = value.replaceAll(",", "").replace(/[^\d.-]/g, "");
+  if (!normalized) return null;
+  const numeric = Number(normalized);
   return Number.isFinite(numeric) ? numeric : null;
 }
 
@@ -43,7 +47,9 @@ function orderTotal(order: OverviewOrder) {
 }
 
 function orderLabel(order: OverviewOrder) {
-  return order._id?.toHexString().slice(-8).toUpperCase() ?? "PENDING";
+  return order.orderNumber && order.orderNumber > 0
+    ? formatOrderNumber(order.orderNumber)
+    : (order._id?.toHexString().slice(-8).toUpperCase() ?? "PENDING");
 }
 
 function monthKey(date: Date) {
