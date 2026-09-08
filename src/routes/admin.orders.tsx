@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Download, FilterX, LoaderCircle, Package, RefreshCw, Search, Truck } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -450,21 +450,30 @@ function AdminOrdersPage() {
                         </select>
                       </td>
                       <td className="px-4 py-5">
-                        <select
-                          value={order.paymentStatus}
-                          disabled={rowWorkingId === order.id}
-                          onChange={(event) =>
-                            void updateOrderRow(order, "paymentStatus", event.target.value)
-                          }
-                          aria-label={`Update payment for ${order.number}`}
-                          className={`min-w-32 border px-3 py-2 text-xs outline-none disabled:opacity-60 ${statusClass(order.paymentStatus)}`}
-                        >
-                          {paymentOptions.map(([value, label]) => (
-                            <option key={value} value={value}>
-                              {label}
-                            </option>
-                          ))}
-                        </select>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <select
+                            value={order.paymentStatus}
+                            disabled={rowWorkingId === order.id}
+                            onChange={(event) =>
+                              void updateOrderRow(order, "paymentStatus", event.target.value)
+                            }
+                            aria-label={`Update payment for ${order.number}`}
+                            className={`min-w-32 border px-3 py-2 text-xs outline-none disabled:opacity-60 ${statusClass(order.paymentStatus)}`}
+                          >
+                            {paymentOptions.map(([value, label]) => (
+                              <option key={value} value={value}>
+                                {label}
+                              </option>
+                            ))}
+                          </select>
+                          <Link
+                            to="/admin/orders/$orderId"
+                            params={{ orderId: order.id }}
+                            className="inline-flex items-center border border-primary px-3 py-2 font-display text-[10px] uppercase tracking-[0.14em] text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                          >
+                            Invoice
+                          </Link>
+                        </div>
                       </td>
                     </tr>
                   ))}

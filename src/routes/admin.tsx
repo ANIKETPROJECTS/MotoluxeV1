@@ -131,7 +131,7 @@ function AdminShell({
           />
         )}
         <aside
-          className={`admin-sidebar z-30 h-full shrink-0 overflow-y-auto border-r border-border p-5 transition-[width,transform] duration-200 lg:static lg:block ${
+          className={`admin-sidebar z-30 h-full shrink-0 overflow-y-auto border-r border-border p-5 transition-[width,transform] duration-200 print:hidden lg:static lg:block ${
             mobileOpen ? "fixed inset-y-0 left-0 block w-64 shadow-2xl" : "hidden lg:block"
           } ${collapsed ? "lg:w-20 lg:px-3" : "w-64"}`}
         >
@@ -204,7 +204,7 @@ function AdminShell({
         </aside>
 
         <div className="admin-content-scroll min-h-0 min-w-0 flex-1 overflow-y-auto">
-          <div className="flex items-center justify-between border-b border-border bg-card px-5 py-4 lg:hidden">
+          <div className="flex items-center justify-between border-b border-border bg-card px-5 py-4 print:hidden lg:hidden">
             <span className="font-display text-sm uppercase tracking-[0.14em]">Motoluxe Admin</span>
             <button
               type="button"
@@ -215,7 +215,7 @@ function AdminShell({
               {mobileOpen ? "Close menu" : "Menu"}
             </button>
           </div>
-          <main className="px-5 py-8 sm:px-8 lg:px-10">{children}</main>
+          <main className="px-5 py-8 sm:px-8 lg:px-10 print:p-0">{children}</main>
         </div>
       </div>
     </section>
