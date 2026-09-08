@@ -140,6 +140,9 @@ function ProfilePage() {
     void loadReviewEligibility();
   }, [authenticated, checking]);
 
+  const hasReviewableProducts = reviewEligibility.some((review) => !review.submittedReview);
+  const hasSubmittedReviews = reviewEligibility.some((review) => review.submittedReview);
+
   if (checking || loading) {
     return (
       <section className="mx-auto flex min-h-[65vh] max-w-3xl items-center justify-center px-5 py-20">
@@ -295,7 +298,7 @@ function ProfilePage() {
 
           {activeTab === "orders" ? (
             <div className="mt-6 grid gap-5">
-              {reviewEligibility.length > 0 && (
+              {hasReviewableProducts ? (
                 <div className="border border-accent/40 bg-accent/10 p-5">
                   <span className="eyebrow text-accent">Share your experience</span>
                   <p className="mt-2 text-sm leading-relaxed text-foreground">
@@ -304,6 +307,19 @@ function ProfilePage() {
                     moderation.
                   </p>
                 </div>
+              ) : (
+                hasSubmittedReviews && (
+                  <div
+                    className="border border-accent/40 bg-accent/10 p-5"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    <span className="eyebrow text-accent">Review submitted</span>
+                    <p className="mt-2 text-sm leading-relaxed text-foreground">
+                      Thank you for sharing your experience.
+                    </p>
+                  </div>
+                )
               )}
               {orders.length > 0 ? (
                 orders.map((order) => (
@@ -339,9 +355,8 @@ function ProfilePage() {
                               {eligibility && (
                                 <div className="border-t border-border pt-2">
                                   {eligibility.submittedReview ? (
-                                    <p className="text-xs text-muted-foreground">
-                                      Review {eligibility.submittedReview.status}. Thank you for
-                                      sharing your experience.
+                                    <p className="text-xs text-accent" role="status">
+                                      Review submitted. Thank you for sharing your experience.
                                     </p>
                                   ) : (
                                     <CustomerReviewForm
