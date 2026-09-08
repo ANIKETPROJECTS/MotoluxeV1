@@ -3,6 +3,7 @@ import "@tanstack/react-start/server-only";
 import { ObjectId, type Collection, type Filter } from "mongodb";
 import { getOrderCollection } from "@/lib/server/customer-auth";
 import { ensureLegacyOrderNumbers, formatOrderNumber } from "@/lib/server/order-number";
+import { getProduct } from "@/data/catalog";
 
 export const orderStatuses = [
   "pending_confirmation",
@@ -128,13 +129,34 @@ function asCollection(collection: Awaited<ReturnType<typeof getOrderCollection>>
 
 function numericValue(value: unknown) {
   if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string" && value.trim() && Number.isFinite(Number(value)))
-    return Number(value);
+  if (typeof value === "string" && value.trim()) {
+    const normalized = value.replaceAll(",", "").replace(/[^\d.-]/g, "");
+    if (normalized && Number.isFinite(Number(normalized))) return Number(normalized);
+  }
   return null;
 }
 
 function dateValue(value: Date | undefined) {
   return value?.toISOString() ?? new Date(0).toISOString();
+}
+
+function lineItemsTotal(items: OrderItemDocument[]) {
+  let total = 0;
+
+  for (const item of items) {
+    const quantity = Number.isInteger(item.quantity) ? (item.quantity as number) : 0;
+    if (quantity < 1) continue;
+
+    const price = numericValue(item.price) ?? numericValue(getProduct(item.productId ?? "")?.price);
+    if (price === null) return null;
+    total += price * quantity;
+  }
+
+  return total;
+}
+
+function orderTotal(document: AdminOrderDocument) {
+  return numericValue(document.pricing?.total) ?? lineItemsTotal(document.items ?? []);
 }
 
 function statusValue(value: unknown) {
@@ -158,7 +180,7 @@ function listItem(document: AdminOrderDocument & { _id: ObjectId }): AdminOrderL
       (total, item) => total + (Number.isInteger(item.quantity) ? (item.quantity as number) : 0),
       0,
     ),
-    total: numericValue(document.pricing?.total),
+    total: orderTotal(document),
     status: statusValue(document.status),
     paymentStatus: paymentStatusValue(document.paymentStatus ?? document.pricing?.status),
     paymentMethod: document.paymentMethod ?? "Not recorded",
@@ -186,21 +208,22 @@ function detail(document: AdminOrderDocument & { _id: ObjectId }): AdminOrderDet
       const quantity = Number.isInteger(item.quantity) ? (item.quantity as number) : 0;
       const price = item.price ?? null;
       const numericPrice = numericValue(price);
+      const resolvedPrice = numericPrice ?? numericValue(getProduct(item.productId ?? "")?.price);
       return {
         productId: item.productId ?? "",
         productName: item.productName ?? "Motoluxe product",
         quantity,
-        price,
+        price: price ?? getProduct(item.productId ?? "")?.price ?? null,
         image: item.image ?? "",
         variant: item.variant ?? "",
-        lineTotal: numericPrice === null ? null : numericPrice * quantity,
+        lineTotal: resolvedPrice === null ? null : resolvedPrice * quantity,
       };
     }),
     pricing: {
       subtotal: numericValue(document.pricing?.subtotal),
       shipping: numericValue(document.pricing?.shipping),
       discount: numericValue(document.pricing?.discount),
-      total: numericValue(document.pricing?.total),
+      total: orderTotal(document),
       status: document.pricing?.status ?? "request_price",
     },
     couponCode: document.couponCode ?? null,
