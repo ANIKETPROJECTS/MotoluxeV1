@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { ArrowLeft, FileDown, LoaderCircle, MessageCircle, Printer, Share2 } from "lucide-react";
+import { ArrowLeft, FileDown, LoaderCircle, Printer, Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { AdminOrderDetail } from "@/lib/server/admin-orders";
 
@@ -71,7 +71,6 @@ async function createInvoicePdf(order: AdminOrderDetail) {
   const document = new jsPDF({ unit: "mm", format: "a4" });
   const left = 18;
   const right = 192;
-  const width = right - left;
   const muted = [100, 100, 100] as const;
   const dark = [30, 30, 34] as const;
   const red = [214, 35, 35] as const;
@@ -150,7 +149,10 @@ async function createInvoicePdf(order: AdminOrderDetail) {
   document.setFont("helvetica", "normal");
   document.setFontSize(9);
   for (const item of order.items) {
-    const nameLines = document.splitTextToSize(item.productName || "Motoluxe product", 92) as string[];
+    const nameLines = document.splitTextToSize(
+      item.productName || "Motoluxe product",
+      92,
+    ) as string[];
     if (itemY > 250) {
       document.addPage();
       itemY = 24;
@@ -278,12 +280,12 @@ function AdminInvoicePage() {
           const url = `https://wa.me/${phone}?text=${encodeURIComponent(invoiceMessage(order))}`;
           window.open(url, "_blank", "noopener,noreferrer");
         }
-        setShareNotice(
-          "Invoice PDF downloaded. Attach it in WhatsApp using the paperclip button.",
-        );
+        setShareNotice("Invoice PDF downloaded. Attach it in WhatsApp using the paperclip button.");
       } catch (shareError) {
         if (shareError instanceof DOMException && shareError.name === "AbortError") return;
-        setError(shareError instanceof Error ? shareError.message : "We could not prepare the invoice.");
+        setError(
+          shareError instanceof Error ? shareError.message : "We could not prepare the invoice.",
+        );
       } finally {
         setSharing(false);
       }
@@ -301,7 +303,9 @@ function AdminInvoicePage() {
         setShareNotice("Invoice PDF downloaded.");
       } catch (downloadError) {
         setError(
-          downloadError instanceof Error ? downloadError.message : "We could not create the invoice PDF.",
+          downloadError instanceof Error
+            ? downloadError.message
+            : "We could not create the invoice PDF.",
         );
       } finally {
         setSharing(false);
@@ -382,7 +386,8 @@ function AdminInvoicePage() {
             }
             className="inline-flex items-center gap-2 border border-accent bg-accent px-4 py-3 font-display text-[10px] uppercase tracking-[0.14em] text-accent-foreground transition-colors hover:bg-accent/80 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <Share2 className="h-3.5 w-3.5" /> {sharing ? "Preparing invoice..." : "Share on WhatsApp"}
+            <Share2 className="h-3.5 w-3.5" />{" "}
+            {sharing ? "Preparing invoice..." : "Share on WhatsApp"}
           </button>
         </div>
       </div>
