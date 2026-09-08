@@ -159,6 +159,29 @@ function orderTotal(document: AdminOrderDocument) {
   return numericValue(document.pricing?.total) ?? lineItemsTotal(document.items ?? []);
 }
 
+function resolvedPricing(document: AdminOrderDocument) {
+  const total = orderTotal(document);
+  const itemSubtotal = lineItemsTotal(document.items ?? []);
+  const storedSubtotal = numericValue(document.pricing?.subtotal);
+  const storedDiscount = numericValue(document.pricing?.discount);
+  const subtotal =
+    storedSubtotal ??
+    itemSubtotal ??
+    (total === null ? null : total + (storedDiscount ?? 0));
+  const discount =
+    storedDiscount ??
+    (subtotal !== null && total !== null && subtotal > total ? subtotal - total : null);
+  const shipping =
+    numericValue(document.pricing?.shipping) ??
+    (subtotal !== null && total !== null
+      ? Math.max(total - subtotal + (discount ?? 0), 0)
+      : total !== null
+        ? 0
+        : null);
+
+  return { subtotal, shipping, discount, total };
+}
+
 function statusValue(value: unknown) {
   return orderStatuses.includes(value as OrderStatus)
     ? (value as OrderStatus)
@@ -190,6 +213,7 @@ function listItem(document: AdminOrderDocument & { _id: ObjectId }): AdminOrderL
 
 function detail(document: AdminOrderDocument & { _id: ObjectId }): AdminOrderDetail {
   const base = listItem(document);
+  const pricing = resolvedPricing(document);
   return {
     ...base,
     customerId: document.customerId ?? null,
@@ -220,10 +244,10 @@ function detail(document: AdminOrderDocument & { _id: ObjectId }): AdminOrderDet
       };
     }),
     pricing: {
-      subtotal: numericValue(document.pricing?.subtotal),
-      shipping: numericValue(document.pricing?.shipping),
-      discount: numericValue(document.pricing?.discount),
-      total: orderTotal(document),
+      subtotal: pricing.subtotal,
+      shipping: pricing.shipping,
+      discount: pricing.discount,
+      total: pricing.total,
       status: document.pricing?.status ?? "request_price",
     },
     couponCode: document.couponCode ?? null,

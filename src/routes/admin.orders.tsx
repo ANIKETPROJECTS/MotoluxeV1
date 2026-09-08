@@ -88,11 +88,6 @@ function statusClass(value: string) {
 
 function AdminOrdersPage() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
-
-  if (pathname !== "/admin/orders" && pathname !== "/admin/orders/") {
-    return <Outlet />;
-  }
-
   const [orders, setOrders] = useState<OrderListItem[]>([]);
   const [summary, setSummary] = useState<OrderSummary>({
     total: 0,
@@ -232,6 +227,10 @@ function AdminOrdersPage() {
     anchor.download = "motoluxe-paid-orders.csv";
     anchor.click();
     URL.revokeObjectURL(url);
+  }
+
+  if (pathname !== "/admin/orders" && pathname !== "/admin/orders/") {
+    return <Outlet />;
   }
 
   return (
