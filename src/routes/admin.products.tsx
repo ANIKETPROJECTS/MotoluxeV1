@@ -9,8 +9,9 @@ import {
   RefreshCw,
   Trash2,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { categories } from "@/data/catalog";
+import { useCallback, useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { categories, type CategorySlug } from "@/data/catalog";
+import type { ProductForm } from "@/components/admin/ProductEditor";
 import type { AdminCatalogProduct } from "@/lib/server/admin-catalog";
 
 export const Route = createFileRoute("/admin/products")({

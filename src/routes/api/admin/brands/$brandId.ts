@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { findAdminFromRequest } from "@/lib/server/admin-auth";
 import {
   deleteCatalogBrand,
+  listCatalogBrands,
   updateCatalogBrand,
   validateBrandInput,
 } from "@/lib/server/admin-taxonomy";
@@ -10,6 +11,18 @@ import { jsonError, readJson } from "@/lib/server/http";
 export const Route = createFileRoute("/api/admin/brands/$brandId")({
   server: {
     handlers: {
+      GET: async ({ request, params }) => {
+        try {
+          if (!(await findAdminFromRequest(request)))
+            return jsonError("Admin authentication required.", 401);
+          const brand = (await listCatalogBrands()).find((item) => item.id === params.brandId);
+          if (!brand) return jsonError("Brand not found.", 404);
+          return Response.json({ brand });
+        } catch (error) {
+          console.error("Admin brand lookup unavailable", error);
+          return jsonError("Brands are temporarily unavailable.", 503);
+        }
+      },
       PUT: async ({ request, params }) => {
         try {
           if (!(await findAdminFromRequest(request)))

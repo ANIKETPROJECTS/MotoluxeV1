@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { LoaderCircle } from "lucide-react";
 import { useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import { categories, type CategorySlug } from "@/data/catalog";

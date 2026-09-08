@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { findAdminFromRequest } from "@/lib/server/admin-auth";
 import {
   deleteCatalogProduct,
+  getCatalogProduct,
   updateCatalogProduct,
   validateCatalogInput,
 } from "@/lib/server/admin-catalog";
@@ -10,6 +11,18 @@ import { jsonError, readJson } from "@/lib/server/http";
 export const Route = createFileRoute("/api/admin/products/$productId")({
   server: {
     handlers: {
+      GET: async ({ request, params }) => {
+        try {
+          if (!(await findAdminFromRequest(request)))
+            return jsonError("Admin authentication required.", 401);
+          const product = await getCatalogProduct(params.productId);
+          if (!product) return jsonError("Product not found.", 404);
+          return Response.json({ product });
+        } catch (error) {
+          console.error("Admin product lookup unavailable", error);
+          return jsonError("Products are temporarily unavailable.", 503);
+        }
+      },
       PUT: async ({ request, params }) => {
         try {
           if (!(await findAdminFromRequest(request)))

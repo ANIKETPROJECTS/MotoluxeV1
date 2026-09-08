@@ -158,6 +158,12 @@ export async function listCatalogProducts(search = "", category = "", stockFilte
   return documents.map(toProduct);
 }
 
+export async function getCatalogProduct(id: string) {
+  if (!ObjectId.isValid(id)) return null;
+  const document = await (await getCollection()).findOne({ _id: new ObjectId(id) });
+  return document ? toProduct(document) : null;
+}
+
 export async function createCatalogProduct(input: CatalogProductInput) {
   const collection = await getCollection();
   const now = new Date();

@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+/* eslint-disable react-refresh/only-export-components */
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   Archive,
   ArrowUpRight,
@@ -28,7 +29,7 @@ export const Route = createFileRoute("/admin/categories")({
   component: AdminCategoriesPage,
 });
 
-type AdminCategory = {
+export type AdminCategory = {
   id: string;
   name: string;
   slug: string;
@@ -44,7 +45,7 @@ type AdminCategory = {
   updatedAt: string;
 };
 
-type AdminBrand = {
+export type AdminBrand = {
   id: string;
   name: string;
   slug: string;
@@ -58,7 +59,7 @@ type AdminBrand = {
   updatedAt: string;
 };
 
-type CategoryForm = {
+export type CategoryForm = {
   name: string;
   slug: string;
   parentId: string;
@@ -69,7 +70,7 @@ type CategoryForm = {
   featured: boolean;
 };
 
-type BrandForm = {
+export type BrandForm = {
   name: string;
   slug: string;
   logo: string;
@@ -79,7 +80,7 @@ type BrandForm = {
   active: boolean;
 };
 
-const blankCategory: CategoryForm = {
+export const blankCategory: CategoryForm = {
   name: "",
   slug: "",
   parentId: "",
@@ -90,7 +91,7 @@ const blankCategory: CategoryForm = {
   featured: false,
 };
 
-const blankBrand: BrandForm = {
+export const blankBrand: BrandForm = {
   name: "",
   slug: "",
   logo: "",
@@ -100,7 +101,7 @@ const blankBrand: BrandForm = {
   active: true,
 };
 
-function categoryToForm(category: AdminCategory): CategoryForm {
+export function categoryToForm(category: AdminCategory): CategoryForm {
   return {
     name: category.name,
     slug: category.slug,
@@ -113,7 +114,7 @@ function categoryToForm(category: AdminCategory): CategoryForm {
   };
 }
 
-function brandToForm(brand: AdminBrand): BrandForm {
+export function brandToForm(brand: AdminBrand): BrandForm {
   return {
     name: brand.name,
     slug: brand.slug,
@@ -126,6 +127,7 @@ function brandToForm(brand: AdminBrand): BrandForm {
 }
 
 function AdminCategoriesPage() {
+  const navigate = useNavigate();
   const [view, setView] = useState<"categories" | "brands">("categories");
   const [categories, setCategories] = useState<AdminCategory[]>([]);
   const [brands, setBrands] = useState<AdminBrand[]>([]);
@@ -213,19 +215,17 @@ function AdminCategoriesPage() {
   }, []);
 
   function openCategoryCreate(parentId = "") {
-    setError("");
-    setNotice("");
-    setCategoryEditingId(null);
-    setCategoryEditor({ ...blankCategory, parentId });
-    setBrandEditor(null);
+    void navigate({
+      to: "/admin/categories/new",
+      search: { parentId },
+    });
   }
 
   function openCategoryEdit(category: AdminCategory) {
-    setError("");
-    setNotice("");
-    setCategoryEditingId(category.id);
-    setCategoryEditor(categoryToForm(category));
-    setBrandEditor(null);
+    void navigate({
+      to: "/admin/categories/$categoryId",
+      params: { categoryId: category.id },
+    });
   }
 
   function closeEditors() {
@@ -358,19 +358,11 @@ function AdminCategoriesPage() {
   }
 
   function openBrandCreate() {
-    setError("");
-    setNotice("");
-    setBrandEditingId(null);
-    setBrandEditor(blankBrand);
-    setCategoryEditor(null);
+    void navigate({ to: "/admin/brands/new" });
   }
 
   function openBrandEdit(brand: AdminBrand) {
-    setError("");
-    setNotice("");
-    setBrandEditingId(brand.id);
-    setBrandEditor(brandToForm(brand));
-    setCategoryEditor(null);
+    void navigate({ to: "/admin/brands/$brandId", params: { brandId: brand.id } });
   }
 
   async function saveBrand(event: FormEvent<HTMLFormElement>) {
@@ -910,7 +902,7 @@ function CategoryRow({
   );
 }
 
-function CategoryEditor({
+export function CategoryEditor({
   form,
   editing,
   categories,
@@ -1027,7 +1019,7 @@ function CategoryEditor({
   );
 }
 
-function BrandEditor({
+export function BrandEditor({
   form,
   editing,
   working,
@@ -1228,7 +1220,7 @@ function EditorHeading({
         onClick={onCancel}
         className="border border-border px-3 py-2 text-xs text-muted-foreground transition-colors hover:border-primary hover:text-primary"
       >
-        Cancel
+        Back to categories & brands
       </button>
     </div>
   );
@@ -1252,7 +1244,7 @@ function EditorActions({
         onClick={onCancel}
         className="border border-border px-5 py-3 text-xs text-muted-foreground"
       >
-        Cancel
+        Back
       </button>
       <button
         type="submit"

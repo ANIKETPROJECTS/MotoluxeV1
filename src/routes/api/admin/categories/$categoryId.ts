@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { findAdminFromRequest } from "@/lib/server/admin-auth";
 import {
   deleteCatalogCategory,
+  listCatalogCategories,
   updateCatalogCategory,
   validateCategoryInput,
 } from "@/lib/server/admin-taxonomy";
@@ -10,6 +11,20 @@ import { jsonError, readJson } from "@/lib/server/http";
 export const Route = createFileRoute("/api/admin/categories/$categoryId")({
   server: {
     handlers: {
+      GET: async ({ request, params }) => {
+        try {
+          if (!(await findAdminFromRequest(request)))
+            return jsonError("Admin authentication required.", 401);
+          const category = (await listCatalogCategories()).find(
+            (item) => item.id === params.categoryId,
+          );
+          if (!category) return jsonError("Category not found.", 404);
+          return Response.json({ category });
+        } catch (error) {
+          console.error("Admin category lookup unavailable", error);
+          return jsonError("Categories are temporarily unavailable.", 503);
+        }
+      },
       PUT: async ({ request, params }) => {
         try {
           if (!(await findAdminFromRequest(request)))
