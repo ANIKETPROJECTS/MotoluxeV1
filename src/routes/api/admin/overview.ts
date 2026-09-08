@@ -34,8 +34,7 @@ function orderTotal(order: OverviewOrder) {
   for (const item of order.items ?? []) {
     const quantity = Number.isInteger(item.quantity) ? (item.quantity as number) : 0;
     if (quantity < 1) continue;
-    const price =
-      numericValue(item.price) ?? numericValue(getProduct(item.productId ?? "")?.price);
+    const price = numericValue(item.price) ?? numericValue(getProduct(item.productId ?? "")?.price);
     if (price === null) return null;
     total += price * quantity;
   }
