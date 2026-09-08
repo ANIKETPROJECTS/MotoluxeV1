@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { Download, FilterX, LoaderCircle, Package, RefreshCw, Search, Truck } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -87,6 +87,12 @@ function statusClass(value: string) {
 }
 
 function AdminOrdersPage() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+
+  if (pathname !== "/admin/orders" && pathname !== "/admin/orders/") {
+    return <Outlet />;
+  }
+
   const [orders, setOrders] = useState<OrderListItem[]>([]);
   const [summary, setSummary] = useState<OrderSummary>({
     total: 0,
