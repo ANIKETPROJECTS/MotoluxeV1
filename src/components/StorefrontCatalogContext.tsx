@@ -1,5 +1,16 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { getProduct, type Category, type Product } from "@/data/catalog";
+import {
+  CATALOG_VISIBILITY_EVENT,
+  CATALOG_VISIBILITY_STORAGE_KEY,
+} from "@/lib/catalog-visibility-events";
 
 type VisibilityProduct = {
   category: string;
@@ -38,14 +49,21 @@ export function StorefrontCatalogProvider({ children }: { children: ReactNode })
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const controller = new AbortController();
-    fetch("/api/catalog/visibility", { signal: controller.signal })
-      .then(async (response) => {
+    let controller: AbortController | null = null;
+    let disposed = false;
+
+    async function refreshVisibility() {
+      controller?.abort();
+      controller = new AbortController();
+      setLoading(true);
+      try {
+        const response = await fetch("/api/catalog/visibility", {
+          signal: controller.signal,
+          cache: "no-store",
+        });
         const payload = (await response.json().catch(() => ({}))) as VisibilityPayload;
         if (!response.ok) throw new Error("Catalog visibility unavailable.");
-        return payload;
-      })
-      .then((payload) => {
+        if (disposed) return;
         setCategoryVisibility(
           Object.fromEntries(
             (payload.categories ?? []).map((category) => [category.slug, category.published]),
@@ -63,11 +81,32 @@ export function StorefrontCatalogProvider({ children }: { children: ReactNode })
             ]),
           ),
         );
-      })
-      .catch(() => undefined)
-      .finally(() => setLoading(false));
+      } catch {
+        // Keep the last known visibility when a background refresh is unavailable.
+      } finally {
+        if (!disposed) setLoading(false);
+      }
+    }
 
-    return () => controller.abort();
+    const refresh = () => void refreshVisibility();
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === CATALOG_VISIBILITY_STORAGE_KEY) refresh();
+    };
+
+    void refreshVisibility();
+    const interval = window.setInterval(refresh, 15_000);
+    window.addEventListener("focus", refresh);
+    window.addEventListener("motoluxe:catalog-visibility-updated", refresh);
+    window.addEventListener("storage", onStorage);
+
+    return () => {
+      disposed = true;
+      controller?.abort();
+      window.clearInterval(interval);
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener(CATALOG_VISIBILITY_EVENT, refresh);
+      window.removeEventListener("storage", onStorage);
+    };
   }, []);
 
   const value = useMemo<StorefrontCatalogContextValue>(
@@ -82,22 +121,12 @@ export function StorefrontCatalogProvider({ children }: { children: ReactNode })
         );
       },
       isProductFeatured: (slug) => productVisibility[slug]?.featured !== false,
-      filterCategories: (items) => items.filter((item) => categoryVisibility[item.slug] !== false),
-      filterProducts: (items) =>
-        items.filter((item) => {
-          const visibility = productVisibility[item.slug];
-          const category = visibility?.category ?? item.category;
-          return visibility?.published !== false && categoryVisibility[category] !== false;
-        }),
+      filterCategories: (items) => items,
+      filterProducts: (items) => items,
       filterFeaturedProducts: (items) =>
         items.filter((item) => {
           const visibility = productVisibility[item.slug];
-          const category = visibility?.category ?? item.category;
-          return (
-            visibility?.published !== false &&
-            visibility?.featured !== false &&
-            categoryVisibility[category] !== false
-          );
+          return visibility?.featured !== false;
         }),
     }),
     [categoryVisibility, loading, productVisibility],
