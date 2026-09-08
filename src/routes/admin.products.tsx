@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowUpRight,
   Check,
@@ -9,8 +9,8 @@ import {
   RefreshCw,
   Trash2,
 } from "lucide-react";
-import { useCallback, useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-import { categories, type CategorySlug } from "@/data/catalog";
+import { useCallback, useEffect, useState } from "react";
+import { categories } from "@/data/catalog";
 import type { AdminCatalogProduct } from "@/lib/server/admin-catalog";
 
 export const Route = createFileRoute("/admin/products")({
@@ -22,66 +22,6 @@ export const Route = createFileRoute("/admin/products")({
   }),
   component: AdminProductsPage,
 });
-
-type ProductForm = {
-  slug: string;
-  name: string;
-  tagline: string;
-  category: CategorySlug;
-  price: string;
-  size: string;
-  image: string;
-  badge: string;
-  description: string;
-  benefits: string;
-  usage: string;
-  published: boolean;
-  featured: boolean;
-  stock: string;
-};
-
-const blankProduct: ProductForm = {
-  slug: "",
-  name: "",
-  tagline: "",
-  category: "chain-care",
-  price: "Request price",
-  size: "Retail pack",
-  image: "",
-  badge: "",
-  description: "",
-  benefits: "",
-  usage: "",
-  published: true,
-  featured: false,
-  stock: "0",
-};
-
-function productToForm(product: AdminCatalogProduct): ProductForm {
-  return {
-    slug: product.slug,
-    name: product.name,
-    tagline: product.tagline,
-    category: product.category,
-    price: product.price,
-    size: product.size,
-    image: product.image,
-    badge: product.badge ?? "",
-    description: product.description,
-    benefits: product.benefits.join("\n"),
-    usage: product.usage.join("\n"),
-    published: product.published,
-    featured: product.featured,
-    stock: String(product.stock),
-  };
-}
-
-function lines(value: string) {
-  return value
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
-}
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-IN", {
@@ -104,13 +44,12 @@ function stockClass(stock: number) {
 }
 
 function AdminProductsPage() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState<AdminCatalogProduct[]>([]);
   const [needsSeed, setNeedsSeed] = useState(false);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [stock, setStock] = useState("all");
-  const [editor, setEditor] = useState<ProductForm | null>(null);
-  const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [working, setWorking] = useState(false);
   const [workingId, setWorkingId] = useState<string | null>(null);
@@ -180,41 +119,6 @@ function AdminProductsPage() {
     }
   }
 
-  async function saveProduct(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!editor) return;
-    setWorking(true);
-    setError("");
-    setNotice("");
-    const input = {
-      ...editor,
-      benefits: lines(editor.benefits),
-      usage: lines(editor.usage),
-      stock: Number(editor.stock),
-    };
-    try {
-      const response = await fetch(
-        editingId ? `/api/admin/products/${editingId}` : "/api/admin/products",
-        {
-          method: editingId ? "PUT" : "POST",
-          headers: { "content-type": "application/json" },
-          credentials: "same-origin",
-          body: JSON.stringify(input),
-        },
-      );
-      const payload = (await response.json().catch(() => ({}))) as { error?: string };
-      if (!response.ok) throw new Error(payload.error ?? "We could not save the product.");
-      setNotice(editingId ? "Product updated." : "Product created.");
-      setEditor(null);
-      setEditingId(null);
-      await loadProducts();
-    } catch (saveError) {
-      setError(saveError instanceof Error ? saveError.message : "We could not save the product.");
-    } finally {
-      setWorking(false);
-    }
-  }
-
   async function toggleProduct(product: AdminCatalogProduct, field: "published" | "featured") {
     setWorkingId(product.id);
     setError("");
@@ -269,20 +173,6 @@ function AdminProductsPage() {
     }
   }
 
-  function openCreate() {
-    setError("");
-    setNotice("");
-    setEditingId(null);
-    setEditor(blankProduct);
-  }
-
-  function openEdit(product: AdminCatalogProduct) {
-    setError("");
-    setNotice("");
-    setEditingId(product.id);
-    setEditor(productToForm(product));
-  }
-
   return (
     <div className="space-y-8">
       <header className="flex flex-wrap items-end justify-between gap-5">
@@ -304,7 +194,7 @@ function AdminProductsPage() {
           </Link>
           <button
             type="button"
-            onClick={openCreate}
+            onClick={() => void navigate({ to: "/admin/products/new" })}
             className="inline-flex items-center gap-2 bg-primary px-4 py-3 font-display text-xs uppercase tracking-[0.16em] text-primary-foreground"
           >
             <Plus className="h-3.5 w-3.5" /> Add product
@@ -325,21 +215,7 @@ function AdminProductsPage() {
         </div>
       )}
 
-      {editor && (
-        <ProductEditor
-          form={editor}
-          editing={Boolean(editingId)}
-          working={working}
-          onChange={setEditor}
-          onSubmit={saveProduct}
-          onCancel={() => {
-            setEditor(null);
-            setEditingId(null);
-          }}
-        />
-      )}
-
-      {needsSeed && !loading && !editor && (
+      {needsSeed && !loading && (
         <section className="border border-accent/40 bg-accent/10 p-6 sm:p-8">
           <div className="flex flex-wrap items-start justify-between gap-5">
             <div>
@@ -519,7 +395,12 @@ function AdminProductsPage() {
                         <div className="flex justify-end gap-2">
                           <button
                             type="button"
-                            onClick={() => openEdit(product)}
+                            onClick={() =>
+                              void navigate({
+                                to: "/admin/products/$productId",
+                                params: { productId: product.id },
+                              })
+                            }
                             className="inline-flex items-center gap-1 border border-border px-2.5 py-2 text-xs text-muted-foreground transition-colors hover:border-primary hover:text-primary"
                           >
                             <Edit3 className="h-3.5 w-3.5" /> Edit
