@@ -165,9 +165,7 @@ function resolvedPricing(document: AdminOrderDocument) {
   const storedSubtotal = numericValue(document.pricing?.subtotal);
   const storedDiscount = numericValue(document.pricing?.discount);
   const subtotal =
-    storedSubtotal ??
-    itemSubtotal ??
-    (total === null ? null : total + (storedDiscount ?? 0));
+    storedSubtotal ?? itemSubtotal ?? (total === null ? null : total + (storedDiscount ?? 0));
   const discount =
     storedDiscount ??
     (subtotal !== null && total !== null && subtotal > total ? subtotal - total : null);
