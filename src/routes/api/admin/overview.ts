@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { categories, products } from "@/data/catalog";
+import { categories, getProduct, products } from "@/data/catalog";
 import { findAdminFromRequest, type Admin } from "@/lib/server/admin-auth";
 import { getCustomerCollection, getOrderCollection } from "@/lib/server/customer-auth";
 import { jsonError } from "@/lib/server/http";
@@ -7,7 +7,12 @@ import { jsonError } from "@/lib/server/http";
 type OverviewOrder = {
   _id?: { toHexString(): string };
   customerId?: string;
-  items?: Array<{ productName?: string; quantity?: number }>;
+  items?: Array<{
+    productId?: string;
+    productName?: string;
+    quantity?: number;
+    price?: string | number | null;
+  }>;
   pricing?: { total?: number | string | null };
   delivery?: { name?: string; email?: string; phone?: string };
   status?: string;
@@ -19,6 +24,23 @@ function numericValue(value: unknown) {
   if (typeof value !== "string") return null;
   const numeric = Number(value.replace(/[^0-9.-]/g, ""));
   return Number.isFinite(numeric) ? numeric : null;
+}
+
+function orderTotal(order: OverviewOrder) {
+  const storedTotal = numericValue(order.pricing?.total);
+  if (storedTotal !== null) return storedTotal;
+
+  let total = 0;
+  for (const item of order.items ?? []) {
+    const quantity = Number.isInteger(item.quantity) ? (item.quantity as number) : 0;
+    if (quantity < 1) continue;
+    const price =
+      numericValue(item.price) ?? numericValue(getProduct(item.productId ?? "")?.price);
+    if (price === null) return null;
+    total += price * quantity;
+  }
+
+  return total;
 }
 
 function orderLabel(order: OverviewOrder) {
@@ -51,7 +73,7 @@ function createTrend(orders: OverviewOrder[]) {
     const month = byMonth.get(monthKey(order.createdAt));
     if (!month) continue;
     month.orders += 1;
-    const total = numericValue(order.pricing?.total);
+    const total = orderTotal(order);
     if (total !== null) month.revenue += total;
   }
 
@@ -91,7 +113,7 @@ export const Route = createFileRoute("/api/admin/overview")({
           for (const order of orderDocuments) {
             const status = order.status ?? "pending_confirmation";
             statusCounts.set(status, (statusCounts.get(status) ?? 0) + 1);
-            const total = numericValue(order.pricing?.total);
+            const total = orderTotal(order);
             if (total !== null) {
               pricedRevenue += total;
               pricedOrderCount += 1;
@@ -126,7 +148,7 @@ export const Route = createFileRoute("/api/admin/overview")({
                 const quantity = item.quantity ?? 0;
                 return total + (Number.isInteger(quantity) ? quantity : 0);
               }, 0),
-              total: numericValue(order.pricing?.total),
+              total: orderTotal(order),
               status: order.status ?? "pending_confirmation",
               createdAt: order.createdAt?.toISOString() ?? null,
             })),
