@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -16,6 +16,7 @@ import { getCategory, getProduct, getProductsByCategory } from "@/data/catalog";
 import { ProductCard } from "@/components/ProductCard";
 import { useCart } from "@/components/CartContext";
 import { useWishlist } from "@/components/WishlistContext";
+import { useStorefrontInventory } from "@/components/StorefrontInventoryContext";
 
 export const Route = createFileRoute("/product/$product")({
   loader: ({ params }) => {
@@ -52,10 +53,24 @@ function ProductPage() {
   const { product, category, related } = Route.useLoaderData();
   const { addToCart, removeFromCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
+  const { getStock } = useStorefrontInventory();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const wishlisted = isWishlisted(product.slug);
+  const stock = getStock(product.slug);
+  const outOfStock = stock === 0;
+  const maxQuantity = stock ?? 99;
   const frames = ["center", "top", "bottom"];
+
+  useEffect(() => {
+    if (stock !== undefined && stock > 0) {
+      setQty((current) => Math.min(current, stock));
+    }
+    if (outOfStock) {
+      setQty(0);
+      setAdded(false);
+    }
+  }, [outOfStock, stock]);
 
   function decreaseQuantity() {
     if (qty === 1) {
@@ -97,10 +112,16 @@ function ProductPage() {
             <span className="slash-tag absolute left-0 top-5 bg-primary px-3.5 py-1.5 pr-6 font-display text-[11px] uppercase tracking-[0.24em] text-primary-foreground">
               {product.badge ?? "Motoluxe original"}
             </span>
-            <span className="absolute bottom-5 right-5 flex items-center gap-2 bg-background/80 px-3 py-2 font-display text-[10px] uppercase tracking-[0.16em] text-muted-foreground backdrop-blur">
-              <ShieldCheck className="h-3.5 w-3.5 text-accent" />
-              Workshop tested care
-            </span>
+            {outOfStock ? (
+              <span className="absolute bottom-5 right-5 bg-primary px-3 py-2 font-display text-[10px] uppercase tracking-[0.16em] text-primary-foreground">
+                Out of stock
+              </span>
+            ) : (
+              <span className="absolute bottom-5 right-5 flex items-center gap-2 bg-background/80 px-3 py-2 font-display text-[10px] uppercase tracking-[0.16em] text-muted-foreground backdrop-blur">
+                <ShieldCheck className="h-3.5 w-3.5 text-accent" />
+                Workshop tested care
+              </span>
+            )}
             <button
               type="button"
               aria-label={
@@ -154,8 +175,16 @@ function ProductPage() {
               <span className="block font-display text-4xl font-bold uppercase">
                 {product.price}
               </span>
-              <span className="mt-2 block text-xs text-muted-foreground">
-                Select your quantity and continue to place your order.
+              <span
+                className={`mt-2 block text-xs ${
+                  outOfStock ? "text-primary" : "text-muted-foreground"
+                }`}
+              >
+                {outOfStock
+                  ? "This product is currently unavailable."
+                  : stock !== undefined && stock <= 5
+                    ? `Only ${stock} left in stock.`
+                    : "Select your quantity and continue to place your order."}
               </span>
             </div>
             <span className="eyebrow text-muted-foreground">{product.size}</span>
@@ -167,7 +196,7 @@ function ProductPage() {
                 type="button"
                 aria-label="Decrease quantity"
                 onClick={decreaseQuantity}
-                disabled={qty === 0}
+                disabled={outOfStock || qty === 0}
                 className="grid h-full w-11 place-items-center transition-colors hover:bg-surface-raised"
               >
                 <Minus className="h-4 w-4" />
@@ -176,15 +205,16 @@ function ProductPage() {
               <button
                 type="button"
                 aria-label="Increase quantity"
-                onClick={() => setQty((value) => value + 1)}
-                className="grid h-full w-11 place-items-center transition-colors hover:bg-surface-raised"
+                onClick={() => setQty((value) => Math.min(maxQuantity, value + 1))}
+                disabled={outOfStock || qty >= maxQuantity}
+                className="grid h-full w-11 place-items-center transition-colors hover:bg-surface-raised disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <Plus className="h-4 w-4" />
               </button>
             </div>
             <button
               type="button"
-              disabled={qty === 0}
+              disabled={outOfStock || qty === 0}
               onClick={() => {
                 addToCart(product, qty);
                 setAdded(true);
@@ -195,7 +225,9 @@ function ProductPage() {
                   : "bg-primary text-primary-foreground hover:shadow-[0_16px_40px_-16px_rgba(230,30,35,0.95)]"
               }`}
             >
-              {added ? (
+              {outOfStock ? (
+                <>Out of stock</>
+              ) : added ? (
                 <>
                   <Check className="h-4 w-4" /> Added to cart
                 </>

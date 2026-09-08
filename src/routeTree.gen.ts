@@ -48,6 +48,7 @@ import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
 import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthMeRouteImport } from './routes/api/auth/me'
 import { Route as ApiAuthProfileRouteImport } from './routes/api/auth/profile'
+import { Route as ApiCatalogStockRouteImport } from './routes/api/catalog/stock'
 import { Route as ApiInventoryPurchaseRouteImport } from './routes/api/inventory/purchase'
 import { Route as ApiAdminAuthLoginRouteImport } from './routes/api/admin/auth/login'
 import { Route as ApiAdminAuthLogoutRouteImport } from './routes/api/admin/auth/logout'
@@ -265,6 +266,11 @@ const ApiAuthProfileRoute = ApiAuthProfileRouteImport.update({
   path: '/api/auth/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCatalogStockRoute = ApiCatalogStockRouteImport.update({
+  id: '/api/catalog/stock',
+  path: '/api/catalog/stock',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiInventoryPurchaseRoute = ApiInventoryPurchaseRouteImport.update({
   id: '/api/inventory/purchase',
   path: '/api/inventory/purchase',
@@ -411,6 +417,7 @@ export interface FileRoutesByFullPath {
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/profile': typeof ApiAuthProfileRoute
+  '/api/catalog/stock': typeof ApiCatalogStockRoute
   '/api/inventory/purchase': typeof ApiInventoryPurchaseRoute
   '/api/admin/auth/login': typeof ApiAdminAuthLoginRoute
   '/api/admin/auth/logout': typeof ApiAdminAuthLogoutRoute
@@ -472,6 +479,7 @@ export interface FileRoutesByTo {
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/profile': typeof ApiAuthProfileRoute
+  '/api/catalog/stock': typeof ApiCatalogStockRoute
   '/api/inventory/purchase': typeof ApiInventoryPurchaseRoute
   '/api/admin/auth/login': typeof ApiAdminAuthLoginRoute
   '/api/admin/auth/logout': typeof ApiAdminAuthLogoutRoute
@@ -534,6 +542,7 @@ export interface FileRoutesById {
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/profile': typeof ApiAuthProfileRoute
+  '/api/catalog/stock': typeof ApiCatalogStockRoute
   '/api/inventory/purchase': typeof ApiInventoryPurchaseRoute
   '/api/admin/auth/login': typeof ApiAdminAuthLoginRoute
   '/api/admin/auth/logout': typeof ApiAdminAuthLogoutRoute
@@ -597,6 +606,7 @@ export interface FileRouteTypes {
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/profile'
+    | '/api/catalog/stock'
     | '/api/inventory/purchase'
     | '/api/admin/auth/login'
     | '/api/admin/auth/logout'
@@ -658,6 +668,7 @@ export interface FileRouteTypes {
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/profile'
+    | '/api/catalog/stock'
     | '/api/inventory/purchase'
     | '/api/admin/auth/login'
     | '/api/admin/auth/logout'
@@ -719,6 +730,7 @@ export interface FileRouteTypes {
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/profile'
+    | '/api/catalog/stock'
     | '/api/inventory/purchase'
     | '/api/admin/auth/login'
     | '/api/admin/auth/logout'
@@ -765,6 +777,7 @@ export interface RootRouteChildren {
   ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
   ApiAuthMeRoute: typeof ApiAuthMeRoute
   ApiAuthProfileRoute: typeof ApiAuthProfileRoute
+  ApiCatalogStockRoute: typeof ApiCatalogStockRoute
   ApiInventoryPurchaseRoute: typeof ApiInventoryPurchaseRoute
   ApiAdminAuthLoginRoute: typeof ApiAdminAuthLoginRoute
   ApiAdminAuthLogoutRoute: typeof ApiAdminAuthLogoutRoute
@@ -1060,6 +1073,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/catalog/stock': {
+      id: '/api/catalog/stock'
+      path: '/api/catalog/stock'
+      fullPath: '/api/catalog/stock'
+      preLoaderRoute: typeof ApiCatalogStockRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/inventory/purchase': {
       id: '/api/inventory/purchase'
       path: '/api/inventory/purchase'
@@ -1310,6 +1330,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAuthLogoutRoute: ApiAuthLogoutRoute,
   ApiAuthMeRoute: ApiAuthMeRoute,
   ApiAuthProfileRoute: ApiAuthProfileRoute,
+  ApiCatalogStockRoute: ApiCatalogStockRoute,
   ApiInventoryPurchaseRoute: ApiInventoryPurchaseRoute,
   ApiAdminAuthLoginRoute: ApiAdminAuthLoginRoute,
   ApiAdminAuthLogoutRoute: ApiAdminAuthLogoutRoute,

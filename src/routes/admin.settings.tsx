@@ -132,6 +132,13 @@ function AdminSettingsPage() {
         throw new Error(payload.error ?? "We could not save settings.");
       }
       setSettings(payload.settings);
+      window.dispatchEvent(new Event("motoluxe:coupons-updated"));
+      window.localStorage.setItem("motoluxe:coupons-updated", String(Date.now()));
+      if (typeof BroadcastChannel !== "undefined") {
+        const channel = new BroadcastChannel("motoluxe-coupons-updated");
+        channel.postMessage({ updatedAt: Date.now() });
+        channel.close();
+      }
       setNotice("Settings saved.");
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "We could not save settings.");

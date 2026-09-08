@@ -1,6 +1,14 @@
 /* eslint-disable react-refresh/only-export-components */
 import { ArrowRight, Check, Tag, Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import type { Product } from "@/data/catalog";
 import {
@@ -51,25 +59,60 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const discount = appliedCoupon ? calculateCouponDiscount(appliedCoupon, subtotal) : 0;
   const total = subtotal - discount;
 
-  useEffect(() => {
-    const controller = new AbortController();
-    fetch("/api/coupons", { signal: controller.signal })
+  const refreshCoupons = useCallback((signal?: AbortSignal) => {
+    fetch("/api/coupons", signal ? { signal } : {})
       .then(async (response) => {
         const payload = (await response.json().catch(() => ({}))) as { coupons?: Coupon[] };
         if (response.ok) setCoupons(payload.coupons ?? []);
       })
       .catch(() => undefined);
-    return () => controller.abort();
   }, []);
 
   useEffect(() => {
-    if (appliedCoupon && subtotal < appliedCoupon.minimumOrderValue) {
+    const controller = new AbortController();
+    const channel =
+      typeof BroadcastChannel === "undefined"
+        ? null
+        : new BroadcastChannel("motoluxe-coupons-updated");
+    const refresh = () => refreshCoupons();
+    refreshCoupons(controller.signal);
+    const interval = window.setInterval(refresh, 30_000);
+    window.addEventListener("motoluxe:coupons-updated", refresh);
+    window.addEventListener("storage", refresh);
+    channel?.addEventListener("message", refresh);
+
+    return () => {
+      controller.abort();
+      window.clearInterval(interval);
+      window.removeEventListener("motoluxe:coupons-updated", refresh);
+      window.removeEventListener("storage", refresh);
+      channel?.removeEventListener("message", refresh);
+      channel?.close();
+    };
+  }, [refreshCoupons]);
+
+  useEffect(() => {
+    const refreshedCoupon = appliedCoupon
+      ? coupons.find((coupon) => coupon.code === appliedCoupon.code)
+      : null;
+    if (appliedCoupon && !refreshedCoupon) {
+      setAppliedCoupon(null);
+      setCouponError(`${appliedCoupon.code} is no longer active.`);
+    } else if (refreshedCoupon && subtotal < refreshedCoupon.minimumOrderValue) {
       setAppliedCoupon(null);
       setCouponError(
-        `Add ₹${appliedCoupon.minimumOrderValue - subtotal} more to use ${appliedCoupon.code}.`,
+        `Add ₹${refreshedCoupon.minimumOrderValue - subtotal} more to use ${refreshedCoupon.code}.`,
       );
+    } else if (
+      refreshedCoupon &&
+      (refreshedCoupon.discountType !== appliedCoupon?.discountType ||
+        refreshedCoupon.discountValue !== appliedCoupon.discountValue ||
+        refreshedCoupon.minimumOrderValue !== appliedCoupon.minimumOrderValue ||
+        refreshedCoupon.description !== appliedCoupon.description)
+    ) {
+      setAppliedCoupon(refreshedCoupon);
     }
-  }, [appliedCoupon, subtotal]);
+  }, [appliedCoupon, coupons, subtotal]);
 
   const value = useMemo<CartContextValue>(
     () => ({

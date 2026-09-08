@@ -2,9 +2,13 @@ import { ArrowUpRight, ShieldCheck } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { Product } from "@/data/catalog";
 import { getCategory } from "@/data/catalog";
+import { useStorefrontInventory } from "./StorefrontInventoryContext";
 
 export function ProductCard({ product }: { product: Product }) {
   const category = getCategory(product.category);
+  const { getStock } = useStorefrontInventory();
+  const stock = getStock(product.slug);
+  const outOfStock = stock === 0;
 
   return (
     <Link
@@ -30,6 +34,11 @@ export function ProductCard({ product }: { product: Product }) {
           className="aspect-4/5 w-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
         <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/45 via-transparent to-white/5 opacity-70" />
+        {outOfStock && (
+          <span className="absolute bottom-14 right-4 z-10 bg-primary px-3 py-2 font-display text-[10px] uppercase tracking-[0.16em] text-primary-foreground shadow-lg">
+            Out of stock
+          </span>
+        )}
         <div className="absolute bottom-4 left-4 flex items-center gap-2 text-xs text-white/80">
           <ShieldCheck className="h-3.5 w-3.5 text-accent" />
           Workshop tested care
@@ -51,7 +60,7 @@ export function ProductCard({ product }: { product: Product }) {
               {product.price}
             </span>
             <span className="mt-1 block text-xs text-muted-foreground">
-              Dealer &amp; bulk orders welcome
+              {outOfStock ? "Currently unavailable" : "Dealer &amp; bulk orders welcome"}
             </span>
           </div>
           <span className="eyebrow text-muted-foreground">{product.size}</span>
