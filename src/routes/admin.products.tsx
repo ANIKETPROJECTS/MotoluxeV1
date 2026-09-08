@@ -1,10 +1,4 @@
-import {
-  createFileRoute,
-  Link,
-  Outlet,
-  useNavigate,
-  useRouterState,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   ArrowUpRight,
   Check,
@@ -64,10 +58,6 @@ function AdminProductsPage() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
-  if (pathname !== "/admin/products" && pathname !== "/admin/products/") {
-    return <Outlet />;
-  }
-
   const loadProducts = useCallback(
     async (nextSearch = search, nextCategory = category, nextStock = stock) => {
       setLoading(true);
@@ -100,6 +90,10 @@ function AdminProductsPage() {
   useEffect(() => {
     void loadProducts();
   }, [loadProducts]);
+
+  if (pathname !== "/admin/products" && pathname !== "/admin/products/") {
+    return <Outlet />;
+  }
 
   async function importStarterCatalog() {
     setWorking(true);

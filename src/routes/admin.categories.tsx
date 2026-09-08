@@ -147,10 +147,6 @@ function AdminCategoriesPage() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
-  if (pathname !== "/admin/categories" && pathname !== "/admin/categories/") {
-    return <Outlet />;
-  }
-
   async function loadCategories(
     nextSearch = categorySearch,
     nextPublished = publishedFilter,
@@ -218,6 +214,10 @@ function AdminCategoriesPage() {
     // The initial load intentionally captures the default filters once.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (pathname !== "/admin/categories" && pathname !== "/admin/categories/") {
+    return <Outlet />;
+  }
 
   function openCategoryCreate(parentId = "") {
     void navigate({
