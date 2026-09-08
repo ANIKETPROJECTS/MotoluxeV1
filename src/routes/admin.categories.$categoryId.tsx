@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate, useParams } from "@tanstack/react-router";
 import { ArrowLeft, LoaderCircle } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
+import { announceCatalogVisibilityChanged } from "@/lib/catalog-visibility-events";
 import {
   CategoryEditor,
   categoryToForm,
@@ -67,6 +68,7 @@ function EditCategoryPage() {
       });
       const payload = (await response.json().catch(() => ({}))) as { error?: string };
       if (!response.ok) throw new Error(payload.error ?? "We could not update the category.");
+      announceCatalogVisibilityChanged();
       await navigate({ to: "/admin/categories" });
     } catch (saveError) {
       setError(

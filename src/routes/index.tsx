@@ -4,6 +4,7 @@ import heroImg from "@/assets/hero-banner.jpg";
 import heroVideo from "@/assets/motoluxe-chain-hero.mp4";
 import { categories, featuredProducts, products } from "@/data/catalog";
 import { ProductCard } from "@/components/ProductCard";
+import { StorefrontCategoryLink, StorefrontProductLink } from "@/components/StorefrontCatalogLink";
 import { useStorefrontCatalog } from "@/components/StorefrontCatalogContext";
 
 export const Route = createFileRoute("/")({
@@ -74,7 +75,13 @@ const careSteps = [
 ];
 
 function Home() {
-  const { filterCategories, filterFeaturedProducts, filterProducts } = useStorefrontCatalog();
+  const {
+    filterCategories,
+    filterFeaturedProducts,
+    filterProducts,
+    isCategoryPublished,
+    isProductPublished,
+  } = useStorefrontCatalog();
   const visibleCategories = filterCategories(categories);
   const visibleProducts = filterProducts(products);
   const visibleFeaturedProducts = filterFeaturedProducts(featuredProducts);
@@ -192,10 +199,10 @@ function Home() {
           {visibleProducts.length > 0 ? (
             <div className="mt-9 grid grid-cols-2 gap-7 sm:grid-cols-5 sm:gap-5">
               {visibleProducts.map((product) => (
-                <Link
+                <StorefrontProductLink
                   key={product.slug}
-                  to="/product/$product"
-                  params={{ product: product.slug }}
+                  slug={product.slug}
+                  available={isProductPublished(product.slug)}
                   className="group flex flex-col items-center text-center"
                 >
                   <span className="relative grid h-28 w-28 place-items-center overflow-hidden rounded-full border border-border bg-surface p-1 transition-all duration-500 group-hover:scale-105 group-hover:border-primary group-hover:shadow-[0_14px_35px_-18px_rgba(230,30,35,0.9)] sm:h-32 sm:w-32">
@@ -213,8 +220,10 @@ function Home() {
                   <span className="mt-4 max-w-[9rem] font-display text-sm uppercase tracking-[0.08em] text-foreground transition-colors group-hover:text-primary">
                     {product.name}
                   </span>
-                  <span className="mt-1 text-xs text-muted-foreground">View product</span>
-                </Link>
+                  <span className="mt-1 text-xs text-muted-foreground">
+                    {isProductPublished(product.slug) ? "View product" : "Not available"}
+                  </span>
+                </StorefrontProductLink>
               ))}
             </div>
           ) : (
@@ -242,10 +251,10 @@ function Home() {
 
         <div className="mt-12 grid gap-5 lg:grid-cols-3">
           {visibleCategories.map((category) => (
-            <Link
+            <StorefrontCategoryLink
               key={category.slug}
-              to="/category/$category"
-              params={{ category: category.slug }}
+              slug={category.slug}
+              available={isCategoryPublished(category.slug)}
               className="group relative min-h-[360px] overflow-hidden border border-border bg-card transition-all duration-500 hover:-translate-y-1 hover:border-primary"
             >
               <img
@@ -271,7 +280,7 @@ function Home() {
                   <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </span>
               </div>
-            </Link>
+            </StorefrontCategoryLink>
           ))}
           {visibleCategories.length === 0 && (
             <div className="border border-border bg-surface px-6 py-10 text-center lg:col-span-3">

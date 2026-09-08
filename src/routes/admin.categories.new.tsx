@@ -7,6 +7,7 @@ import {
   type AdminCategory,
   type CategoryForm,
 } from "./admin.categories";
+import { announceCatalogVisibilityChanged } from "@/lib/catalog-visibility-events";
 
 export const Route = createFileRoute("/admin/categories/new")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -52,6 +53,7 @@ function NewCategoryPage() {
       });
       const payload = (await response.json().catch(() => ({}))) as { error?: string };
       if (!response.ok) throw new Error(payload.error ?? "We could not create the category.");
+      announceCatalogVisibilityChanged();
       await navigate({ to: "/admin/categories" });
     } catch (saveError) {
       setError(

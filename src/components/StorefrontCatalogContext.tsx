@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { getProduct, type Category, type Product } from "@/data/catalog";
 import {
   CATALOG_VISIBILITY_EVENT,
@@ -96,7 +89,7 @@ export function StorefrontCatalogProvider({ children }: { children: ReactNode })
     void refreshVisibility();
     const interval = window.setInterval(refresh, 15_000);
     window.addEventListener("focus", refresh);
-    window.addEventListener("motoluxe:catalog-visibility-updated", refresh);
+    window.addEventListener(CATALOG_VISIBILITY_EVENT, refresh);
     window.addEventListener("storage", onStorage);
 
     return () => {

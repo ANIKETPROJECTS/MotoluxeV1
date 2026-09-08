@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight, Check, ChevronRight, ShieldCheck } from "lucide-react";
 import { categories, getProductsByCategory } from "@/data/catalog";
 import { ProductCard } from "@/components/ProductCard";
+import { StorefrontCategoryLink } from "@/components/StorefrontCatalogLink";
 import { useStorefrontCatalog } from "@/components/StorefrontCatalogContext";
 
 export const Route = createFileRoute("/categories")({
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/categories")({
 });
 
 function CategoriesPage() {
-  const { filterCategories, filterProducts } = useStorefrontCatalog();
+  const { filterCategories, filterProducts, isCategoryPublished } = useStorefrontCatalog();
   const visibleCategories = filterCategories(categories);
 
   return (
@@ -71,12 +72,13 @@ function CategoriesPage() {
         <div className="mt-10 grid gap-px border border-border bg-border lg:grid-cols-3">
           {visibleCategories.map((category) => {
             const categoryProducts = filterProducts(getProductsByCategory(category.slug));
+            const categoryAvailable = isCategoryPublished(category.slug);
 
             return (
               <article key={category.slug} className="group flex flex-col bg-card">
-                <Link
-                  to="/category/$category"
-                  params={{ category: category.slug }}
+                <StorefrontCategoryLink
+                  slug={category.slug}
+                  available={categoryAvailable}
                   className="relative block overflow-hidden"
                 >
                   <img
@@ -91,7 +93,7 @@ function CategoriesPage() {
                     {category.index}
                   </span>
                   <ArrowUpRight className="absolute bottom-5 right-5 h-5 w-5 text-white transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-                </Link>
+                </StorefrontCategoryLink>
                 <div className="flex flex-1 flex-col p-6">
                   <span className="eyebrow text-accent">{category.short}</span>
                   <h3 className="mt-3 text-2xl font-semibold">{category.name}</h3>
@@ -117,14 +119,14 @@ function CategoriesPage() {
                       {categoryProducts.length} related product
                       {categoryProducts.length === 1 ? "" : "s"}
                     </span>
-                    <Link
-                      to="/category/$category"
-                      params={{ category: category.slug }}
+                    <StorefrontCategoryLink
+                      slug={category.slug}
+                      available={categoryAvailable}
                       className="group/link inline-flex items-center gap-2 font-display text-[10px] uppercase tracking-[0.16em] text-primary"
                     >
                       View collection
                       <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/link:translate-x-1" />
-                    </Link>
+                    </StorefrontCategoryLink>
                   </div>
                 </div>
               </article>
@@ -161,31 +163,35 @@ function CategoriesPage() {
           </div>
 
           <div className="mt-12 space-y-16">
-            {visibleCategories.map((category) => (
-              <div key={category.slug} className="border-t border-border pt-6">
-                <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <span className="font-display text-2xl font-bold text-primary/70">
-                      {category.index}
-                    </span>
-                    <h3 className="text-2xl font-semibold">{category.name}</h3>
+            {visibleCategories.map((category) => {
+              const categoryAvailable = isCategoryPublished(category.slug);
+
+              return (
+                <div key={category.slug} className="border-t border-border pt-6">
+                  <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <span className="font-display text-2xl font-bold text-primary/70">
+                        {category.index}
+                      </span>
+                      <h3 className="text-2xl font-semibold">{category.name}</h3>
+                    </div>
+                    <StorefrontCategoryLink
+                      slug={category.slug}
+                      available={categoryAvailable}
+                      className="group inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.18em] text-accent"
+                    >
+                      Open category
+                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </StorefrontCategoryLink>
                   </div>
-                  <Link
-                    to="/category/$category"
-                    params={{ category: category.slug }}
-                    className="group inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.18em] text-accent"
-                  >
-                    Open category
-                    <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Link>
+                  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {filterProducts(getProductsByCategory(category.slug)).map((product) => (
+                      <ProductCard key={product.slug} product={product} />
+                    ))}
+                  </div>
                 </div>
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {filterProducts(getProductsByCategory(category.slug)).map((product) => (
-                    <ProductCard key={product.slug} product={product} />
-                  ))}
-                </div>
-              </div>
-            ))}
+              );
+            })}
             {visibleCategories.length === 0 && (
               <div className="border-t border-border pt-6 text-center">
                 <p className="text-sm text-muted-foreground">

@@ -13,6 +13,7 @@ import { useCallback, useEffect, useState, type ChangeEvent, type FormEvent } fr
 import { categories, type CategorySlug } from "@/data/catalog";
 import type { ProductForm } from "@/components/admin/ProductEditor";
 import type { AdminCatalogProduct } from "@/lib/server/admin-catalog";
+import { announceCatalogVisibilityChanged } from "@/lib/catalog-visibility-events";
 
 export const Route = createFileRoute("/admin/products")({
   head: () => ({
@@ -146,6 +147,7 @@ function AdminProductsPage() {
       setNotice(
         `${product.name} ${field === "published" ? "visibility" : "featured status"} updated.`,
       );
+      announceCatalogVisibilityChanged();
       await loadProducts();
     } catch (toggleError) {
       setError(

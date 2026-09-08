@@ -9,6 +9,7 @@ import {
   productToForm,
   type ProductForm,
 } from "@/components/admin/ProductEditor";
+import { announceCatalogVisibilityChanged } from "@/lib/catalog-visibility-events";
 
 export const Route = createFileRoute("/admin/products/$productId")({
   head: () => ({ meta: [{ title: "Edit Product — Motoluxe Admin" }] }),
@@ -59,6 +60,7 @@ function EditProductPage() {
       });
       const payload = (await response.json().catch(() => ({}))) as { error?: string };
       if (!response.ok) throw new Error(payload.error ?? "We could not update the product.");
+      announceCatalogVisibilityChanged();
       await navigate({ to: "/admin/products" });
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "We could not update the product.");

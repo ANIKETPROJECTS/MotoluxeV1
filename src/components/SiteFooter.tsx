@@ -3,9 +3,10 @@ import { Mail, Phone, MapPin } from "lucide-react";
 import { categories } from "@/data/catalog";
 import { Logo } from "./Logo";
 import { useStorefrontCatalog } from "./StorefrontCatalogContext";
+import { StorefrontCategoryLink } from "./StorefrontCatalogLink";
 
 export function SiteFooter() {
-  const { filterCategories } = useStorefrontCatalog();
+  const { filterCategories, isCategoryPublished } = useStorefrontCatalog();
 
   return (
     <footer className="relative mt-8 border-t border-border bg-surface">
@@ -32,13 +33,13 @@ export function SiteFooter() {
           <ul className="mt-4 space-y-2.5">
             {filterCategories(categories).map((c) => (
               <li key={c.slug}>
-                <Link
-                  to="/category/$category"
-                  params={{ category: c.slug }}
+                <StorefrontCategoryLink
+                  slug={c.slug}
+                  available={isCategoryPublished(c.slug)}
                   className="text-sm text-muted-foreground transition-colors hover:text-primary"
                 >
                   {c.name}
-                </Link>
+                </StorefrontCategoryLink>
               </li>
             ))}
             <li>

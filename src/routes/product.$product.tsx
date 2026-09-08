@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { getCategory, getProduct, getProductsByCategory } from "@/data/catalog";
 import { ProductCard } from "@/components/ProductCard";
+import { StorefrontCategoryLink } from "@/components/StorefrontCatalogLink";
 import { useCart } from "@/components/CartContext";
 import { useWishlist } from "@/components/WishlistContext";
 import { useStorefrontInventory } from "@/components/StorefrontInventoryContext";
@@ -55,12 +56,13 @@ function ProductPage() {
   const { addToCart, removeFromCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { getStock } = useStorefrontInventory();
-  const { filterProducts, isProductPublished } = useStorefrontCatalog();
+  const { filterProducts, isCategoryPublished, isProductPublished } = useStorefrontCatalog();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const wishlisted = isWishlisted(product.slug);
   const stock = getStock(product.slug);
   const productPublished = isProductPublished(product.slug);
+  const categoryPublished = isCategoryPublished(category.slug);
   const outOfStock = stock === 0;
   const unavailable = !productPublished || outOfStock;
   const maxQuantity = productPublished ? (stock ?? 99) : 0;
@@ -92,13 +94,13 @@ function ProductPage() {
           Home
         </Link>
         <ChevronRight className="h-3 w-3" />
-        <Link
-          to="/category/$category"
-          params={{ category: category.slug }}
+        <StorefrontCategoryLink
+          slug={category.slug}
+          available={categoryPublished}
           className="transition-colors hover:text-primary"
         >
           {category.name}
-        </Link>
+        </StorefrontCategoryLink>
         <ChevronRight className="h-3 w-3" />
         <span className="text-foreground">{product.name}</span>
       </nav>
@@ -319,13 +321,13 @@ function ProductPage() {
               <span className="eyebrow text-primary">Complete the routine</span>
               <h2 className="mt-3 text-3xl font-bold sm:text-4xl">More from {category.name}</h2>
             </div>
-            <Link
-              to="/category/$category"
-              params={{ category: category.slug }}
+            <StorefrontCategoryLink
+              slug={category.slug}
+              available={categoryPublished}
               className="inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.2em] text-accent"
             >
               View category <ArrowLeft className="h-4 w-4 rotate-180" />
-            </Link>
+            </StorefrontCategoryLink>
           </div>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {visibleRelated.map((item) => (

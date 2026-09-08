@@ -7,6 +7,7 @@ import {
   productFormInput,
   type ProductForm,
 } from "@/components/admin/ProductEditor";
+import { announceCatalogVisibilityChanged } from "@/lib/catalog-visibility-events";
 
 export const Route = createFileRoute("/admin/products/new")({
   head: () => ({ meta: [{ title: "Add Product — Motoluxe Admin" }] }),
@@ -32,6 +33,7 @@ function NewProductPage() {
       });
       const payload = (await response.json().catch(() => ({}))) as { error?: string };
       if (!response.ok) throw new Error(payload.error ?? "We could not create the product.");
+      announceCatalogVisibilityChanged();
       await navigate({ to: "/admin/products" });
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "We could not create the product.");

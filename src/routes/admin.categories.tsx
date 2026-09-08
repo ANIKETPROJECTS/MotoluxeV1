@@ -13,6 +13,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { announceCatalogVisibilityChanged } from "@/lib/catalog-visibility-events";
 
 export const Route = createFileRoute("/admin/categories")({
   head: () => ({
@@ -174,6 +175,7 @@ function AdminCategoriesPage() {
       const payload = (await response.json().catch(() => ({}))) as { error?: string };
       if (!response.ok) throw new Error(payload.error ?? "We could not save the category.");
       setNotice(categoryEditingId ? "Category updated." : "Category created.");
+      announceCatalogVisibilityChanged();
       closeEditors();
       await loadCategories();
     } catch (saveError) {
@@ -234,6 +236,7 @@ function AdminCategoriesPage() {
       const payload = (await response.json().catch(() => ({}))) as { error?: string };
       if (!response.ok) throw new Error(payload.error ?? "We could not update the category.");
       setNotice(category.published ? "Category moved to draft." : "Category published.");
+      announceCatalogVisibilityChanged();
       await loadCategories();
     } catch (toggleError) {
       setError(
