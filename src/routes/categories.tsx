@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight, Check, ChevronRight, ShieldCheck } from "lucide-react";
 import { categories, getProductsByCategory } from "@/data/catalog";
 import { ProductCard } from "@/components/ProductCard";
+import { useStorefrontCatalog } from "@/components/StorefrontCatalogContext";
 
 export const Route = createFileRoute("/categories")({
   head: () => ({
@@ -22,6 +23,9 @@ export const Route = createFileRoute("/categories")({
 });
 
 function CategoriesPage() {
+  const { filterCategories, filterProducts } = useStorefrontCatalog();
+  const visibleCategories = filterCategories(categories);
+
   return (
     <>
       <section className="relative isolate overflow-hidden border-b border-border">
@@ -65,8 +69,8 @@ function CategoriesPage() {
         </div>
 
         <div className="mt-10 grid gap-px border border-border bg-border lg:grid-cols-3">
-          {categories.map((category) => {
-            const categoryProducts = getProductsByCategory(category.slug);
+          {visibleCategories.map((category) => {
+            const categoryProducts = filterProducts(getProductsByCategory(category.slug));
 
             return (
               <article key={category.slug} className="group flex flex-col bg-card">
@@ -126,6 +130,16 @@ function CategoriesPage() {
               </article>
             );
           })}
+          {visibleCategories.length === 0 && (
+            <div className="bg-card px-6 py-12 text-center lg:col-span-3">
+              <p className="font-display text-sm uppercase tracking-[0.18em] text-primary">
+                No categories are currently published
+              </p>
+              <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
+                Motoluxe is preparing the next public care collections. Please check back soon.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -147,7 +161,7 @@ function CategoriesPage() {
           </div>
 
           <div className="mt-12 space-y-16">
-            {categories.map((category) => (
+            {visibleCategories.map((category) => (
               <div key={category.slug} className="border-t border-border pt-6">
                 <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
@@ -166,12 +180,19 @@ function CategoriesPage() {
                   </Link>
                 </div>
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {getProductsByCategory(category.slug).map((product) => (
+                  {filterProducts(getProductsByCategory(category.slug)).map((product) => (
                     <ProductCard key={product.slug} product={product} />
                   ))}
                 </div>
               </div>
             ))}
+            {visibleCategories.length === 0 && (
+              <div className="border-t border-border pt-6 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Product collections will appear here when they are published.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>

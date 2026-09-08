@@ -47,6 +47,7 @@ import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthMeRouteImport } from './routes/api/auth/me'
 import { Route as ApiAuthProfileRouteImport } from './routes/api/auth/profile'
 import { Route as ApiCatalogStockRouteImport } from './routes/api/catalog/stock'
+import { Route as ApiCatalogVisibilityRouteImport } from './routes/api/catalog/visibility'
 import { Route as ApiInventoryPurchaseRouteImport } from './routes/api/inventory/purchase'
 import { Route as ApiAdminAuthLoginRouteImport } from './routes/api/admin/auth/login'
 import { Route as ApiAdminAuthLogoutRouteImport } from './routes/api/admin/auth/logout'
@@ -257,6 +258,11 @@ const ApiCatalogStockRoute = ApiCatalogStockRouteImport.update({
   path: '/api/catalog/stock',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCatalogVisibilityRoute = ApiCatalogVisibilityRouteImport.update({
+  id: '/api/catalog/visibility',
+  path: '/api/catalog/visibility',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiInventoryPurchaseRoute = ApiInventoryPurchaseRouteImport.update({
   id: '/api/inventory/purchase',
   path: '/api/inventory/purchase',
@@ -392,6 +398,7 @@ export interface FileRoutesByFullPath {
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/profile': typeof ApiAuthProfileRoute
   '/api/catalog/stock': typeof ApiCatalogStockRoute
+  '/api/catalog/visibility': typeof ApiCatalogVisibilityRoute
   '/api/inventory/purchase': typeof ApiInventoryPurchaseRoute
   '/api/admin/auth/login': typeof ApiAdminAuthLoginRoute
   '/api/admin/auth/logout': typeof ApiAdminAuthLogoutRoute
@@ -450,6 +457,7 @@ export interface FileRoutesByTo {
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/profile': typeof ApiAuthProfileRoute
   '/api/catalog/stock': typeof ApiCatalogStockRoute
+  '/api/catalog/visibility': typeof ApiCatalogVisibilityRoute
   '/api/inventory/purchase': typeof ApiInventoryPurchaseRoute
   '/api/admin/auth/login': typeof ApiAdminAuthLoginRoute
   '/api/admin/auth/logout': typeof ApiAdminAuthLogoutRoute
@@ -509,6 +517,7 @@ export interface FileRoutesById {
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/profile': typeof ApiAuthProfileRoute
   '/api/catalog/stock': typeof ApiCatalogStockRoute
+  '/api/catalog/visibility': typeof ApiCatalogVisibilityRoute
   '/api/inventory/purchase': typeof ApiInventoryPurchaseRoute
   '/api/admin/auth/login': typeof ApiAdminAuthLoginRoute
   '/api/admin/auth/logout': typeof ApiAdminAuthLogoutRoute
@@ -569,6 +578,7 @@ export interface FileRouteTypes {
     | '/api/auth/me'
     | '/api/auth/profile'
     | '/api/catalog/stock'
+    | '/api/catalog/visibility'
     | '/api/inventory/purchase'
     | '/api/admin/auth/login'
     | '/api/admin/auth/logout'
@@ -627,6 +637,7 @@ export interface FileRouteTypes {
     | '/api/auth/me'
     | '/api/auth/profile'
     | '/api/catalog/stock'
+    | '/api/catalog/visibility'
     | '/api/inventory/purchase'
     | '/api/admin/auth/login'
     | '/api/admin/auth/logout'
@@ -685,6 +696,7 @@ export interface FileRouteTypes {
     | '/api/auth/me'
     | '/api/auth/profile'
     | '/api/catalog/stock'
+    | '/api/catalog/visibility'
     | '/api/inventory/purchase'
     | '/api/admin/auth/login'
     | '/api/admin/auth/logout'
@@ -730,6 +742,7 @@ export interface RootRouteChildren {
   ApiAuthMeRoute: typeof ApiAuthMeRoute
   ApiAuthProfileRoute: typeof ApiAuthProfileRoute
   ApiCatalogStockRoute: typeof ApiCatalogStockRoute
+  ApiCatalogVisibilityRoute: typeof ApiCatalogVisibilityRoute
   ApiInventoryPurchaseRoute: typeof ApiInventoryPurchaseRoute
   ApiAdminAuthLoginRoute: typeof ApiAdminAuthLoginRoute
   ApiAdminAuthLogoutRoute: typeof ApiAdminAuthLogoutRoute
@@ -1016,6 +1029,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCatalogStockRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/catalog/visibility': {
+      id: '/api/catalog/visibility'
+      path: '/api/catalog/visibility'
+      fullPath: '/api/catalog/visibility'
+      preLoaderRoute: typeof ApiCatalogVisibilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/inventory/purchase': {
       id: '/api/inventory/purchase'
       path: '/api/inventory/purchase'
@@ -1249,6 +1269,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAuthMeRoute: ApiAuthMeRoute,
   ApiAuthProfileRoute: ApiAuthProfileRoute,
   ApiCatalogStockRoute: ApiCatalogStockRoute,
+  ApiCatalogVisibilityRoute: ApiCatalogVisibilityRoute,
   ApiInventoryPurchaseRoute: ApiInventoryPurchaseRoute,
   ApiAdminAuthLoginRoute: ApiAdminAuthLoginRoute,
   ApiAdminAuthLogoutRoute: ApiAdminAuthLogoutRoute,

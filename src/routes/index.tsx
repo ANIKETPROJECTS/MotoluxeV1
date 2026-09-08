@@ -4,6 +4,7 @@ import heroImg from "@/assets/hero-banner.jpg";
 import heroVideo from "@/assets/motoluxe-chain-hero.mp4";
 import { categories, featuredProducts, products } from "@/data/catalog";
 import { ProductCard } from "@/components/ProductCard";
+import { useStorefrontCatalog } from "@/components/StorefrontCatalogContext";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -73,6 +74,11 @@ const careSteps = [
 ];
 
 function Home() {
+  const { filterCategories, filterFeaturedProducts, filterProducts } = useStorefrontCatalog();
+  const visibleCategories = filterCategories(categories);
+  const visibleProducts = filterProducts(products);
+  const visibleFeaturedProducts = filterFeaturedProducts(featuredProducts);
+
   return (
     <>
       <section className="relative isolate min-h-[calc(100svh-6.5rem)] overflow-hidden border-b border-border">
@@ -141,7 +147,7 @@ function Home() {
               <span className="text-primary">Zero guesswork.</span>
             </p>
             <ul className="mt-6 space-y-3 text-sm text-white/70">
-              {products.slice(0, 3).map((product) => (
+              {visibleProducts.slice(0, 3).map((product) => (
                 <li key={product.slug} className="flex items-center gap-3">
                   <CircleCheck className="h-4 w-4 text-accent" />
                   {product.name}
@@ -183,33 +189,45 @@ function Home() {
               Tap any product to view details and add it to your cart.
             </span>
           </div>
-          <div className="mt-9 grid grid-cols-2 gap-7 sm:grid-cols-5 sm:gap-5">
-            {products.map((product) => (
-              <Link
-                key={product.slug}
-                to="/product/$product"
-                params={{ product: product.slug }}
-                className="group flex flex-col items-center text-center"
-              >
-                <span className="relative grid h-28 w-28 place-items-center overflow-hidden rounded-full border border-border bg-surface p-1 transition-all duration-500 group-hover:scale-105 group-hover:border-primary group-hover:shadow-[0_14px_35px_-18px_rgba(230,30,35,0.9)] sm:h-32 sm:w-32">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    loading="lazy"
-                    width={256}
-                    height={256}
-                    className="h-full w-full rounded-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <span className="absolute inset-0 rounded-full bg-linear-to-t from-black/50 via-transparent to-transparent" />
-                  <ArrowUpRight className="absolute bottom-3 right-3 h-4 w-4 text-white opacity-0 transition-opacity group-hover:opacity-100" />
-                </span>
-                <span className="mt-4 max-w-[9rem] font-display text-sm uppercase tracking-[0.08em] text-foreground transition-colors group-hover:text-primary">
-                  {product.name}
-                </span>
-                <span className="mt-1 text-xs text-muted-foreground">View product</span>
-              </Link>
-            ))}
-          </div>
+          {visibleProducts.length > 0 ? (
+            <div className="mt-9 grid grid-cols-2 gap-7 sm:grid-cols-5 sm:gap-5">
+              {visibleProducts.map((product) => (
+                <Link
+                  key={product.slug}
+                  to="/product/$product"
+                  params={{ product: product.slug }}
+                  className="group flex flex-col items-center text-center"
+                >
+                  <span className="relative grid h-28 w-28 place-items-center overflow-hidden rounded-full border border-border bg-surface p-1 transition-all duration-500 group-hover:scale-105 group-hover:border-primary group-hover:shadow-[0_14px_35px_-18px_rgba(230,30,35,0.9)] sm:h-32 sm:w-32">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      loading="lazy"
+                      width={256}
+                      height={256}
+                      className="h-full w-full rounded-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <span className="absolute inset-0 rounded-full bg-linear-to-t from-black/50 via-transparent to-transparent" />
+                    <ArrowUpRight className="absolute bottom-3 right-3 h-4 w-4 text-white opacity-0 transition-opacity group-hover:opacity-100" />
+                  </span>
+                  <span className="mt-4 max-w-[9rem] font-display text-sm uppercase tracking-[0.08em] text-foreground transition-colors group-hover:text-primary">
+                    {product.name}
+                  </span>
+                  <span className="mt-1 text-xs text-muted-foreground">View product</span>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-9 border border-border bg-surface px-6 py-10 text-center">
+              <p className="font-display text-sm uppercase tracking-[0.18em] text-primary">
+                Products are being prepared
+              </p>
+              <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
+                There are no products published for online shopping right now. Check back soon or
+                contact Motoluxe for help choosing the right care routine.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -223,7 +241,7 @@ function Home() {
         </div>
 
         <div className="mt-12 grid gap-5 lg:grid-cols-3">
-          {categories.map((category) => (
+          {visibleCategories.map((category) => (
             <Link
               key={category.slug}
               to="/category/$category"
@@ -255,6 +273,16 @@ function Home() {
               </div>
             </Link>
           ))}
+          {visibleCategories.length === 0 && (
+            <div className="border border-border bg-surface px-6 py-10 text-center lg:col-span-3">
+              <p className="font-display text-sm uppercase tracking-[0.18em] text-primary">
+                Categories are being prepared
+              </p>
+              <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
+                Our public care collections are temporarily unavailable. Please check back soon.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -270,11 +298,23 @@ function Home() {
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.slug} product={product} />
-            ))}
-          </div>
+          {visibleFeaturedProducts.length > 0 ? (
+            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+              {visibleFeaturedProducts.map((product) => (
+                <ProductCard key={product.slug} product={product} />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-12 border border-border bg-background px-6 py-10 text-center">
+              <p className="font-display text-sm uppercase tracking-[0.18em] text-primary">
+                Featured products are being prepared
+              </p>
+              <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
+                There are no featured products published right now. Browse the available care
+                collections or check back soon.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 

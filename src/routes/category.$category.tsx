@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowUpRight, ChevronRight, ShieldCheck } from "lucide-react";
 import { getCategory, getProductsByCategory } from "@/data/catalog";
 import { ProductCard } from "@/components/ProductCard";
+import { useStorefrontCatalog } from "@/components/StorefrontCatalogContext";
 
 export const Route = createFileRoute("/category/$category")({
   loader: ({ params }) => {
@@ -12,10 +13,7 @@ export const Route = createFileRoute("/category/$category")({
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [
-          { title: "Category not found — Motoluxe" },
-          { name: "robots", content: "noindex" },
-        ],
+        meta: [{ title: "Category not found — Motoluxe" }, { name: "robots", content: "noindex" }],
       };
     }
     const title = `${loaderData.category.name} — Motoluxe`;
@@ -33,6 +31,29 @@ export const Route = createFileRoute("/category/$category")({
 
 function CategoryPage() {
   const { category, products } = Route.useLoaderData();
+  const { filterProducts, isCategoryPublished } = useStorefrontCatalog();
+  const categoryPublished = isCategoryPublished(category.slug);
+  const visibleProducts = filterProducts(products);
+
+  if (!categoryPublished) {
+    return (
+      <section className="mx-auto max-w-3xl px-5 py-24 text-center lg:py-32">
+        <span className="eyebrow text-primary">Category unavailable</span>
+        <h1 className="mt-4 text-4xl font-bold sm:text-6xl">{category.name}</h1>
+        <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground">
+          This category is not currently available. Please return to the published Motoluxe
+          categories to continue shopping.
+        </p>
+        <Link
+          to="/categories"
+          className="mt-8 inline-flex items-center gap-2 bg-primary px-6 py-4 font-display text-xs uppercase tracking-[0.2em] text-primary-foreground"
+        >
+          Browse available categories
+          <ChevronRight className="h-4 w-4" />
+        </Link>
+      </section>
+    );
+  }
 
   return (
     <>
@@ -59,9 +80,7 @@ function CategoryPage() {
               {category.index}
             </span>
             <span className="eyebrow mt-2 block text-accent">{category.short}</span>
-            <h1 className="mt-4 text-5xl font-bold sm:text-7xl">
-              {category.name}
-            </h1>
+            <h1 className="mt-4 text-5xl font-bold sm:text-7xl">{category.name}</h1>
             <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground">
               {category.blurb}
             </p>
@@ -72,8 +91,8 @@ function CategoryPage() {
               <span className="eyebrow">The Motoluxe standard</span>
             </div>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              Practical care products, clear application and support when you
-              need a better answer than guesswork.
+              Practical care products, clear application and support when you need a better answer
+              than guesswork.
             </p>
           </div>
         </div>
@@ -85,8 +104,8 @@ function CategoryPage() {
           <div>
             <span className="eyebrow text-primary">Select your essential</span>
             <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-              {products.length} product{products.length === 1 ? "" : "s"} for
-              this routine
+              {visibleProducts.length} product{visibleProducts.length === 1 ? "" : "s"} for this
+              routine
             </h2>
           </div>
           <Link
@@ -97,11 +116,22 @@ function CategoryPage() {
             <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => (
-            <ProductCard key={product.slug} product={product} />
-          ))}
-        </div>
+        {visibleProducts.length > 0 ? (
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {visibleProducts.map((product) => (
+              <ProductCard key={product.slug} product={product} />
+            ))}
+          </div>
+        ) : (
+          <div className="mt-10 border border-border bg-surface px-6 py-10 text-center">
+            <p className="font-display text-sm uppercase tracking-[0.18em] text-primary">
+              Products are being prepared
+            </p>
+            <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
+              No products in this published category are currently available to order.
+            </p>
+          </div>
+        )}
       </section>
     </>
   );

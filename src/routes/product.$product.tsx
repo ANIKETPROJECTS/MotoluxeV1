@@ -17,6 +17,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { useCart } from "@/components/CartContext";
 import { useWishlist } from "@/components/WishlistContext";
 import { useStorefrontInventory } from "@/components/StorefrontInventoryContext";
+import { useStorefrontCatalog } from "@/components/StorefrontCatalogContext";
 
 export const Route = createFileRoute("/product/$product")({
   loader: ({ params }) => {
@@ -54,23 +55,27 @@ function ProductPage() {
   const { addToCart, removeFromCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { getStock } = useStorefrontInventory();
+  const { filterProducts, isProductPublished } = useStorefrontCatalog();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const wishlisted = isWishlisted(product.slug);
   const stock = getStock(product.slug);
+  const productPublished = isProductPublished(product.slug);
   const outOfStock = stock === 0;
-  const maxQuantity = stock ?? 99;
+  const unavailable = !productPublished || outOfStock;
+  const maxQuantity = productPublished ? (stock ?? 99) : 0;
+  const visibleRelated = filterProducts(related);
   const frames = ["center", "top", "bottom"];
 
   useEffect(() => {
     if (stock !== undefined && stock > 0) {
       setQty((current) => Math.min(current, stock));
     }
-    if (outOfStock) {
+    if (unavailable) {
       setQty(0);
       setAdded(false);
     }
-  }, [outOfStock, stock]);
+  }, [outOfStock, stock, unavailable]);
 
   function decreaseQuantity() {
     if (qty === 1) {
@@ -98,6 +103,12 @@ function ProductPage() {
         <span className="text-foreground">{product.name}</span>
       </nav>
 
+      {!productPublished && (
+        <div className="mt-8 border border-primary/40 bg-primary/10 px-5 py-4 text-sm text-primary">
+          This product is not currently published and cannot be ordered.
+        </div>
+      )}
+
       <div className="mt-10 grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
         <div>
           <div className="relative overflow-hidden border border-border bg-card">
@@ -112,7 +123,11 @@ function ProductPage() {
             <span className="slash-tag absolute left-0 top-5 bg-primary px-3.5 py-1.5 pr-6 font-display text-[11px] uppercase tracking-[0.24em] text-primary-foreground">
               {product.badge ?? "Motoluxe original"}
             </span>
-            {outOfStock ? (
+            {!productPublished ? (
+              <span className="absolute bottom-5 right-5 bg-primary px-3 py-2 font-display text-[10px] uppercase tracking-[0.16em] text-primary-foreground">
+                Not available
+              </span>
+            ) : outOfStock ? (
               <span className="absolute bottom-5 right-5 bg-primary px-3 py-2 font-display text-[10px] uppercase tracking-[0.16em] text-primary-foreground">
                 Out of stock
               </span>
@@ -130,12 +145,13 @@ function ProductPage() {
                   : `Add ${product.name} to wishlist`
               }
               aria-pressed={wishlisted}
+              disabled={!productPublished}
               onClick={() => toggleWishlist(product)}
               className={`absolute right-5 top-5 grid h-11 w-11 place-items-center border backdrop-blur transition-colors ${
                 wishlisted
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-white/20 bg-background/80 text-foreground hover:border-primary hover:text-primary"
-              }`}
+              } disabled:cursor-not-allowed disabled:opacity-40`}
             >
               <Heart className={`h-5 w-5 ${wishlisted ? "fill-current" : ""}`} />
             </button>
@@ -180,11 +196,13 @@ function ProductPage() {
                   outOfStock ? "text-primary" : "text-muted-foreground"
                 }`}
               >
-                {outOfStock
+                {!productPublished
                   ? "This product is currently unavailable."
-                  : stock !== undefined && stock <= 5
-                    ? `Only ${stock} left in stock.`
-                    : "Select your quantity and continue to place your order."}
+                  : outOfStock
+                    ? "This product is currently unavailable."
+                    : stock !== undefined && stock <= 5
+                      ? `Only ${stock} left in stock.`
+                      : "Select your quantity and continue to place your order."}
               </span>
             </div>
             <span className="eyebrow text-muted-foreground">{product.size}</span>
@@ -196,7 +214,7 @@ function ProductPage() {
                 type="button"
                 aria-label="Decrease quantity"
                 onClick={decreaseQuantity}
-                disabled={outOfStock || qty === 0}
+                disabled={unavailable || qty === 0}
                 className="grid h-full w-11 place-items-center transition-colors hover:bg-surface-raised"
               >
                 <Minus className="h-4 w-4" />
@@ -206,7 +224,7 @@ function ProductPage() {
                 type="button"
                 aria-label="Increase quantity"
                 onClick={() => setQty((value) => Math.min(maxQuantity, value + 1))}
-                disabled={outOfStock || qty >= maxQuantity}
+                disabled={unavailable || qty >= maxQuantity}
                 className="grid h-full w-11 place-items-center transition-colors hover:bg-surface-raised disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <Plus className="h-4 w-4" />
@@ -214,7 +232,7 @@ function ProductPage() {
             </div>
             <button
               type="button"
-              disabled={outOfStock || qty === 0}
+              disabled={unavailable || qty === 0}
               onClick={() => {
                 addToCart(product, qty);
                 setAdded(true);
@@ -225,7 +243,9 @@ function ProductPage() {
                   : "bg-primary text-primary-foreground hover:shadow-[0_16px_40px_-16px_rgba(230,30,35,0.95)]"
               }`}
             >
-              {outOfStock ? (
+              {!productPublished ? (
+                <>Not available</>
+              ) : outOfStock ? (
                 <>Out of stock</>
               ) : added ? (
                 <>
@@ -292,7 +312,7 @@ function ProductPage() {
         </div>
       </div>
 
-      {related.length > 0 && (
+      {visibleRelated.length > 0 && (
         <section className="mt-24 border-t border-border pt-14">
           <div className="flex flex-wrap items-end justify-between gap-5">
             <div>
@@ -308,7 +328,7 @@ function ProductPage() {
             </Link>
           </div>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((item) => (
+            {visibleRelated.map((item) => (
               <ProductCard key={item.slug} product={item} />
             ))}
           </div>

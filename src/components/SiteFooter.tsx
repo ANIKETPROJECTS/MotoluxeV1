@@ -2,8 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { categories } from "@/data/catalog";
 import { Logo } from "./Logo";
+import { useStorefrontCatalog } from "./StorefrontCatalogContext";
 
 export function SiteFooter() {
+  const { filterCategories } = useStorefrontCatalog();
+
   return (
     <footer className="relative mt-8 border-t border-border bg-surface">
       <div className="h-1.5 hazard-stripes opacity-70" />
@@ -11,8 +14,8 @@ export function SiteFooter() {
         <div className="md:col-span-2">
           <Logo size="lg" />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
-            Premium autocare and bike care formulations, engineered to German
-            specification and blended for Indian roads, dust and monsoon.
+            Premium autocare and bike care formulations, engineered to German specification and
+            blended for Indian roads, dust and monsoon.
           </p>
           <div className="mt-6 flex gap-2">
             <span className="slash-tag bg-primary px-3 py-1 pr-5 font-display text-[11px] uppercase tracking-[0.2em] text-primary-foreground">
@@ -27,7 +30,7 @@ export function SiteFooter() {
         <div>
           <h4 className="text-sm font-semibold tracking-[0.2em]">Range</h4>
           <ul className="mt-4 space-y-2.5">
-            {categories.map((c) => (
+            {filterCategories(categories).map((c) => (
               <li key={c.slug}>
                 <Link
                   to="/category/$category"
