@@ -6,6 +6,7 @@ import {
   Edit3,
   FilterX,
   LoaderCircle,
+  Minus,
   PackageSearch,
   Plus,
   RefreshCw,
@@ -113,11 +114,13 @@ function AdminInventoryPage() {
     quantityChange: "",
     reason: "",
   });
+  const [quickAmounts, setQuickAmounts] = useState<Record<string, string>>({});
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingReason, setEditingReason] = useState("");
   const [loading, setLoading] = useState(true);
   const [working, setWorking] = useState(false);
   const [workingId, setWorkingId] = useState<string | null>(null);
+  const [quickWorkingId, setQuickWorkingId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
@@ -190,6 +193,49 @@ function AdminInventoryPage() {
       );
     } finally {
       setWorking(false);
+    }
+  }
+
+  async function quickAdjust(product: InventoryProduct, direction: "add" | "remove") {
+    const amount = Number(quickAmounts[product.id] ?? "1");
+    if (!Number.isInteger(amount) || amount < 1 || amount > 1_000_000) {
+      setError("Enter a whole-number quantity between 1 and 1,000,000.");
+      setNotice("");
+      return;
+    }
+    if (direction === "remove" && amount > product.stock) {
+      setError(`You can remove at most ${product.stock} unit${product.stock === 1 ? "" : "s"}.`);
+      setNotice("");
+      return;
+    }
+
+    setQuickWorkingId(product.id);
+    setError("");
+    setNotice("");
+    try {
+      const response = await fetch("/api/admin/inventory", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({
+          productId: product.id,
+          quantityChange: direction === "add" ? amount : -amount,
+          reason:
+            direction === "add"
+              ? "Quick stock increase from inventory list"
+              : "Quick stock decrease from inventory list",
+        }),
+      });
+      const payload = (await response.json().catch(() => ({}))) as { error?: string };
+      if (!response.ok) throw new Error(payload.error ?? "We could not update stock.");
+      setNotice(`${product.name} stock updated.`);
+      await loadInventory();
+    } catch (quickAdjustError) {
+      setError(
+        quickAdjustError instanceof Error ? quickAdjustError.message : "We could not update stock.",
+      );
+    } finally {
+      setQuickWorkingId(null);
     }
   }
 
@@ -297,6 +343,97 @@ function AdminInventoryPage() {
         <MetricCard label="Low stock" value={summary.lowStock} accent />
         <MetricCard label="Out of stock" value={summary.outOfStock} danger />
       </div>
+
+      <section className="border border-border bg-card p-5 sm:p-7">
+        <div className="flex flex-wrap items-start justify-between gap-5">
+          <div>
+            <span className="eyebrow text-accent">Current product stock</span>
+            <h2 className="mt-2 text-2xl font-semibold">Add or remove stock quickly.</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              Choose a quantity, then add received stock or remove stock from the product list. Each
+              quick change is still recorded in inventory history.
+            </p>
+          </div>
+          <PackageSearch className="h-5 w-5 text-accent" />
+        </div>
+        {products.length === 0 ? (
+          <p className="mt-6 border border-border bg-background px-4 py-5 text-sm text-muted-foreground">
+            No products are available yet. Add products from Products &amp; catalog first.
+          </p>
+        ) : (
+          <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {products.map((product) => {
+              const busy = quickWorkingId === product.id;
+              const amount = quickAmounts[product.id] ?? "1";
+              return (
+                <article key={product.id} className="border border-border bg-background p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h3 className="truncate font-semibold">{product.name}</h3>
+                      <p className="mt-1 truncate font-display text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                        {product.slug}
+                      </p>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <span
+                        className={`font-display text-2xl font-bold ${stockClass(product.stock)}`}
+                      >
+                        {product.stock}
+                      </span>
+                      <span
+                        className={`mt-1 block text-[10px] uppercase tracking-[0.12em] ${stockClass(product.stock)}`}
+                      >
+                        {stockLabel(product.stock)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="mt-5 flex flex-wrap items-end gap-2">
+                    <label className="flex-1">
+                      <span className="eyebrow mb-2 block text-muted-foreground">Quantity</span>
+                      <input
+                        aria-label={`Quantity for ${product.name}`}
+                        min="1"
+                        max="1000000"
+                        step="1"
+                        type="number"
+                        value={amount}
+                        onChange={(event) =>
+                          setQuickAmounts((current) => ({
+                            ...current,
+                            [product.id]: event.target.value,
+                          }))
+                        }
+                        className={inputClass}
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => void quickAdjust(product, "add")}
+                      className="inline-flex items-center gap-1 border border-accent px-3 py-3 text-xs text-accent hover:bg-accent/10 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {busy ? (
+                        <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Plus className="h-3.5 w-3.5" />
+                      )}
+                      Add
+                    </button>
+                    <button
+                      type="button"
+                      disabled={busy || product.stock === 0}
+                      onClick={() => void quickAdjust(product, "remove")}
+                      className="inline-flex items-center gap-1 border border-primary px-3 py-3 text-xs text-primary hover:bg-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <Minus className="h-3.5 w-3.5" /> Remove
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
 
       <section className="border border-primary/40 bg-card p-5 sm:p-7">
         <div className="flex flex-wrap items-start justify-between gap-5">

@@ -5,7 +5,7 @@ import { AdminAuthProvider, useAdminAuth } from "@/components/AdminAuthContext";
 const navigation = [
   { label: "Overview", to: "/admin" },
   { label: "Products & catalog", to: "/admin/products" },
-  { label: "Categories & brands", to: "/admin/categories" },
+  { label: "Categories", to: "/admin/categories" },
   { label: "Inventory", to: "/admin/inventory" },
   { label: "Orders", to: "/admin/orders" },
   { label: "Customers", to: "/admin/customers" },

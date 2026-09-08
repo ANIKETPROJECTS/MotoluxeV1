@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
-type CloudinaryUploadKind = "product" | "category" | "brand" | "review";
+type CloudinaryUploadKind = "product" | "category" | "review";
 
 function requiredSecret(name: string) {
   const value = process.env[name];
@@ -27,7 +27,6 @@ function uploadFolder(kind: CloudinaryUploadKind, section: string) {
     return `Motoluxe/Products/${safePathSegment(section, "uncategorized")}`;
   }
   if (kind === "category") return "Motoluxe/Categories";
-  if (kind === "brand") return "Motoluxe/Brands";
   return "Motoluxe/Reviews";
 }
 

@@ -111,21 +111,20 @@ Primary navigation:
 1. Overview
 2. Products & catalog
 3. Categories
-4. Brands
-5. Vehicle fitment
-6. Inventory
-7. Warehouses
-8. Suppliers
-9. Purchase orders
-10. Orders
-11. Returns & refunds
-12. Customers
-13. Reviews & questions
-14. Coupons & promotions
-15. Homepage/content
-16. Reports & exports
-17. Settings
-18. Admin users and roles
+4. Vehicle fitment
+5. Inventory
+6. Warehouses
+7. Suppliers
+8. Purchase orders
+9. Orders
+10. Returns & refunds
+11. Customers
+12. Reviews & questions
+13. Coupons & promotions
+14. Homepage/content
+15. Reports & exports
+16. Settings
+17. Admin users and roles
 
 On mobile, collapse the sidebar into an accessible menu.
 
@@ -142,7 +141,7 @@ Build working persistence and validation in this order:
 4. Overview dashboard with current order/customer/catalog counts.
 5. Products list using the existing Motoluxe catalog.
 6. Product create/edit/archive flow backed by the shared catalog model.
-7. Categories and brands management.
+7. Categories management.
 8. Orders list and order detail using the existing `orders` collection.
 9. Customers list and customer detail using the existing `customers` collection.
 
@@ -201,7 +200,6 @@ Planned admin API resources:
 /api/admin/products
 /api/admin/products/:id
 /api/admin/categories
-/api/admin/brands
 /api/admin/vehicles
 /api/admin/fitments
 /api/admin/inventory
@@ -317,7 +315,7 @@ Before declaring the admin complete:
 2. Run available tests.
 3. Verify admin login and logout.
 4. Verify session expiry and permission restrictions.
-5. Verify product, category, brand, order, and customer workflows.
+5. Verify product, category, order, and customer workflows.
 6. Verify empty, loading, error, validation, not-found, and denied states.
 7. Verify desktop and mobile layouts.
 8. Check browser and server logs for new errors.

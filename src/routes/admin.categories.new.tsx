@@ -68,7 +68,7 @@ function NewCategoryPage() {
         to="/admin/categories"
         className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground hover:text-primary"
       >
-        <ArrowLeft className="h-3.5 w-3.5" /> Back to Categories &amp; Brands
+        <ArrowLeft className="h-3.5 w-3.5" /> Back to Categories
       </Link>
       {error && (
         <div

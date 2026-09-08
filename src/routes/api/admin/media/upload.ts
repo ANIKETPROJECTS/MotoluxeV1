@@ -3,7 +3,7 @@ import { uploadToCloudinary } from "@/lib/server/cloudinary";
 import { findAdminFromRequest } from "@/lib/server/admin-auth";
 import { jsonError } from "@/lib/server/http";
 
-const uploadKinds = ["product", "category", "brand", "review"] as const;
+const uploadKinds = ["product", "category", "review"] as const;
 
 export const Route = createFileRoute("/api/admin/media/upload")({
   server: {

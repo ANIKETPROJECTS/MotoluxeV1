@@ -30,8 +30,6 @@ import { Route as ApiCouponsRouteImport } from './routes/api/coupons'
 import { Route as ApiReviewsRouteImport } from './routes/api/reviews'
 import { Route as CategoryCategoryRouteImport } from './routes/category.$category'
 import { Route as ProductProductRouteImport } from './routes/product.$product'
-import { Route as AdminBrandsBrandIdRouteImport } from './routes/admin.brands.$brandId'
-import { Route as AdminBrandsNewRouteImport } from './routes/admin.brands.new'
 import { Route as AdminCategoriesCategoryIdRouteImport } from './routes/admin.categories.$categoryId'
 import { Route as AdminCategoriesNewRouteImport } from './routes/admin.categories.new'
 import { Route as AdminProductsProductIdRouteImport } from './routes/admin.products.$productId'
@@ -55,8 +53,6 @@ import { Route as ApiAdminAuthLogoutRouteImport } from './routes/api/admin/auth/
 import { Route as ApiAdminAuthMeRouteImport } from './routes/api/admin/auth/me'
 import { Route as ApiAdminAuthSetupRouteImport } from './routes/api/admin/auth/setup'
 import { Route as ApiAdminAuthStatusRouteImport } from './routes/api/admin/auth/status'
-import { Route as ApiAdminBrandsIndexRouteImport } from './routes/api/admin/brands/index'
-import { Route as ApiAdminBrandsBrandIdRouteImport } from './routes/api/admin/brands/$brandId'
 import { Route as ApiAdminCategoriesIndexRouteImport } from './routes/api/admin/categories/index'
 import { Route as ApiAdminCategoriesCategoryIdRouteImport } from './routes/api/admin/categories/$categoryId'
 import { Route as ApiAdminCategoriesReorderRouteImport } from './routes/api/admin/categories/reorder'
@@ -175,16 +171,6 @@ const ProductProductRoute = ProductProductRouteImport.update({
   path: '/product/$product',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminBrandsBrandIdRoute = AdminBrandsBrandIdRouteImport.update({
-  id: '/brands/$brandId',
-  path: '/brands/$brandId',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminBrandsNewRoute = AdminBrandsNewRouteImport.update({
-  id: '/brands/new',
-  path: '/brands/new',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminCategoriesCategoryIdRoute =
   AdminCategoriesCategoryIdRouteImport.update({
     id: '/$categoryId',
@@ -301,16 +287,6 @@ const ApiAdminAuthStatusRoute = ApiAdminAuthStatusRouteImport.update({
   path: '/api/admin/auth/status',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAdminBrandsIndexRoute = ApiAdminBrandsIndexRouteImport.update({
-  id: '/api/admin/brands/',
-  path: '/api/admin/brands/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAdminBrandsBrandIdRoute = ApiAdminBrandsBrandIdRouteImport.update({
-  id: '/api/admin/brands/$brandId',
-  path: '/api/admin/brands/$brandId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiAdminCategoriesIndexRoute = ApiAdminCategoriesIndexRouteImport.update({
   id: '/api/admin/categories/',
   path: '/api/admin/categories/',
@@ -399,8 +375,6 @@ export interface FileRoutesByFullPath {
   '/api/reviews': typeof ApiReviewsRoute
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$product': typeof ProductProductRoute
-  '/admin/brands/$brandId': typeof AdminBrandsBrandIdRoute
-  '/admin/brands/new': typeof AdminBrandsNewRoute
   '/admin/categories/$categoryId': typeof AdminCategoriesCategoryIdRoute
   '/admin/categories/new': typeof AdminCategoriesNewRoute
   '/admin/products/$productId': typeof AdminProductsProductIdRoute
@@ -424,7 +398,6 @@ export interface FileRoutesByFullPath {
   '/api/admin/auth/me': typeof ApiAdminAuthMeRoute
   '/api/admin/auth/setup': typeof ApiAdminAuthSetupRoute
   '/api/admin/auth/status': typeof ApiAdminAuthStatusRoute
-  '/api/admin/brands/$brandId': typeof ApiAdminBrandsBrandIdRoute
   '/api/admin/categories/$categoryId': typeof ApiAdminCategoriesCategoryIdRoute
   '/api/admin/categories/reorder': typeof ApiAdminCategoriesReorderRoute
   '/api/admin/customers/$customerId': typeof ApiAdminCustomersCustomerIdRoute
@@ -433,7 +406,6 @@ export interface FileRoutesByFullPath {
   '/api/admin/orders/$orderId': typeof ApiAdminOrdersOrderIdRoute
   '/api/admin/products/$productId': typeof ApiAdminProductsProductIdRoute
   '/api/admin/reviews/$reviewId': typeof ApiAdminReviewsReviewIdRoute
-  '/api/admin/brands/': typeof ApiAdminBrandsIndexRoute
   '/api/admin/categories/': typeof ApiAdminCategoriesIndexRoute
   '/api/admin/customers/': typeof ApiAdminCustomersIndexRoute
   '/api/admin/products/': typeof ApiAdminProductsIndexRoute
@@ -461,8 +433,6 @@ export interface FileRoutesByTo {
   '/api/reviews': typeof ApiReviewsRoute
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$product': typeof ProductProductRoute
-  '/admin/brands/$brandId': typeof AdminBrandsBrandIdRoute
-  '/admin/brands/new': typeof AdminBrandsNewRoute
   '/admin/categories/$categoryId': typeof AdminCategoriesCategoryIdRoute
   '/admin/categories/new': typeof AdminCategoriesNewRoute
   '/admin/products/$productId': typeof AdminProductsProductIdRoute
@@ -486,7 +456,6 @@ export interface FileRoutesByTo {
   '/api/admin/auth/me': typeof ApiAdminAuthMeRoute
   '/api/admin/auth/setup': typeof ApiAdminAuthSetupRoute
   '/api/admin/auth/status': typeof ApiAdminAuthStatusRoute
-  '/api/admin/brands/$brandId': typeof ApiAdminBrandsBrandIdRoute
   '/api/admin/categories/$categoryId': typeof ApiAdminCategoriesCategoryIdRoute
   '/api/admin/categories/reorder': typeof ApiAdminCategoriesReorderRoute
   '/api/admin/customers/$customerId': typeof ApiAdminCustomersCustomerIdRoute
@@ -495,7 +464,6 @@ export interface FileRoutesByTo {
   '/api/admin/orders/$orderId': typeof ApiAdminOrdersOrderIdRoute
   '/api/admin/products/$productId': typeof ApiAdminProductsProductIdRoute
   '/api/admin/reviews/$reviewId': typeof ApiAdminReviewsReviewIdRoute
-  '/api/admin/brands': typeof ApiAdminBrandsIndexRoute
   '/api/admin/categories': typeof ApiAdminCategoriesIndexRoute
   '/api/admin/customers': typeof ApiAdminCustomersIndexRoute
   '/api/admin/products': typeof ApiAdminProductsIndexRoute
@@ -524,8 +492,6 @@ export interface FileRoutesById {
   '/api/reviews': typeof ApiReviewsRoute
   '/category/$category': typeof CategoryCategoryRoute
   '/product/$product': typeof ProductProductRoute
-  '/admin/brands/$brandId': typeof AdminBrandsBrandIdRoute
-  '/admin/brands/new': typeof AdminBrandsNewRoute
   '/admin/categories/$categoryId': typeof AdminCategoriesCategoryIdRoute
   '/admin/categories/new': typeof AdminCategoriesNewRoute
   '/admin/products/$productId': typeof AdminProductsProductIdRoute
@@ -549,7 +515,6 @@ export interface FileRoutesById {
   '/api/admin/auth/me': typeof ApiAdminAuthMeRoute
   '/api/admin/auth/setup': typeof ApiAdminAuthSetupRoute
   '/api/admin/auth/status': typeof ApiAdminAuthStatusRoute
-  '/api/admin/brands/$brandId': typeof ApiAdminBrandsBrandIdRoute
   '/api/admin/categories/$categoryId': typeof ApiAdminCategoriesCategoryIdRoute
   '/api/admin/categories/reorder': typeof ApiAdminCategoriesReorderRoute
   '/api/admin/customers/$customerId': typeof ApiAdminCustomersCustomerIdRoute
@@ -558,7 +523,6 @@ export interface FileRoutesById {
   '/api/admin/orders/$orderId': typeof ApiAdminOrdersOrderIdRoute
   '/api/admin/products/$productId': typeof ApiAdminProductsProductIdRoute
   '/api/admin/reviews/$reviewId': typeof ApiAdminReviewsReviewIdRoute
-  '/api/admin/brands/': typeof ApiAdminBrandsIndexRoute
   '/api/admin/categories/': typeof ApiAdminCategoriesIndexRoute
   '/api/admin/customers/': typeof ApiAdminCustomersIndexRoute
   '/api/admin/products/': typeof ApiAdminProductsIndexRoute
@@ -588,8 +552,6 @@ export interface FileRouteTypes {
     | '/api/reviews'
     | '/category/$category'
     | '/product/$product'
-    | '/admin/brands/$brandId'
-    | '/admin/brands/new'
     | '/admin/categories/$categoryId'
     | '/admin/categories/new'
     | '/admin/products/$productId'
@@ -613,7 +575,6 @@ export interface FileRouteTypes {
     | '/api/admin/auth/me'
     | '/api/admin/auth/setup'
     | '/api/admin/auth/status'
-    | '/api/admin/brands/$brandId'
     | '/api/admin/categories/$categoryId'
     | '/api/admin/categories/reorder'
     | '/api/admin/customers/$customerId'
@@ -622,7 +583,6 @@ export interface FileRouteTypes {
     | '/api/admin/orders/$orderId'
     | '/api/admin/products/$productId'
     | '/api/admin/reviews/$reviewId'
-    | '/api/admin/brands/'
     | '/api/admin/categories/'
     | '/api/admin/customers/'
     | '/api/admin/products/'
@@ -650,8 +610,6 @@ export interface FileRouteTypes {
     | '/api/reviews'
     | '/category/$category'
     | '/product/$product'
-    | '/admin/brands/$brandId'
-    | '/admin/brands/new'
     | '/admin/categories/$categoryId'
     | '/admin/categories/new'
     | '/admin/products/$productId'
@@ -675,7 +633,6 @@ export interface FileRouteTypes {
     | '/api/admin/auth/me'
     | '/api/admin/auth/setup'
     | '/api/admin/auth/status'
-    | '/api/admin/brands/$brandId'
     | '/api/admin/categories/$categoryId'
     | '/api/admin/categories/reorder'
     | '/api/admin/customers/$customerId'
@@ -684,7 +641,6 @@ export interface FileRouteTypes {
     | '/api/admin/orders/$orderId'
     | '/api/admin/products/$productId'
     | '/api/admin/reviews/$reviewId'
-    | '/api/admin/brands'
     | '/api/admin/categories'
     | '/api/admin/customers'
     | '/api/admin/products'
@@ -712,8 +668,6 @@ export interface FileRouteTypes {
     | '/api/reviews'
     | '/category/$category'
     | '/product/$product'
-    | '/admin/brands/$brandId'
-    | '/admin/brands/new'
     | '/admin/categories/$categoryId'
     | '/admin/categories/new'
     | '/admin/products/$productId'
@@ -737,7 +691,6 @@ export interface FileRouteTypes {
     | '/api/admin/auth/me'
     | '/api/admin/auth/setup'
     | '/api/admin/auth/status'
-    | '/api/admin/brands/$brandId'
     | '/api/admin/categories/$categoryId'
     | '/api/admin/categories/reorder'
     | '/api/admin/customers/$customerId'
@@ -746,7 +699,6 @@ export interface FileRouteTypes {
     | '/api/admin/orders/$orderId'
     | '/api/admin/products/$productId'
     | '/api/admin/reviews/$reviewId'
-    | '/api/admin/brands/'
     | '/api/admin/categories/'
     | '/api/admin/customers/'
     | '/api/admin/products/'
@@ -784,14 +736,12 @@ export interface RootRouteChildren {
   ApiAdminAuthMeRoute: typeof ApiAdminAuthMeRoute
   ApiAdminAuthSetupRoute: typeof ApiAdminAuthSetupRoute
   ApiAdminAuthStatusRoute: typeof ApiAdminAuthStatusRoute
-  ApiAdminBrandsBrandIdRoute: typeof ApiAdminBrandsBrandIdRoute
   ApiAdminCategoriesCategoryIdRoute: typeof ApiAdminCategoriesCategoryIdRoute
   ApiAdminCategoriesReorderRoute: typeof ApiAdminCategoriesReorderRoute
   ApiAdminCustomersCustomerIdRoute: typeof ApiAdminCustomersCustomerIdRoute
   ApiAdminMediaUploadRoute: typeof ApiAdminMediaUploadRoute
   ApiAdminProductsProductIdRoute: typeof ApiAdminProductsProductIdRoute
   ApiAdminReviewsReviewIdRoute: typeof ApiAdminReviewsReviewIdRoute
-  ApiAdminBrandsIndexRoute: typeof ApiAdminBrandsIndexRoute
   ApiAdminCategoriesIndexRoute: typeof ApiAdminCategoriesIndexRoute
   ApiAdminCustomersIndexRoute: typeof ApiAdminCustomersIndexRoute
   ApiAdminProductsIndexRoute: typeof ApiAdminProductsIndexRoute
@@ -946,20 +896,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/product/$product'
       preLoaderRoute: typeof ProductProductRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/admin/brands/$brandId': {
-      id: '/admin/brands/$brandId'
-      path: '/brands/$brandId'
-      fullPath: '/admin/brands/$brandId'
-      preLoaderRoute: typeof AdminBrandsBrandIdRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/brands/new': {
-      id: '/admin/brands/new'
-      path: '/brands/new'
-      fullPath: '/admin/brands/new'
-      preLoaderRoute: typeof AdminBrandsNewRouteImport
-      parentRoute: typeof AdminRoute
     }
     '/admin/categories/$categoryId': {
       id: '/admin/categories/$categoryId'
@@ -1122,20 +1058,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminAuthStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/brands/': {
-      id: '/api/admin/brands/'
-      path: '/api/admin/brands'
-      fullPath: '/api/admin/brands/'
-      preLoaderRoute: typeof ApiAdminBrandsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/admin/brands/$brandId': {
-      id: '/api/admin/brands/$brandId'
-      path: '/api/admin/brands/$brandId'
-      fullPath: '/api/admin/brands/$brandId'
-      preLoaderRoute: typeof ApiAdminBrandsBrandIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/admin/categories/': {
       id: '/api/admin/categories/'
       path: '/api/admin/categories'
@@ -1262,8 +1184,6 @@ interface AdminRouteChildren {
   AdminReviewsRoute: typeof AdminReviewsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSetupRoute: typeof AdminSetupRoute
-  AdminBrandsBrandIdRoute: typeof AdminBrandsBrandIdRoute
-  AdminBrandsNewRoute: typeof AdminBrandsNewRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -1277,8 +1197,6 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminReviewsRoute: AdminReviewsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSetupRoute: AdminSetupRoute,
-  AdminBrandsBrandIdRoute: AdminBrandsBrandIdRoute,
-  AdminBrandsNewRoute: AdminBrandsNewRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
@@ -1337,14 +1255,12 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminAuthMeRoute: ApiAdminAuthMeRoute,
   ApiAdminAuthSetupRoute: ApiAdminAuthSetupRoute,
   ApiAdminAuthStatusRoute: ApiAdminAuthStatusRoute,
-  ApiAdminBrandsBrandIdRoute: ApiAdminBrandsBrandIdRoute,
   ApiAdminCategoriesCategoryIdRoute: ApiAdminCategoriesCategoryIdRoute,
   ApiAdminCategoriesReorderRoute: ApiAdminCategoriesReorderRoute,
   ApiAdminCustomersCustomerIdRoute: ApiAdminCustomersCustomerIdRoute,
   ApiAdminMediaUploadRoute: ApiAdminMediaUploadRoute,
   ApiAdminProductsProductIdRoute: ApiAdminProductsProductIdRoute,
   ApiAdminReviewsReviewIdRoute: ApiAdminReviewsReviewIdRoute,
-  ApiAdminBrandsIndexRoute: ApiAdminBrandsIndexRoute,
   ApiAdminCategoriesIndexRoute: ApiAdminCategoriesIndexRoute,
   ApiAdminCustomersIndexRoute: ApiAdminCustomersIndexRoute,
   ApiAdminProductsIndexRoute: ApiAdminProductsIndexRoute,
