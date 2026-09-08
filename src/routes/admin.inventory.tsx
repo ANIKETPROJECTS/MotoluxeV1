@@ -361,76 +361,85 @@ function AdminInventoryPage() {
             No products are available yet. Add products from Products &amp; catalog first.
           </p>
         ) : (
-          <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            {products.map((product) => {
-              const busy = quickWorkingId === product.id;
-              const amount = quickAmounts[product.id] ?? "1";
-              return (
-                <article key={product.id} className="border border-border bg-background p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <h3 className="truncate font-semibold">{product.name}</h3>
-                      <p className="mt-1 truncate font-display text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
-                        {product.slug}
-                      </p>
-                    </div>
-                    <div className="shrink-0 text-right">
-                      <span
-                        className={`font-display text-2xl font-bold ${stockClass(product.stock)}`}
-                      >
-                        {product.stock}
-                      </span>
-                      <span
-                        className={`mt-1 block text-[10px] uppercase tracking-[0.12em] ${stockClass(product.stock)}`}
-                      >
-                        {stockLabel(product.stock)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="mt-5 flex flex-wrap items-end gap-2">
-                    <label className="flex-1">
-                      <span className="eyebrow mb-2 block text-muted-foreground">Quantity</span>
-                      <input
-                        aria-label={`Quantity for ${product.name}`}
-                        min="1"
-                        max="1000000"
-                        step="1"
-                        type="number"
-                        value={amount}
-                        onChange={(event) =>
-                          setQuickAmounts((current) => ({
-                            ...current,
-                            [product.id]: event.target.value,
-                          }))
-                        }
-                        className={inputClass}
-                      />
-                    </label>
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={() => void quickAdjust(product, "add")}
-                      className="inline-flex items-center gap-1 border border-accent px-3 py-3 text-xs text-accent hover:bg-accent/10 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      {busy ? (
-                        <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
-                      ) : (
-                        <Plus className="h-3.5 w-3.5" />
-                      )}
-                      Add
-                    </button>
-                    <button
-                      type="button"
-                      disabled={busy || product.stock === 0}
-                      onClick={() => void quickAdjust(product, "remove")}
-                      className="inline-flex items-center gap-1 border border-primary px-3 py-3 text-xs text-primary hover:bg-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      <Minus className="h-3.5 w-3.5" /> Remove
-                    </button>
-                  </div>
-                </article>
-              );
-            })}
+          <div className="mt-6 overflow-x-auto border-y border-border">
+            <table className="w-full min-w-[720px] text-left text-sm">
+              <thead className="border-b border-border font-display text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                <tr>
+                  <th className="px-4 py-3 font-normal sm:px-5">Product</th>
+                  <th className="px-4 py-3 font-normal">Current stock</th>
+                  <th className="px-4 py-3 font-normal">Quantity</th>
+                  <th className="px-4 py-3 text-right font-normal">Quick update</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {products.map((product) => {
+                  const busy = quickWorkingId === product.id;
+                  const amount = quickAmounts[product.id] ?? "1";
+                  return (
+                    <tr key={product.id} className="bg-background/30">
+                      <td className="px-4 py-4 sm:px-5">
+                        <span className="block font-medium">{product.name}</span>
+                        <span className="mt-1 block font-display text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                          {product.slug}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <span
+                          className={`font-display text-lg font-bold ${stockClass(product.stock)}`}
+                        >
+                          {product.stock}
+                        </span>
+                        <span className={`ml-2 text-xs ${stockClass(product.stock)}`}>
+                          {stockLabel(product.stock)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <input
+                          aria-label={`Quantity for ${product.name}`}
+                          min="1"
+                          max="1000000"
+                          step="1"
+                          type="number"
+                          value={amount}
+                          onChange={(event) =>
+                            setQuickAmounts((current) => ({
+                              ...current,
+                              [product.id]: event.target.value,
+                            }))
+                          }
+                          className="w-24 border border-input bg-background px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
+                        />
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            type="button"
+                            disabled={busy}
+                            onClick={() => void quickAdjust(product, "add")}
+                            className="inline-flex items-center gap-1 border border-accent px-3 py-2 text-xs text-accent hover:bg-accent/10 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            {busy ? (
+                              <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              <Plus className="h-3.5 w-3.5" />
+                            )}
+                            Add
+                          </button>
+                          <button
+                            type="button"
+                            disabled={busy || product.stock === 0}
+                            onClick={() => void quickAdjust(product, "remove")}
+                            className="inline-flex items-center gap-1 border border-primary px-3 py-2 text-xs text-primary hover:bg-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            <Minus className="h-3.5 w-3.5" /> Remove
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         )}
       </section>
