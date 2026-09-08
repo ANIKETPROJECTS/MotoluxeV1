@@ -620,13 +620,12 @@ function CustomerDetail({
             label="Location"
             value={[customer.city, customer.state].filter(Boolean).join(", ") || "Not recorded"}
           />
+          <DetailRow
+            label="Orders"
+            value={`${customer.orderCount} order${customer.orderCount === 1 ? "" : "s"}`}
+          />
           <DetailRow label="Joined" value={formatDate(customer.joinedAt)} />
           <DetailRow label="Last activity" value={formatDate(customer.lastActivityAt)} />
-          <DetailRow label="Verification" value={customer.verification} />
-          <DetailRow
-            label="Wishlist"
-            value={`${customer.wishlistCount} item${customer.wishlistCount === 1 ? "" : "s"}`}
-          />
         </div>
         <div className="mt-6 flex flex-wrap gap-2">
           <button
