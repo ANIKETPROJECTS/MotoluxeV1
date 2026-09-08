@@ -81,6 +81,7 @@ export type AdminOrderListItem = {
   email: string;
   itemCount: number;
   total: number | null;
+  shipping: number | null;
   status: string;
   paymentStatus: string;
   paymentMethod: string;
@@ -202,6 +203,7 @@ function listItem(document: AdminOrderDocument & { _id: ObjectId }): AdminOrderL
       0,
     ),
     total: orderTotal(document),
+    shipping: numericValue(document.pricing?.shipping),
     status: statusValue(document.status),
     paymentStatus: paymentStatusValue(document.paymentStatus ?? document.pricing?.status),
     paymentMethod: document.paymentMethod ?? "Not recorded",
@@ -339,6 +341,7 @@ export async function getAdminOrder(id: string) {
 export function validateOrderUpdate(input: Record<string, unknown>) {
   const status = input["status"];
   const paymentStatus = input["paymentStatus"];
+  const shipping = input["shipping"];
   const note = typeof input["note"] === "string" ? input["note"].trim() : "";
   const paymentMethod =
     typeof input["paymentMethod"] === "string" ? input["paymentMethod"].trim().slice(0, 100) : "";
@@ -355,11 +358,27 @@ export function validateOrderUpdate(input: Record<string, unknown>) {
   if (paymentStatus !== undefined && !paymentStatuses.includes(paymentStatus as PaymentStatus)) {
     return { error: "Choose a valid payment status." as const };
   }
+  let normalizedShipping: number | null | undefined;
+  if (shipping !== undefined) {
+    if (shipping === null || (typeof shipping === "string" && shipping.trim() === "")) {
+      normalizedShipping = null;
+    } else if (
+      (typeof shipping !== "number" && typeof shipping !== "string") ||
+      !Number.isFinite(Number(shipping)) ||
+      Number(shipping) < 0 ||
+      Number(shipping) > 1_000_000
+    ) {
+      return { error: "Enter a shipping amount between ₹0 and ₹1,000,000." as const };
+    } else {
+      normalizedShipping = Math.round(Number(shipping) * 100) / 100;
+    }
+  }
   if (note.length > 500) return { error: "Status notes must be 500 characters or less." as const };
   return {
     input: {
       ...(status !== undefined ? { status: status as OrderStatus } : {}),
       ...(paymentStatus !== undefined ? { paymentStatus: paymentStatus as PaymentStatus } : {}),
+      ...(shipping !== undefined ? { shipping: normalizedShipping } : {}),
       note,
       paymentMethod,
       transactionReference,
@@ -373,6 +392,7 @@ export async function updateAdminOrder(
   input: {
     status?: OrderStatus;
     paymentStatus?: PaymentStatus;
+    shipping?: number | null | undefined;
     note: string;
     paymentMethod: string;
     transactionReference: string;
@@ -395,6 +415,24 @@ export async function updateAdminOrder(
   if (input.paymentMethod) setValues["paymentMethod"] = input.paymentMethod;
   if (input.transactionReference) setValues["transactionReference"] = input.transactionReference;
   if (input.paymentNotes) setValues["paymentNotes"] = input.paymentNotes;
+  if (input.shipping !== undefined) {
+    const pricing = resolvedPricing(current);
+    if (pricing.subtotal === null) {
+      return {
+        ok: false as const,
+        status: 422,
+        error: "Add a product price before setting shipping.",
+      };
+    }
+    const shipping = input.shipping ?? 0;
+    const discount = pricing.discount ?? 0;
+    const total = Math.max(pricing.subtotal - discount + shipping, 0);
+    setValues["pricing.subtotal"] = pricing.subtotal;
+    setValues["pricing.shipping"] = shipping;
+    setValues["pricing.discount"] = pricing.discount;
+    setValues["pricing.total"] = Math.round(total * 100) / 100;
+    setValues["pricing.status"] = "priced";
+  }
   const statusChanged = input.status && input.status !== currentStatus;
   const updated = await collection.findOneAndUpdate(
     { _id: orderId, deletedAt: { $exists: false } },

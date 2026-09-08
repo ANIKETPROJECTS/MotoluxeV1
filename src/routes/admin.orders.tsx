@@ -41,6 +41,7 @@ type OrderListItem = {
   email: string;
   itemCount: number;
   total: number | null;
+  shipping: number | null;
   status: string;
   paymentStatus: string;
   paymentMethod: string;
@@ -103,6 +104,7 @@ function AdminOrdersPage() {
   const [to, setTo] = useState("");
   const [sort, setSort] = useState("newest");
   const [rowWorkingId, setRowWorkingId] = useState<string | null>(null);
+  const [shippingDrafts, setShippingDrafts] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -135,6 +137,14 @@ function AdminOrdersPage() {
       };
       if (!response.ok) throw new Error(payload.error ?? "We could not load orders.");
       setOrders(payload.orders ?? []);
+      setShippingDrafts(
+        Object.fromEntries(
+          (payload.orders ?? []).map((order) => [
+            order.id,
+            order.shipping === null ? "" : String(order.shipping),
+          ]),
+        ),
+      );
       setSummary(payload.summary ?? { total: 0, pending: 0, approved: 0, shipped: 0, paid: 0 });
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "We could not load orders.");
@@ -151,7 +161,7 @@ function AdminOrdersPage() {
 
   async function updateOrderRow(
     order: OrderListItem,
-    field: "status" | "paymentStatus",
+    field: "status" | "paymentStatus" | "shipping",
     value: string,
   ) {
     if (
@@ -170,19 +180,29 @@ function AdminOrdersPage() {
         method: "PATCH",
         headers: { "content-type": "application/json" },
         credentials: "same-origin",
-        body: JSON.stringify({
-          [field]: value,
-          note:
-            field === "status"
-              ? `Order status changed to ${labelFor(statusOptions, value)} from the order list.`
-              : "",
-        }),
+        body: JSON.stringify(
+          field === "shipping"
+            ? { shipping: value.trim() === "" ? null : Number(value), note: "" }
+            : {
+                [field]: value,
+                note:
+                  field === "status"
+                    ? `Order status changed to ${labelFor(statusOptions, value)} from the order list.`
+                    : "",
+              },
+        ),
       });
       const payload = (await response.json().catch(() => ({}))) as {
         error?: string;
       };
       if (!response.ok) throw new Error(payload.error ?? "We could not update this order.");
-      setNotice(field === "status" ? "Order status updated." : "Payment status updated.");
+      setNotice(
+        field === "status"
+          ? "Order status updated."
+          : field === "paymentStatus"
+            ? "Payment status updated."
+            : "Shipping updated and invoice total recalculated.",
+      );
       await loadOrders();
     } catch (updateError) {
       setError(
@@ -407,13 +427,14 @@ function AdminOrdersPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[900px] text-left text-sm">
+              <table className="w-full min-w-[1080px] text-left text-sm">
                 <thead className="border-b border-border font-display text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
                   <tr>
                     <th className="px-5 py-4 font-normal sm:px-7">Order</th>
                     <th className="px-4 py-4 font-normal">Customer</th>
                     <th className="px-4 py-4 font-normal">Items</th>
                     <th className="px-4 py-4 font-normal">Total</th>
+                    <th className="px-4 py-4 font-normal">Shipping</th>
                     <th className="px-4 py-4 font-normal">Status</th>
                     <th className="px-4 py-4 font-normal">Payment</th>
                   </tr>
@@ -437,6 +458,49 @@ function AdminOrdersPage() {
                       </td>
                       <td className="px-4 py-5 text-muted-foreground">{order.itemCount}</td>
                       <td className="px-4 py-5 font-medium">{formatMoney(order.total)}</td>
+                      <td className="px-4 py-5">
+                        <form
+                          className="flex items-center gap-2"
+                          onSubmit={(event) => {
+                            event.preventDefault();
+                            void updateOrderRow(order, "shipping", shippingDrafts[order.id] ?? "");
+                          }}
+                        >
+                          <label className="sr-only" htmlFor={`shipping-${order.id}`}>
+                            Shipping amount for {order.number}
+                          </label>
+                          <div className="flex items-center border border-input bg-background">
+                            <span className="px-2 text-xs text-muted-foreground">₹</span>
+                            <input
+                              id={`shipping-${order.id}`}
+                              type="number"
+                              min="0"
+                              max="1000000"
+                              step="0.01"
+                              inputMode="decimal"
+                              value={shippingDrafts[order.id] ?? ""}
+                              placeholder="0"
+                              onChange={(event) =>
+                                setShippingDrafts((current) => ({
+                                  ...current,
+                                  [order.id]: event.target.value,
+                                }))
+                              }
+                              className="w-20 bg-transparent px-2 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                            />
+                          </div>
+                          <button
+                            type="submit"
+                            disabled={rowWorkingId === order.id}
+                            className="border border-accent px-2 py-2 font-display text-[10px] uppercase tracking-[0.12em] text-accent transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            Save
+                          </button>
+                        </form>
+                        <span className="mt-1 block text-[11px] text-muted-foreground">
+                          {order.shipping === null ? "Not set" : formatMoney(order.shipping)}
+                        </span>
+                      </td>
                       <td className="px-4 py-5">
                         <select
                           value={order.status}

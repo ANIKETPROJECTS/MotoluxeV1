@@ -186,7 +186,7 @@ function AdminInvoicePage() {
         </header>
 
         <div className="grid gap-8 border-b border-border py-8 sm:grid-cols-2">
-          <div>
+          <div className="min-w-0">
             <span className="eyebrow text-muted-foreground">Billed to</span>
             <p className="mt-3 font-medium text-foreground">{order.delivery.name || "Customer"}</p>
             {order.delivery.phone && (
@@ -196,12 +196,12 @@ function AdminInvoicePage() {
               <p className="mt-1 break-all text-sm text-muted-foreground">{order.delivery.email}</p>
             )}
           </div>
-          <div className="sm:text-right">
+          <div className="min-w-0 border-t border-border pt-8 sm:border-l sm:border-t-0 sm:pl-8 sm:pt-0">
             <span className="eyebrow text-muted-foreground">Deliver to</span>
-            <p className="mt-3 text-sm leading-relaxed text-foreground">
+            <p className="mt-3 break-words text-sm leading-relaxed text-foreground">
               {address.length > 0
-                ? address.map((line) => (
-                    <span key={line} className="block">
+                ? address.map((line, index) => (
+                    <span key={`${line}-${index}`} className="block break-words">
                       {line}
                     </span>
                   ))
