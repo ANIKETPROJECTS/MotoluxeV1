@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Archive,
   ArrowUpRight,
@@ -128,6 +128,7 @@ export function brandToForm(brand: AdminBrand): BrandForm {
 
 function AdminCategoriesPage() {
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
   const [view, setView] = useState<"categories" | "brands">("categories");
   const [categories, setCategories] = useState<AdminCategory[]>([]);
   const [brands, setBrands] = useState<AdminBrand[]>([]);
@@ -145,6 +146,10 @@ function AdminCategoriesPage() {
   const [needsSeed, setNeedsSeed] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+
+  if (pathname !== "/admin/categories" && pathname !== "/admin/categories/") {
+    return <Outlet />;
+  }
 
   async function loadCategories(
     nextSearch = categorySearch,

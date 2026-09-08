@@ -1,4 +1,10 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  Outlet,
+  useNavigate,
+  useRouterState,
+} from "@tanstack/react-router";
 import {
   ArrowUpRight,
   Check,
@@ -46,6 +52,7 @@ function stockClass(stock: number) {
 
 function AdminProductsPage() {
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
   const [products, setProducts] = useState<AdminCatalogProduct[]>([]);
   const [needsSeed, setNeedsSeed] = useState(false);
   const [search, setSearch] = useState("");
@@ -56,6 +63,10 @@ function AdminProductsPage() {
   const [workingId, setWorkingId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+
+  if (pathname !== "/admin/products" && pathname !== "/admin/products/") {
+    return <Outlet />;
+  }
 
   const loadProducts = useCallback(
     async (nextSearch = search, nextCategory = category, nextStock = stock) => {
