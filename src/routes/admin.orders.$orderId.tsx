@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { ArrowLeft, LoaderCircle, MessageCircle, Printer } from "lucide-react";
+import { ArrowLeft, FileDown, LoaderCircle, MessageCircle, Printer, Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { AdminOrderDetail } from "@/lib/server/admin-orders";
 
@@ -54,11 +54,177 @@ function invoiceMessage(order: AdminOrderDetail) {
   ].join("\n");
 }
 
+function pdfMoney(value: number | null) {
+  return value === null
+    ? "Request price"
+    : `INR ${new Intl.NumberFormat("en-IN", {
+        maximumFractionDigits: 0,
+      }).format(value)}`;
+}
+
+function pdfFileName(order: AdminOrderDetail) {
+  return `${order.number.toLowerCase().replaceAll(/[^a-z0-9]+/g, "-")}-invoice.pdf`;
+}
+
+async function createInvoicePdf(order: AdminOrderDetail) {
+  const { jsPDF } = await import("jspdf");
+  const document = new jsPDF({ unit: "mm", format: "a4" });
+  const left = 18;
+  const right = 192;
+  const width = right - left;
+  const muted = [100, 100, 100] as const;
+  const dark = [30, 30, 34] as const;
+  const red = [214, 35, 35] as const;
+  const yellow = [228, 183, 16] as const;
+
+  document.setProperties({
+    title: `Motoluxe Invoice ${order.number}`,
+    subject: "Motoluxe customer invoice",
+  });
+  document.setTextColor(...dark);
+  document.setFont("helvetica", "bold");
+  document.setFontSize(22);
+  document.text("MOTOLUXE", left, 22);
+  document.setDrawColor(...red);
+  document.setLineWidth(1.4);
+  document.line(left, 27, left + 13, 27);
+
+  document.setTextColor(...red);
+  document.setFontSize(8);
+  document.text("TAX INVOICE", right, 17, { align: "right" });
+  document.setTextColor(...dark);
+  document.setFontSize(20);
+  document.text("INVOICE", right, 25, { align: "right" });
+  document.setFontSize(9);
+  document.text(order.number, right, 32, { align: "right" });
+  document.setFont("helvetica", "normal");
+  document.setTextColor(...muted);
+  document.setFontSize(8);
+  document.text(formatDate(order.createdAt), right, 38, { align: "right" });
+
+  document.setDrawColor(195, 195, 195);
+  document.setLineWidth(0.3);
+  document.line(left, 47, right, 47);
+
+  const address = [
+    order.delivery.addressLine1,
+    order.delivery.addressLine2,
+    order.delivery.address,
+    [order.delivery.city, order.delivery.state].filter(Boolean).join(", "),
+    order.delivery.postalCode,
+  ].filter(Boolean);
+  const addText = (text: string, x: number, y: number, maxWidth: number, lineHeight = 4) => {
+    const lines = document.splitTextToSize(text || "—", maxWidth) as string[];
+    document.text(lines, x, y, { lineHeightFactor: lineHeight / 4 });
+    return y + lines.length * lineHeight;
+  };
+
+  document.setFont("helvetica", "bold");
+  document.setFontSize(7);
+  document.setTextColor(...muted);
+  document.text("BILLED TO", left, 58);
+  document.text("DELIVER TO", 108, 58);
+  document.setFont("helvetica", "normal");
+  document.setFontSize(9);
+  document.setTextColor(...dark);
+  let billY = 66;
+  billY = addText(order.delivery.name || "Customer", left, billY, 78);
+  document.setTextColor(...muted);
+  billY = addText(order.delivery.phone, left, billY + 1, 78);
+  addText(order.delivery.email, left, billY + 1, 78);
+  document.setTextColor(...dark);
+  addText(address.join("\n"), 108, 66, 84, 4.2);
+
+  document.setDrawColor(195, 195, 195);
+  document.line(left, 94, right, 94);
+  document.setFont("helvetica", "bold");
+  document.setFontSize(7);
+  document.setTextColor(...muted);
+  document.text("ITEM", left, 102);
+  document.text("QTY", 142, 102, { align: "right" });
+  document.text("UNIT PRICE", 168, 102, { align: "right" });
+  document.text("AMOUNT", right, 102, { align: "right" });
+  document.line(left, 106, right, 106);
+
+  let itemY = 114;
+  document.setFont("helvetica", "normal");
+  document.setFontSize(9);
+  for (const item of order.items) {
+    const nameLines = document.splitTextToSize(item.productName || "Motoluxe product", 92) as string[];
+    if (itemY > 250) {
+      document.addPage();
+      itemY = 24;
+    }
+    document.setTextColor(...dark);
+    document.text(nameLines, left, itemY);
+    document.setTextColor(...muted);
+    document.text(String(item.quantity), 142, itemY, { align: "right" });
+    document.text(
+      item.lineTotal === null || item.quantity < 1
+        ? "Request price"
+        : pdfMoney(item.lineTotal / item.quantity),
+      168,
+      itemY,
+      { align: "right" },
+    );
+    document.setTextColor(...dark);
+    document.text(pdfMoney(item.lineTotal), right, itemY, { align: "right" });
+    itemY += Math.max(8, nameLines.length * 4) + 5;
+    document.setDrawColor(225, 225, 225);
+    document.line(left, itemY - 3, right, itemY - 3);
+  }
+
+  const totalsY = Math.min(itemY + 7, 258);
+  document.setDrawColor(195, 195, 195);
+  document.line(112, totalsY - 4, right, totalsY - 4);
+  document.setFont("helvetica", "normal");
+  document.setFontSize(9);
+  document.setTextColor(...muted);
+  document.text("Subtotal", 112, totalsY + 4);
+  document.text(pdfMoney(order.pricing.subtotal), right, totalsY + 4, { align: "right" });
+  document.text("Shipping", 112, totalsY + 12);
+  document.text(pdfMoney(order.pricing.shipping), right, totalsY + 12, { align: "right" });
+  let totalY = totalsY + 20;
+  if (order.pricing.discount !== null && order.pricing.discount > 0) {
+    document.setTextColor(...yellow);
+    document.text("Discount", 112, totalY);
+    document.text(`-${pdfMoney(order.pricing.discount)}`, right, totalY, { align: "right" });
+    totalY += 8;
+  }
+  document.setDrawColor(195, 195, 195);
+  document.line(112, totalY + 3, right, totalY + 3);
+  document.setFont("helvetica", "bold");
+  document.setTextColor(...dark);
+  document.text("Total", 112, totalY + 11);
+  document.text(pdfMoney(order.total), right, totalY + 11, { align: "right" });
+
+  document.setDrawColor(195, 195, 195);
+  document.line(left, 282, right, 282);
+  document.setFont("helvetica", "normal");
+  document.setFontSize(8);
+  document.setTextColor(...muted);
+  document.text(`Payment: ${formatStatus(order.paymentStatus)}`, left, 290);
+  document.text("Thank you for choosing Motoluxe.", right, 290, { align: "right" });
+
+  return new File([document.output("blob")], pdfFileName(order), { type: "application/pdf" });
+}
+
+function downloadFile(file: File) {
+  const url = URL.createObjectURL(file);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = file.name;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
 function AdminInvoicePage() {
   const { orderId } = useParams({ from: "/admin/orders/$orderId" });
   const [order, setOrder] = useState<AdminOrderDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [shareNotice, setShareNotice] = useState("");
+  const [sharing, setSharing] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -89,10 +255,58 @@ function AdminInvoicePage() {
 
   function shareOnWhatsApp() {
     if (!order) return;
-    const phone = whatsappNumber(order.delivery.phone);
-    if (!phone) return;
-    const url = `https://wa.me/${phone}?text=${encodeURIComponent(invoiceMessage(order))}`;
-    window.open(url, "_blank", "noopener,noreferrer");
+    void (async () => {
+      setSharing(true);
+      setError("");
+      setShareNotice("");
+      try {
+        const file = await createInvoicePdf(order);
+        const shareData = {
+          title: `Motoluxe Invoice ${order.number}`,
+          text: invoiceMessage(order),
+          files: [file],
+        };
+        if (navigator.share && navigator.canShare?.({ files: [file] })) {
+          await navigator.share(shareData);
+          setShareNotice("Invoice PDF is ready in the share sheet.");
+          return;
+        }
+
+        downloadFile(file);
+        const phone = whatsappNumber(order.delivery.phone);
+        if (phone) {
+          const url = `https://wa.me/${phone}?text=${encodeURIComponent(invoiceMessage(order))}`;
+          window.open(url, "_blank", "noopener,noreferrer");
+        }
+        setShareNotice(
+          "Invoice PDF downloaded. Attach it in WhatsApp using the paperclip button.",
+        );
+      } catch (shareError) {
+        if (shareError instanceof DOMException && shareError.name === "AbortError") return;
+        setError(shareError instanceof Error ? shareError.message : "We could not prepare the invoice.");
+      } finally {
+        setSharing(false);
+      }
+    })();
+  }
+
+  function downloadInvoice() {
+    if (!order) return;
+    void (async () => {
+      setSharing(true);
+      setError("");
+      setShareNotice("");
+      try {
+        downloadFile(await createInvoicePdf(order));
+        setShareNotice("Invoice PDF downloaded.");
+      } catch (downloadError) {
+        setError(
+          downloadError instanceof Error ? downloadError.message : "We could not create the invoice PDF.",
+        );
+      } finally {
+        setSharing(false);
+      }
+    })();
   }
 
   if (loading) {
@@ -143,7 +357,16 @@ function AdminInvoicePage() {
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
+            onClick={downloadInvoice}
+            disabled={sharing}
+            className="inline-flex items-center gap-2 border border-border px-4 py-3 font-display text-[10px] uppercase tracking-[0.14em] text-foreground transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <FileDown className="h-3.5 w-3.5" /> Download PDF
+          </button>
+          <button
+            type="button"
             onClick={() => window.print()}
+            disabled={sharing}
             className="inline-flex items-center gap-2 border border-border px-4 py-3 font-display text-[10px] uppercase tracking-[0.14em] text-foreground transition-colors hover:border-primary hover:text-primary"
           >
             <Printer className="h-3.5 w-3.5" /> Print invoice
@@ -151,18 +374,26 @@ function AdminInvoicePage() {
           <button
             type="button"
             onClick={shareOnWhatsApp}
-            disabled={!phone}
+            disabled={!phone || sharing}
             title={
               phone
-                ? "Open WhatsApp with a prefilled invoice message"
+                ? "Share the invoice PDF and message with WhatsApp"
                 : "Customer phone unavailable"
             }
             className="inline-flex items-center gap-2 border border-accent bg-accent px-4 py-3 font-display text-[10px] uppercase tracking-[0.14em] text-accent-foreground transition-colors hover:bg-accent/80 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <MessageCircle className="h-3.5 w-3.5" /> Share on WhatsApp
+            <Share2 className="h-3.5 w-3.5" /> {sharing ? "Preparing invoice..." : "Share on WhatsApp"}
           </button>
         </div>
       </div>
+      {shareNotice && (
+        <div
+          className="border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-accent print:hidden"
+          role="status"
+        >
+          {shareNotice}
+        </div>
+      )}
 
       <article className="mx-auto max-w-4xl border border-border bg-card p-6 shadow-sm sm:p-10 print:border-0 print:p-0 print:shadow-none">
         <header className="flex flex-wrap items-start justify-between gap-8 border-b border-border pb-8">
