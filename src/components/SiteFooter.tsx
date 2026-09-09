@@ -13,7 +13,7 @@ export function SiteFooter() {
       <div className="h-1.5 hazard-stripes opacity-70" />
       <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 md:grid-cols-4">
         <div className="md:col-span-2">
-          <Logo size="lg" />
+          <Logo size="lg" variant="onDark" />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
             Premium autocare and bike care formulations, engineered to German specification and
             blended for Indian roads, dust and monsoon.

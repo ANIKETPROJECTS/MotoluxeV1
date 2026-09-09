@@ -188,7 +188,7 @@ export function SiteHeader() {
 
         <div className="mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between gap-5 px-5">
           <Link to="/" className="flex shrink-0 items-center">
-            <Logo size="lg" />
+            <Logo size="lg" variant="onDark" />
           </Link>
 
           <nav className="hidden h-full items-center gap-8 whitespace-nowrap md:flex">{nav()}</nav>
