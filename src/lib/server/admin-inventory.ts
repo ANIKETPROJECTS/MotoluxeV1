@@ -179,7 +179,7 @@ export async function listInventory(productId = "", eventType = "", from = "", t
     name: product.name,
     slug: product.slug,
     stock: Number.isInteger(product.stock) ? product.stock : 0,
-    updatedAt: product.updatedAt?.toISOString(),
+    ...(product.updatedAt ? { updatedAt: product.updatedAt.toISOString() } : {}),
   }));
   const totalUnits = inventoryProducts.reduce((sum, product) => sum + product.stock, 0);
   const lowStock = inventoryProducts.filter(

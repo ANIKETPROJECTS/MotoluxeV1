@@ -577,7 +577,10 @@ function AdminInventoryPage() {
             </div>
 
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
-              <HistorySummary label="Current stock" value={`${selectedHistoryProduct?.stock ?? 0}`} />
+              <HistorySummary
+                label="Current stock"
+                value={`${selectedHistoryProduct?.stock ?? 0}`}
+              />
               <HistorySummary
                 label="Stock status"
                 value={stockLabel(selectedHistoryProduct?.stock ?? 0)}
@@ -689,131 +692,133 @@ function AdminInventoryPage() {
         </>
       )}
 
-      {selectedHistoryProductId && <section className="border border-border bg-card">
-        {loading ? (
-          <div className="flex min-h-56 items-center justify-center gap-3 text-sm text-muted-foreground">
-            <LoaderCircle className="h-5 w-5 animate-spin text-primary" /> Loading inventory
-          </div>
-        ) : movements.length === 0 ? (
-          <div className="px-5 py-16 text-center">
-            <PackageSearch className="mx-auto h-7 w-7 text-muted-foreground" />
-            <h3 className="mt-4 text-lg font-semibold">No inventory movements found.</h3>
-            <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-muted-foreground">
-              Adjust stock above to create the first auditable movement, or clear the filters to see
-              the full history.
-            </p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[860px] text-left text-sm">
-              <thead className="border-b border-border font-display text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-                <tr>
-                  <th className="px-5 py-4 font-normal sm:px-7">Date</th>
-                  <th className="px-4 py-4 font-normal">Change</th>
-                  <th className="px-4 py-4 font-normal">Stock after</th>
-                  <th className="px-4 py-4 font-normal">Reason / order</th>
-                  <th className="px-4 py-4 text-right font-normal">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {movements.map((movement) => {
-                  const busy = workingId === movement.id;
-                  const editing = editingId === movement.id;
-                  return (
-                    <tr key={movement.id} className="border-b border-border last:border-0">
-                      <td className="px-5 py-5 text-xs text-muted-foreground sm:px-7">
-                        {formatDate(movement.createdAt)}
-                      </td>
-                      <td
-                        className={`px-4 py-5 font-display text-lg ${changeClass(movement.quantityChange)}`}
-                      >
-                        <span className="inline-flex items-center gap-1">
-                          {movement.quantityChange < 0 ? (
-                            <ArrowDownRight className="h-4 w-4" />
-                          ) : (
-                            <ArrowUpRight className="h-4 w-4" />
-                          )}
-                          {movement.quantityChange > 0 ? "+" : ""}
-                          {movement.quantityChange}
-                        </span>
-                      </td>
-                      <td className="px-4 py-5">
-                        <span className="block text-foreground">
-                          {movement.stockBefore} → {movement.stockAfter}
-                        </span>
-                        <span className={`mt-1 block text-xs ${stockClass(movement.stockAfter)}`}>
-                          {stockLabel(movement.stockAfter)}
-                        </span>
-                      </td>
-                      <td className="max-w-[420px] px-4 py-5">
-                        {editing ? (
-                          <div className="flex min-w-56 gap-2">
-                            <input
-                              autoFocus
-                              value={editingReason}
-                              onChange={(event) => setEditingReason(event.target.value)}
-                              className={inputClass}
-                            />
-                            <button
-                              type="button"
-                              disabled={busy}
-                              onClick={() => void saveMovement(movement)}
-                              className="border border-primary px-2 text-xs text-primary hover:bg-primary hover:text-primary-foreground"
-                            >
-                              Save
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setEditingId(null)}
-                              className="border border-border px-2 text-xs text-muted-foreground"
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        ) : (
-                          <>
-                            <span className="block break-words text-foreground">
-                              {movement.reason}
-                            </span>
-                            {movement.relatedOrderNumber && (
-                              <span className="mt-1 block text-xs text-accent">
-                                Order {movement.relatedOrderNumber}
-                              </span>
+      {selectedHistoryProductId && (
+        <section className="border border-border bg-card">
+          {loading ? (
+            <div className="flex min-h-56 items-center justify-center gap-3 text-sm text-muted-foreground">
+              <LoaderCircle className="h-5 w-5 animate-spin text-primary" /> Loading inventory
+            </div>
+          ) : movements.length === 0 ? (
+            <div className="px-5 py-16 text-center">
+              <PackageSearch className="mx-auto h-7 w-7 text-muted-foreground" />
+              <h3 className="mt-4 text-lg font-semibold">No inventory movements found.</h3>
+              <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-muted-foreground">
+                Adjust stock above to create the first auditable movement, or clear the filters to
+                see the full history.
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[860px] text-left text-sm">
+                <thead className="border-b border-border font-display text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                  <tr>
+                    <th className="px-5 py-4 font-normal sm:px-7">Date</th>
+                    <th className="px-4 py-4 font-normal">Change</th>
+                    <th className="px-4 py-4 font-normal">Stock after</th>
+                    <th className="px-4 py-4 font-normal">Reason / order</th>
+                    <th className="px-4 py-4 text-right font-normal">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {movements.map((movement) => {
+                    const busy = workingId === movement.id;
+                    const editing = editingId === movement.id;
+                    return (
+                      <tr key={movement.id} className="border-b border-border last:border-0">
+                        <td className="px-5 py-5 text-xs text-muted-foreground sm:px-7">
+                          {formatDate(movement.createdAt)}
+                        </td>
+                        <td
+                          className={`px-4 py-5 font-display text-lg ${changeClass(movement.quantityChange)}`}
+                        >
+                          <span className="inline-flex items-center gap-1">
+                            {movement.quantityChange < 0 ? (
+                              <ArrowDownRight className="h-4 w-4" />
+                            ) : (
+                              <ArrowUpRight className="h-4 w-4" />
                             )}
-                          </>
-                        )}
-                      </td>
-                      <td className="px-4 py-5">
-                        <div className="flex justify-end gap-2">
-                          {movement.eventType === "manual_adjustment" && !editing && (
-                            <>
-                              <button
-                                type="button"
-                                onClick={() => startEdit(movement)}
-                                className="inline-flex items-center gap-1 border border-border px-2.5 py-2 text-xs text-muted-foreground hover:border-primary hover:text-primary"
-                              >
-                                <Edit3 className="h-3.5 w-3.5" /> Edit
-                              </button>
+                            {movement.quantityChange > 0 ? "+" : ""}
+                            {movement.quantityChange}
+                          </span>
+                        </td>
+                        <td className="px-4 py-5">
+                          <span className="block text-foreground">
+                            {movement.stockBefore} → {movement.stockAfter}
+                          </span>
+                          <span className={`mt-1 block text-xs ${stockClass(movement.stockAfter)}`}>
+                            {stockLabel(movement.stockAfter)}
+                          </span>
+                        </td>
+                        <td className="max-w-[420px] px-4 py-5">
+                          {editing ? (
+                            <div className="flex min-w-56 gap-2">
+                              <input
+                                autoFocus
+                                value={editingReason}
+                                onChange={(event) => setEditingReason(event.target.value)}
+                                className={inputClass}
+                              />
                               <button
                                 type="button"
                                 disabled={busy}
-                                onClick={() => void deleteMovement(movement)}
-                                className="inline-flex items-center gap-1 border border-border px-2.5 py-2 text-xs text-muted-foreground hover:border-primary hover:text-primary disabled:opacity-50"
+                                onClick={() => void saveMovement(movement)}
+                                className="border border-primary px-2 text-xs text-primary hover:bg-primary hover:text-primary-foreground"
                               >
-                                <Trash2 className="h-3.5 w-3.5" /> Delete
+                                Save
                               </button>
+                              <button
+                                type="button"
+                                onClick={() => setEditingId(null)}
+                                className="border border-border px-2 text-xs text-muted-foreground"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <span className="block break-words text-foreground">
+                                {movement.reason}
+                              </span>
+                              {movement.relatedOrderNumber && (
+                                <span className="mt-1 block text-xs text-accent">
+                                  Order {movement.relatedOrderNumber}
+                                </span>
+                              )}
                             </>
                           )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>}
+                        </td>
+                        <td className="px-4 py-5">
+                          <div className="flex justify-end gap-2">
+                            {movement.eventType === "manual_adjustment" && !editing && (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => startEdit(movement)}
+                                  className="inline-flex items-center gap-1 border border-border px-2.5 py-2 text-xs text-muted-foreground hover:border-primary hover:text-primary"
+                                >
+                                  <Edit3 className="h-3.5 w-3.5" /> Edit
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={busy}
+                                  onClick={() => void deleteMovement(movement)}
+                                  className="inline-flex items-center gap-1 border border-border px-2.5 py-2 text-xs text-muted-foreground hover:border-primary hover:text-primary disabled:opacity-50"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" /> Delete
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      )}
     </div>
   );
 }
