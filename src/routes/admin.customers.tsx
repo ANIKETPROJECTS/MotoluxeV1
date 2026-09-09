@@ -240,7 +240,7 @@ function AdminCustomersPage() {
   }
 
   return (
-    <div className="space-y-6 p-5 sm:p-8">
+    <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-5">
         <div>
           <span className="eyebrow text-primary">Customer directory</span>
