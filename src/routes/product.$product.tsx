@@ -74,7 +74,7 @@ function ProductPage() {
       setQty((current) => Math.min(current, stock));
     }
     if (unavailable) {
-      setQty(0);
+      setQty(1);
       setAdded(false);
     }
   }, [outOfStock, stock, unavailable]);
@@ -83,8 +83,9 @@ function ProductPage() {
     if (qty === 1) {
       removeFromCart(product.slug);
       setAdded(false);
+      return;
     }
-    setQty((value) => Math.max(0, value - 1));
+    setQty((value) => Math.max(1, value - 1));
   }
 
   return (
@@ -216,7 +217,7 @@ function ProductPage() {
                 type="button"
                 aria-label="Decrease quantity"
                 onClick={decreaseQuantity}
-                disabled={unavailable || qty === 0}
+                disabled={unavailable || qty === 1}
                 className="grid h-full w-11 place-items-center transition-colors hover:bg-surface-raised"
               >
                 <Minus className="h-4 w-4" />
