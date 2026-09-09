@@ -58,7 +58,9 @@ export function SiteFooter() {
           <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
             <li className="flex gap-2.5">
               <Mail className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-              care@motoluxe.in
+              <a href="mailto:info@motoluxe.co.in" className="transition-colors hover:text-primary">
+                info@motoluxe.co.in
+              </a>
             </li>
             <li className="flex gap-2.5">
               <Phone className="mt-0.5 h-4 w-4 shrink-0 text-primary" />

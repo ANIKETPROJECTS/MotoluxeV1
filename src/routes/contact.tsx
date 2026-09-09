@@ -17,8 +17,7 @@ export const Route = createFileRoute("/contact")({
       },
       {
         property: "og:description",
-        content:
-          "Talk to the Motoluxe team about product questions, compatibility, or support.",
+        content: "Talk to the Motoluxe team about product questions, compatibility, or support.",
       },
     ],
   }),
@@ -26,7 +25,7 @@ export const Route = createFileRoute("/contact")({
 });
 
 const details = [
-  { icon: Mail, label: "Email", value: "care@motoluxe.in" },
+  { icon: Mail, label: "Email", value: "info@motoluxe.co.in" },
   { icon: Phone, label: "Phone", value: "+91 98200 44120" },
   {
     icon: MapPin,
@@ -41,10 +40,44 @@ const inputClass =
 
 function ContactPage() {
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSent(true);
+    setSending(true);
+    setError("");
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.get("name"),
+          email: formData.get("email"),
+          message: formData.get("message"),
+        }),
+      });
+
+      const result = (await response.json()) as { error?: string };
+      if (!response.ok) {
+        throw new Error(result.error || "Unable to send your message.");
+      }
+
+      form.reset();
+      setSent(true);
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error
+          ? submitError.message
+          : "Unable to send your message. Please try again shortly.",
+      );
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -53,12 +86,10 @@ function ContactPage() {
         <span className="h-px w-8 bg-primary" />
         Contact Us
       </span>
-      <h1 className="mt-4 max-w-2xl text-5xl font-bold sm:text-6xl">
-        How Can We Help?
-      </h1>
+      <h1 className="mt-4 max-w-2xl text-5xl font-bold sm:text-6xl">How Can We Help?</h1>
       <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
-        Have a product question, compatibility problem, or another issue? Send
-        us the details and our team will respond within one working day.
+        Have a product question, compatibility problem, or another issue? Send us the details and
+        our team will respond within one working day.
       </p>
 
       <div className="mt-14 grid gap-10 lg:grid-cols-5">
@@ -66,10 +97,10 @@ function ContactPage() {
           {sent ? (
             <div className="flex min-h-80 flex-col items-center justify-center text-center">
               <CheckCircle2 className="h-12 w-12 text-accent" />
-              <h2 className="mt-6 text-3xl font-bold">Message Logged</h2>
+              <h2 className="mt-6 text-3xl font-bold">Message Sent</h2>
               <p className="mt-3 max-w-sm text-sm text-muted-foreground">
-                This is a UI demo — nothing was sent. In production our team
-                reviews your message and replies within one working day.
+                Thanks for reaching out. Our team will review your message and reply within one
+                working day.
               </p>
               <button
                 type="button"
@@ -82,10 +113,7 @@ function ContactPage() {
           ) : (
             <form onSubmit={onSubmit} className="space-y-6">
               <div>
-                <label
-                  htmlFor="name"
-                  className="eyebrow mb-2 block text-muted-foreground"
-                >
+                <label htmlFor="name" className="eyebrow mb-2 block text-muted-foreground">
                   Name
                 </label>
                 <input
@@ -97,10 +125,7 @@ function ContactPage() {
                 />
               </div>
               <div>
-                <label
-                  htmlFor="email"
-                  className="eyebrow mb-2 block text-muted-foreground"
-                >
+                <label htmlFor="email" className="eyebrow mb-2 block text-muted-foreground">
                   Email
                 </label>
                 <input
@@ -113,10 +138,7 @@ function ContactPage() {
                 />
               </div>
               <div>
-                <label
-                  htmlFor="message"
-                  className="eyebrow mb-2 block text-muted-foreground"
-                >
+                <label htmlFor="message" className="eyebrow mb-2 block text-muted-foreground">
                   Message
                 </label>
                 <textarea
@@ -124,17 +146,23 @@ function ContactPage() {
                   name="message"
                   required
                   rows={6}
-                   placeholder="Tell us about your question or problem, including the product and vehicle model if relevant."
+                  placeholder="Tell us about your question or problem, including the product and vehicle model if relevant."
                   className={`${inputClass} resize-none`}
                 />
               </div>
               <button
                 type="submit"
+                disabled={sending}
                 className="group inline-flex items-center gap-2 bg-primary px-8 py-4 font-display text-sm uppercase tracking-[0.22em] text-primary-foreground transition-all hover:ember-glow"
               >
-                Send Message
+                {sending ? "Sending..." : "Send Message"}
                 <Send className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </button>
+              {error ? (
+                <p role="alert" className="text-sm text-primary">
+                  {error}
+                </p>
+              ) : null}
             </form>
           )}
         </div>
@@ -147,23 +175,17 @@ function ContactPage() {
                   <d.icon className="h-4 w-4" />
                 </div>
                 <div>
-                  <span className="eyebrow text-muted-foreground">
-                    {d.label}
-                  </span>
-                  <p className="mt-1.5 text-sm leading-snug text-foreground">
-                    {d.value}
-                  </p>
+                  <span className="eyebrow text-muted-foreground">{d.label}</span>
+                  <p className="mt-1.5 text-sm leading-snug text-foreground">{d.value}</p>
                 </div>
               </div>
             ))}
           </div>
           <div className="mt-6 skew-cut-tl border border-accent/30 bg-accent/10 p-6">
-            <h3 className="text-lg font-semibold text-accent">
-              Distributor Programme
-            </h3>
+            <h3 className="text-lg font-semibold text-accent">Distributor Programme</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Workshops and retailers get tiered pricing, display units and
-              training material. Mention "DISTRIBUTOR" in your message.
+              Workshops and retailers get tiered pricing, display units and training material.
+              Mention "DISTRIBUTOR" in your message.
             </p>
           </div>
         </div>
