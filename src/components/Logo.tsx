@@ -1,16 +1,13 @@
+import logoAsset from "@/assets/motoluxe-logo.png";
+
 export function Logo({ size = "md" }: { size?: "md" | "lg" }) {
-  const text = size === "lg" ? "text-3xl" : "text-xl";
   return (
-    <span className="flex items-center gap-2">
-      <span className="flex h-7 w-2.5 -skew-x-12 flex-col">
-        <span className="h-1/2 w-full bg-primary" />
-        <span className="h-1/2 w-full bg-accent" />
-      </span>
-      <span
-        className={`font-display font-bold uppercase leading-none tracking-tight ${text}`}
-      >
-        Moto<span className="text-primary">luxe</span>
-      </span>
+    <span
+      className={`inline-flex shrink-0 items-center bg-white ${
+        size === "lg" ? "px-2 py-1.5" : "px-1.5 py-1"
+      }`}
+    >
+      <img src={logoAsset} alt="Motoluxe" className={size === "lg" ? "h-9 w-auto" : "h-7 w-auto"} />
     </span>
   );
 }

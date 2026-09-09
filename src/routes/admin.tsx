@@ -1,6 +1,7 @@
 import { Outlet, createFileRoute, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { AdminAuthProvider, useAdminAuth } from "@/components/AdminAuthContext";
+import { Logo } from "@/components/Logo";
 
 const navigation = [
   { label: "Overview", to: "/admin" },
@@ -137,9 +138,11 @@ function AdminShell({
         >
           <div className={`border-b border-border pb-6 ${collapsed ? "lg:text-center" : ""}`}>
             <Link to="/" className="block" onClick={() => setMobileOpen(false)}>
-              <span className="font-display text-sm uppercase tracking-[0.14em]">
-                {collapsed ? "ML" : "Motoluxe Admin"}
-              </span>
+              {collapsed ? (
+                <span className="font-display text-sm uppercase tracking-[0.14em]">ML</span>
+              ) : (
+                <Logo size="md" />
+              )}
               <span className={`mt-2 block h-1 bg-primary ${collapsed ? "mx-auto w-7" : "w-12"}`} />
             </Link>
           </div>
@@ -205,7 +208,7 @@ function AdminShell({
 
         <div className="admin-content-scroll min-h-0 min-w-0 flex-1 overflow-y-auto">
           <div className="flex items-center justify-between border-b border-border bg-card px-5 py-4 print:hidden lg:hidden">
-            <span className="font-display text-sm uppercase tracking-[0.14em]">Motoluxe Admin</span>
+            <Logo size="md" />
             <button
               type="button"
               onClick={() => setMobileOpen((value) => !value)}

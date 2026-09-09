@@ -2,6 +2,7 @@ import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { ArrowLeft, FileDown, LoaderCircle, Printer, Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { AdminOrderDetail } from "@/lib/server/admin-orders";
+import { Logo } from "@/components/Logo";
 
 export const Route = createFileRoute("/admin/orders/$orderId")({
   head: () => ({
@@ -403,10 +404,7 @@ function AdminInvoicePage() {
       <article className="mx-auto max-w-4xl border border-border bg-card p-6 shadow-sm sm:p-10 print:border-0 print:p-0 print:shadow-none">
         <header className="flex flex-wrap items-start justify-between gap-8 border-b border-border pb-8">
           <div>
-            <span className="font-display text-2xl uppercase tracking-[0.12em] text-foreground">
-              Motoluxe
-            </span>
-            <span className="mt-2 block h-1 w-12 bg-primary" />
+            <Logo size="lg" />
             <p className="mt-5 max-w-xs text-xs leading-relaxed text-muted-foreground">
               Purpose-built care essentials for riders, workshops, and dealers.
             </p>
