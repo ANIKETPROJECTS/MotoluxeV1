@@ -5,6 +5,7 @@ import { sendContactMessage } from "@/lib/server/contact-mail";
 const contactSchema = z.object({
   name: z.string().trim().min(2).max(120),
   email: z.string().trim().email().max(254),
+  phone: z.string().trim().min(7).max(30),
   message: z.string().trim().min(10).max(5000),
 });
 
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/api/contact")({
         } catch (error) {
           if (error instanceof z.ZodError) {
             return Response.json(
-              { error: "Please check your name, email, and message." },
+              { error: "Please check your name, email, phone, and message." },
               { status: 400 },
             );
           }

@@ -5,6 +5,7 @@ export const CONTACT_EMAIL = "info@motoluxe.co.in";
 type ContactMessage = {
   name: string;
   email: string;
+  phone: string;
   message: string;
 };
 
@@ -45,10 +46,11 @@ function getTransporter() {
   };
 }
 
-export async function sendContactMessage({ name, email, message }: ContactMessage) {
+export async function sendContactMessage({ name, email, phone, message }: ContactMessage) {
   const { user, transporter } = getTransporter();
   const safeName = escapeHtml(name);
   const safeEmail = escapeHtml(email);
+  const safePhone = escapeHtml(phone);
   const safeMessage = escapeHtml(message).replace(/\r?\n/g, "<br />");
 
   await transporter.sendMail({
@@ -56,11 +58,12 @@ export async function sendContactMessage({ name, email, message }: ContactMessag
     to: CONTACT_EMAIL,
     replyTo: email,
     subject: `Website enquiry from ${name}`,
-    text: [`Name: ${name}`, `Email: ${email}`, "", message].join("\n"),
+    text: [`Name: ${name}`, `Email: ${email}`, `Phone: ${phone}`, "", message].join("\n"),
     html: `
       <h2>New Motoluxe website enquiry</h2>
       <p><strong>Name:</strong> ${safeName}</p>
       <p><strong>Email:</strong> ${safeEmail}</p>
+      <p><strong>Phone:</strong> ${safePhone}</p>
       <p><strong>Message:</strong></p>
       <p>${safeMessage}</p>
     `,

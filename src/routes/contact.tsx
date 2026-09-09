@@ -26,7 +26,11 @@ export const Route = createFileRoute("/contact")({
 
 const details = [
   { icon: Mail, label: "Email", value: "info@motoluxe.co.in" },
-  { icon: Phone, label: "Phone", value: "+91 98200 44120" },
+  {
+    icon: Phone,
+    label: "Phone",
+    value: "+91 91724 77222\n+91 73045 77779",
+  },
   {
     icon: MapPin,
     label: "Works",
@@ -58,6 +62,7 @@ function ContactPage() {
         body: JSON.stringify({
           name: formData.get("name"),
           email: formData.get("email"),
+          phone: formData.get("phone"),
           message: formData.get("message"),
         }),
       });
@@ -138,6 +143,20 @@ function ContactPage() {
                 />
               </div>
               <div>
+                <label htmlFor="phone" className="eyebrow mb-2 block text-muted-foreground">
+                  Phone
+                </label>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  autoComplete="tel"
+                  placeholder="+91 91724 77222"
+                  className={inputClass}
+                />
+              </div>
+              <div>
                 <label htmlFor="message" className="eyebrow mb-2 block text-muted-foreground">
                   Message
                 </label>
@@ -176,7 +195,9 @@ function ContactPage() {
                 </div>
                 <div>
                   <span className="eyebrow text-muted-foreground">{d.label}</span>
-                  <p className="mt-1.5 text-sm leading-snug text-foreground">{d.value}</p>
+                  <p className="mt-1.5 whitespace-pre-line text-sm leading-snug text-foreground">
+                    {d.value}
+                  </p>
                 </div>
               </div>
             ))}
