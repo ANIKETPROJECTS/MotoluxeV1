@@ -105,7 +105,8 @@ export function ProductEditor({
       payload.append("file", file);
       payload.append("kind", "product");
       payload.append("section", form.category);
-      if (form.slug.trim()) payload.append("publicId", form.slug.trim());
+      payload.append("productName", form.name.trim());
+      payload.append("publicId", "img");
       const response = await fetch("/api/admin/media/upload", {
         method: "POST",
         credentials: "same-origin",
@@ -218,13 +219,14 @@ export function ProductEditor({
                 type="file"
                 accept="image/jpeg,image/png,image/webp,image/gif"
                 onChange={uploadImage}
-                disabled={uploadingImage}
+                disabled={uploadingImage || !form.name.trim()}
                 className="sr-only"
               />
             </label>
           </div>
           <p className="text-[11px] text-muted-foreground">
-            Stored in Cloudinary under Motoluxe / Products / {form.category || "uncategorized"}.
+            Stored in Cloudinary under Motoluxe / Products / {form.category || "uncategorized"} /{" "}
+            {form.name.trim() || "product-name"} / img.
           </p>
           {uploadError && <p className="text-xs text-primary">{uploadError}</p>}
         </div>

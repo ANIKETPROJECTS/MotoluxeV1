@@ -17,6 +17,7 @@ export const Route = createFileRoute("/api/admin/media/upload")({
           const file = form.get("file");
           const kind = form.get("kind");
           const section = form.get("section");
+          const productName = form.get("productName");
           const publicId = form.get("publicId");
           if (!(file instanceof File)) return jsonError("Choose an image to upload.", 400);
           if (
@@ -25,10 +26,14 @@ export const Route = createFileRoute("/api/admin/media/upload")({
           ) {
             return jsonError("Choose a valid upload section.", 400);
           }
+          if (kind === "product" && (typeof productName !== "string" || !productName.trim())) {
+            return jsonError("Enter the product name before uploading its image.", 400);
+          }
           const uploadOptions = {
             file,
             kind: kind as (typeof uploadKinds)[number],
             ...(typeof section === "string" ? { section } : {}),
+            ...(typeof productName === "string" ? { productName } : {}),
             ...(typeof publicId === "string" ? { publicId } : {}),
           } as const;
           const result = await uploadToCloudinary(uploadOptions);

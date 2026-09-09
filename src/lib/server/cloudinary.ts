@@ -12,6 +12,30 @@ function requiredSecret(name: string) {
   return value;
 }
 
+function cloudinaryCredentials() {
+  const cloudinaryUrl = requiredSecret("CLOUDINARY_URL");
+  let parsed: URL;
+  try {
+    parsed = new URL(cloudinaryUrl);
+  } catch {
+    throw new Error("CLOUDINARY_URL is not valid.");
+  }
+  if (
+    parsed.protocol !== "cloudinary:" ||
+    !parsed.hostname ||
+    !parsed.username ||
+    !parsed.password
+  ) {
+    throw new Error("CLOUDINARY_URL is not valid.");
+  }
+
+  return {
+    cloudName: parsed.hostname,
+    apiKey: decodeURIComponent(parsed.username),
+    apiSecret: decodeURIComponent(parsed.password),
+  };
+}
+
 function safePathSegment(value: string, fallback: string) {
   const segment = value
     .trim()
@@ -22,9 +46,9 @@ function safePathSegment(value: string, fallback: string) {
   return segment || fallback;
 }
 
-function uploadFolder(kind: CloudinaryUploadKind, section: string) {
+function uploadFolder(kind: CloudinaryUploadKind, section: string, productName = "") {
   if (kind === "product") {
-    return `Motoluxe/Products/${safePathSegment(section, "uncategorized")}`;
+    return `Motoluxe/Products/${safePathSegment(section, "uncategorized")}/${safePathSegment(productName, "untitled-product")}`;
   }
   if (kind === "category") return "Motoluxe/Categories";
   return "Motoluxe/Reviews";
@@ -43,6 +67,7 @@ export async function uploadToCloudinary(options: {
   file: File;
   kind: CloudinaryUploadKind;
   section?: string;
+  productName?: string;
   publicId?: string;
 }) {
   if (!options.file.type.startsWith("image/")) {
@@ -52,12 +77,15 @@ export async function uploadToCloudinary(options: {
     throw new Error("Images must be smaller than 10 MB.");
   }
 
-  const cloudName = requiredSecret("CLOUDINARY_CLOUD_NAME");
-  const apiKey = requiredSecret("CLOUDINARY_API_KEY");
-  const apiSecret = requiredSecret("CLOUDINARY_API_SECRET");
+  const { cloudName, apiKey, apiSecret } = cloudinaryCredentials();
   const timestamp = Math.floor(Date.now() / 1000).toString();
-  const folder = uploadFolder(options.kind, options.section ?? "");
-  const publicId = options.publicId ? safePathSegment(options.publicId, `asset-${timestamp}`) : "";
+  const folder = uploadFolder(options.kind, options.section ?? "", options.productName);
+  const publicId =
+    options.kind === "product"
+      ? "img"
+      : options.publicId
+        ? safePathSegment(options.publicId, `asset-${timestamp}`)
+        : "";
   const signedParams: Record<string, string> = {
     folder,
     timestamp,
@@ -98,9 +126,7 @@ export async function uploadToCloudinary(options: {
 
 export async function deleteFromCloudinary(publicId: string) {
   if (!publicId) return;
-  const cloudName = requiredSecret("CLOUDINARY_CLOUD_NAME");
-  const apiKey = requiredSecret("CLOUDINARY_API_KEY");
-  const apiSecret = requiredSecret("CLOUDINARY_API_SECRET");
+  const { cloudName, apiKey, apiSecret } = cloudinaryCredentials();
   const timestamp = Math.floor(Date.now() / 1000).toString();
   const signedParams = { public_id: publicId, timestamp };
   const form = new FormData();
