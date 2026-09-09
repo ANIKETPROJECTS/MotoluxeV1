@@ -141,7 +141,7 @@ function AdminShell({
               {collapsed ? (
                 <span className="font-display text-sm uppercase tracking-[0.14em]">ML</span>
               ) : (
-                <Logo size="md" />
+                <Logo size="md" variant="onDark" />
               )}
               <span className={`mt-2 block h-1 bg-primary ${collapsed ? "mx-auto w-7" : "w-12"}`} />
             </Link>
