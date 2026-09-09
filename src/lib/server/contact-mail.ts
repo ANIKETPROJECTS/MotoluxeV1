@@ -23,18 +23,18 @@ function escapeHtml(value: string) {
 }
 
 function getTransporter() {
-  const password = process.env.HOSTINGER_SMTP_PASSWORD?.trim();
+  const password = process.env["HOSTINGER_SMTP_PASSWORD"]?.trim();
   if (!password) {
     throw new Error("HOSTINGER_SMTP_PASSWORD is not configured");
   }
 
-  const port = Number(process.env.HOSTINGER_SMTP_PORT ?? "465");
-  const user = process.env.HOSTINGER_SMTP_USER?.trim() || CONTACT_EMAIL;
+  const port = Number(process.env["HOSTINGER_SMTP_PORT"] ?? "465");
+  const user = process.env["HOSTINGER_SMTP_USER"]?.trim() || CONTACT_EMAIL;
 
   return {
     user,
     transporter: nodemailer.createTransport({
-      host: process.env.HOSTINGER_SMTP_HOST?.trim() || "smtp.hostinger.com",
+      host: process.env["HOSTINGER_SMTP_HOST"]?.trim() || "smtp.hostinger.com",
       port,
       secure: port === 465,
       auth: {
