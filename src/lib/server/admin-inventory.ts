@@ -38,6 +38,7 @@ export type AdminInventoryProduct = {
   name: string;
   slug: string;
   stock: number;
+  updatedAt?: string;
 };
 
 type InventoryProductDocument = {
@@ -166,7 +167,7 @@ export async function listInventory(productId = "", eventType = "", from = "", t
 
   const [productDocuments, movementDocuments] = await Promise.all([
     products
-      .find({}, { projection: { name: 1, slug: 1, stock: 1 } })
+      .find({}, { projection: { name: 1, slug: 1, stock: 1, updatedAt: 1 } })
       .sort({ name: 1 })
       .limit(250)
       .toArray(),
@@ -178,6 +179,7 @@ export async function listInventory(productId = "", eventType = "", from = "", t
     name: product.name,
     slug: product.slug,
     stock: Number.isInteger(product.stock) ? product.stock : 0,
+    updatedAt: product.updatedAt?.toISOString(),
   }));
   const totalUnits = inventoryProducts.reduce((sum, product) => sum + product.stock, 0);
   const lowStock = inventoryProducts.filter(
