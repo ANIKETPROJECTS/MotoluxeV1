@@ -121,18 +121,14 @@ export const Route = createFileRoute("/api/inventory/purchase")({
         const address = typeof delivery?.["address"] === "string" ? delivery["address"].trim() : "";
         const name =
           typeof delivery?.["name"] === "string" ? delivery["name"].trim() : (customer.name ?? "");
-        const email =
-          typeof delivery?.["email"] === "string"
-            ? delivery["email"].trim().toLowerCase()
-            : (customer.email ?? "");
-        if (
-          address.length < 10 ||
-          address.length > 1000 ||
-          name.length < 2 ||
-          name.length > 100 ||
-          (email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-        ) {
-          return jsonError("Enter a valid name, email, and delivery address.", 400);
+        const accountEmail =
+          typeof customer.email === "string" ? customer.email.trim().toLowerCase() : "";
+        const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(accountEmail) ? accountEmail : "";
+        if (address.length < 10 || address.length > 1000 || name.length < 2 || name.length > 100) {
+          return jsonError(
+            "Enter a valid name and a delivery address of at least 10 characters.",
+            400,
+          );
         }
 
         let database;
@@ -182,7 +178,7 @@ export const Route = createFileRoute("/api/inventory/purchase")({
           const price = numericPrice(product.price);
           if (!Number.isFinite(price) || price <= 0) {
             return jsonError(
-              `${product.name} is not currently available for online checkout.`,
+              `${product.name} does not have an online price set yet. Please contact Motoluxe for pricing.`,
               422,
             );
           }

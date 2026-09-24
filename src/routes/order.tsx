@@ -3,6 +3,8 @@ import { ArrowLeft, ArrowRight, LoaderCircle, Minus, Plus } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useCart } from "@/components/CartContext";
 import { useCustomerAuth } from "@/components/CustomerAuthContext";
+import { useStorefrontInventory } from "@/components/StorefrontInventoryContext";
+import { numericPrice } from "@/lib/coupon-types";
 
 export const Route = createFileRoute("/order")({
   head: () => ({
@@ -30,8 +32,22 @@ function OrderPage() {
     removeFromCart,
   } = useCart();
   const { customer, checking, authenticated, openAuth } = useCustomerAuth();
+  const { getStock } = useStorefrontInventory();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const missingPriceLine = lines.find((line) => {
+    const price = numericPrice(line.product.price);
+    return !Number.isFinite(price) || price <= 0;
+  });
+  const lowStockLine = lines
+    .map((line) => ({ line, stock: getStock(line.product.slug) }))
+    .find(({ line, stock }) => stock !== undefined && stock < line.quantity);
+  const checkoutIssue = missingPriceLine
+    ? `${missingPriceLine.product.name} does not have an online price set yet. Please contact Motoluxe for pricing.`
+    : lowStockLine
+      ? `${lowStockLine.line.product.name} has only ${lowStockLine.stock} unit${lowStockLine.stock === 1 ? "" : "s"} available.`
+      : "";
+  const pricesAreValid = !missingPriceLine;
 
   if (pathname === "/order/return") return <Outlet />;
 
@@ -174,14 +190,19 @@ function OrderPage() {
                   id="order-address"
                   name="address"
                   required
+                  minLength={10}
+                  maxLength={1000}
                   rows={5}
                   placeholder="Delivery address and any order notes"
                   className="w-full resize-none border border-input bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary"
                 />
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Include enough detail for delivery, such as your street, area, city, and PIN code.
+                </p>
               </div>
               <button
                 type="submit"
-                disabled={submitting}
+                disabled={submitting || Boolean(checkoutIssue)}
                 className="group inline-flex items-center gap-2 bg-primary px-8 py-4 font-display text-sm uppercase tracking-[0.22em] text-primary-foreground transition-all hover:ember-glow disabled:cursor-wait disabled:opacity-60"
               >
                 {submitting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : null}
@@ -190,6 +211,14 @@ function OrderPage() {
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 )}
               </button>
+              {checkoutIssue && (
+                <p
+                  role="alert"
+                  className="border border-primary/40 bg-primary/10 px-4 py-3 text-xs leading-relaxed text-primary"
+                >
+                  {checkoutIssue}
+                </p>
+              )}
               {error && (
                 <p
                   role="alert"
@@ -274,6 +303,13 @@ function OrderPage() {
                         {line.product.price}
                       </span>
                     </div>
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      {getStock(line.product.slug) === undefined
+                        ? "Checking stock…"
+                        : getStock(line.product.slug) === 0
+                          ? "Out of stock"
+                          : `${getStock(line.product.slug)} in stock`}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -283,9 +319,9 @@ function OrderPage() {
             <div className="grid gap-3 border-t border-border pt-5 text-sm">
               <div className="flex justify-between text-muted-foreground">
                 <span>Subtotal</span>
-                <span>₹{subtotal}</span>
+                <span>{pricesAreValid ? `₹${subtotal}` : "—"}</span>
               </div>
-              {appliedCoupon && discount > 0 && (
+              {pricesAreValid && appliedCoupon && discount > 0 && (
                 <div className="flex justify-between text-accent">
                   <span>Coupon · {appliedCoupon.code}</span>
                   <span>−₹{discount}</span>
@@ -293,7 +329,7 @@ function OrderPage() {
               )}
               <div className="flex justify-between font-display text-lg text-foreground">
                 <span>Total</span>
-                <span>₹{total}</span>
+                <span>{pricesAreValid ? `₹${total}` : "—"}</span>
               </div>
             </div>
           )}
