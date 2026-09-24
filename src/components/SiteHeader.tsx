@@ -9,7 +9,7 @@ import { useWishlist } from "./WishlistContext";
 import { useStorefrontCatalog } from "./StorefrontCatalogContext";
 
 const linkBase =
-  "shrink-0 font-display uppercase tracking-[0.16em] text-[11px] text-muted-foreground transition-colors hover:text-foreground";
+  "focus-ring shrink-0 font-display uppercase tracking-[0.16em] text-[11px] text-muted-foreground transition-colors hover:text-foreground";
 
 function CategoriesMenu() {
   const { products } = useStorefrontCatalog();
@@ -187,7 +187,7 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-xl">
+      <header className="storefront-header sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-xl">
         <div className="hazard-stripes h-1 opacity-80" />
 
         <div className="mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between gap-5 px-5">

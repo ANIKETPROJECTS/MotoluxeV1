@@ -4,7 +4,7 @@ import heroImg from "@/assets/hero-banner.jpg";
 import heroVideo from "@/assets/motoluxe-chain-hero.mp4";
 import { categories } from "@/data/catalog";
 import { ProductCard } from "@/components/ProductCard";
-import { StorefrontCategoryLink, StorefrontProductLink } from "@/components/StorefrontCatalogLink";
+import { StorefrontCategoryLink } from "@/components/StorefrontCatalogLink";
 import { useStorefrontCatalog } from "@/components/StorefrontCatalogContext";
 
 export const Route = createFileRoute("/")({
@@ -81,7 +81,6 @@ function Home() {
     filterFeaturedProducts,
     filterProducts,
     isCategoryPublished,
-    isProductPublished,
   } = useStorefrontCatalog();
   const visibleCategories = filterCategories(categories);
   const visibleProducts = filterProducts(products);
@@ -92,7 +91,7 @@ function Home() {
 
   return (
     <>
-      <section className="relative isolate min-h-[calc(100svh-6.5rem)] overflow-hidden border-b border-border">
+      <section className="relative isolate min-h-[70svh] overflow-hidden border-b border-border">
         <video
           autoPlay
           muted
@@ -114,7 +113,7 @@ function Home() {
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(8,9,11,0.94)_0%,rgba(8,9,11,0.74)_40%,rgba(8,9,11,0.22)_100%)]" />
         <div className="absolute inset-0 grid-lines opacity-20" />
 
-        <div className="relative mx-auto grid min-h-[calc(100svh-6.5rem)] max-w-7xl items-end gap-12 px-5 pb-14 pt-20 lg:grid-cols-[1fr_320px] lg:items-center lg:pb-20">
+        <div className="relative mx-auto grid min-h-[70svh] max-w-7xl items-end gap-12 px-5 pb-14 pt-20 text-white lg:grid-cols-[1fr_320px] lg:items-center lg:pb-20">
           <div className="max-w-3xl rise-in">
             <span className="slash-tag inline-block bg-primary px-3.5 py-1.5 pr-7 font-display text-[11px] uppercase tracking-[0.28em] text-primary-foreground">
               Motoluxe autocare
@@ -124,22 +123,21 @@ function Home() {
               <br />
               Respect the <span className="text-accent">miles.</span>
             </h1>
-            <p className="mt-7 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+            <p className="mt-7 max-w-xl text-base leading-relaxed text-white/75 sm:text-lg">
               Purpose-built care essentials for riders, workshops and dealers who know that the
               details show up in every mile.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
-              <Link
-                to="/category/$category"
-                params={{ category: "chain-care" }}
-                className="group inline-flex items-center gap-3 bg-primary px-7 py-4 font-display text-sm uppercase tracking-[0.22em] text-primary-foreground transition-all hover:shadow-[0_16px_40px_-16px_rgba(230,30,35,0.95)]"
+              <a
+                href="#shop-products"
+                className="focus-ring group inline-flex items-center gap-3 bg-primary px-7 py-4 font-display text-sm uppercase tracking-[0.22em] text-primary-foreground transition-all hover:shadow-[0_16px_40px_-16px_rgba(230,30,35,0.95)]"
               >
                 Shop all products
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
+              </a>
               <Link
                 to="/contact"
-                className="inline-flex items-center gap-2 border border-white/25 bg-black/20 px-7 py-4 font-display text-sm uppercase tracking-[0.22em] text-foreground backdrop-blur transition-colors hover:border-accent hover:text-accent"
+                className="focus-ring inline-flex items-center gap-2 border border-white/25 bg-black/20 px-7 py-4 font-display text-sm uppercase tracking-[0.22em] text-white backdrop-blur transition-colors hover:border-accent hover:text-accent"
               >
                 Dealer support
                 <ArrowUpRight className="h-4 w-4" />
@@ -147,7 +145,7 @@ function Home() {
             </div>
           </div>
 
-          <div className="hidden border border-white/20 bg-black/45 p-5 backdrop-blur-md lg:block">
+          <div className="hidden border border-white/20 bg-black/45 p-5 text-white backdrop-blur-md lg:block">
             <div className="flex items-center justify-between border-b border-white/15 pb-4">
               <span className="eyebrow text-accent">The Motoluxe edit</span>
               <Sparkles className="h-4 w-4 text-accent" />
@@ -189,45 +187,21 @@ function Home() {
         </div>
       </section>
 
-      <section className="border-b border-border bg-background">
-        <div className="mx-auto max-w-7xl px-5 py-14">
+      <section id="shop-products" className="scroll-mt-24 border-b border-border bg-background">
+        <div className="mx-auto max-w-7xl px-5 py-16 lg:py-20">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <span className="eyebrow text-primary">Shop the essentials</span>
-              <h2 className="mt-3 text-2xl font-semibold sm:text-3xl">Pick your product</h2>
+              <span className="eyebrow text-primary">Shop Motoluxe</span>
+              <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">Care for the next ride.</h2>
             </div>
             <span className="text-sm text-muted-foreground">
-              Tap any product to view details and add it to your cart.
+              {visibleProducts.length} essentials · straightforward care, ready to ship
             </span>
           </div>
           {visibleProducts.length > 0 ? (
-            <div className="mt-9 grid grid-cols-2 gap-7 sm:grid-cols-5 sm:gap-5">
+            <div className="mt-9 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-5">
               {visibleProducts.map((product) => (
-                <StorefrontProductLink
-                  key={product.slug}
-                  slug={product.slug}
-                  available={isProductPublished(product.slug)}
-                  className="group flex flex-col items-center text-center"
-                >
-                  <span className="relative grid h-28 w-28 place-items-center overflow-hidden rounded-full border border-border bg-surface p-1 transition-all duration-500 group-hover:scale-105 group-hover:border-primary group-hover:shadow-[0_14px_35px_-18px_rgba(230,30,35,0.9)] sm:h-32 sm:w-32">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      loading="lazy"
-                      width={256}
-                      height={256}
-                      className="h-full w-full rounded-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <span className="absolute inset-0 rounded-full bg-linear-to-t from-black/50 via-transparent to-transparent" />
-                    <ArrowUpRight className="absolute bottom-3 right-3 h-4 w-4 text-white opacity-0 transition-opacity group-hover:opacity-100" />
-                  </span>
-                  <span className="mt-4 max-w-[9rem] font-display text-sm uppercase tracking-[0.08em] text-foreground transition-colors group-hover:text-primary">
-                    {product.name}
-                  </span>
-                  <span className="mt-1 text-xs text-muted-foreground">
-                    {isProductPublished(product.slug) ? "View product" : "Not available"}
-                  </span>
-                </StorefrontProductLink>
+                <ProductCard key={product.slug} product={product} />
               ))}
             </div>
           ) : (
@@ -312,7 +286,7 @@ function Home() {
             </Link>
           </div>
           {visibleFeaturedProducts.length > 0 ? (
-            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+            <div className="mt-12 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-5">
               {visibleFeaturedProducts.map((product) => (
                 <ProductCard key={product.slug} product={product} />
               ))}

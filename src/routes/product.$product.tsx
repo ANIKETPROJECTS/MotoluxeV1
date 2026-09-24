@@ -129,13 +129,13 @@ function ProductPage() {
 
       <div className="mt-10 grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
         <div>
-          <div className="relative overflow-hidden border border-border bg-card">
+          <div className="product-card-image relative overflow-hidden border border-border">
             <img
               src={product.image}
               alt={product.name}
               width={640}
               height={800}
-              className="aspect-4/5 w-full object-cover transition-transform duration-700 hover:scale-[1.02]"
+              className="aspect-[4/5] w-full object-contain p-8 transition-transform duration-500 hover:scale-[1.025] sm:p-12"
             />
             <div className="pointer-events-none absolute inset-0 bg-linear-to-tr from-black/30 via-transparent to-white/10" />
             <span className="slash-tag absolute left-0 top-5 bg-primary px-3.5 py-1.5 pr-6 font-display text-[11px] uppercase tracking-[0.24em] text-primary-foreground">
