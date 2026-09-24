@@ -75,10 +75,16 @@ const careSteps = [
 ];
 
 function Home() {
-  const { products, filterCategories, filterProducts, isCategoryPublished } =
-    useStorefrontCatalog();
+  const {
+    products,
+    filterCategories,
+    filterFeaturedProducts,
+    filterProducts,
+    isCategoryPublished,
+  } = useStorefrontCatalog();
   const visibleCategories = filterCategories(categories);
   const visibleProducts = filterProducts(products);
+  const visibleFeaturedProducts = filterFeaturedProducts(products);
   const activeHighlights = highlights.map((highlight, index) =>
     index === 0 ? { ...highlight, value: String(products.length).padStart(2, "0") } : highlight,
   );
@@ -182,20 +188,42 @@ function Home() {
       </section>
 
       <section id="shop-products" className="scroll-mt-24 border-b border-border bg-background">
-        <div className="mx-auto max-w-7xl px-5 py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-5 py-14">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <span className="eyebrow text-primary">Shop Motoluxe</span>
-              <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">Care for the next ride.</h2>
+              <span className="eyebrow text-primary">Shop the essentials</span>
+              <h2 className="mt-3 text-2xl font-semibold sm:text-3xl">Pick your product</h2>
             </div>
             <span className="text-sm text-muted-foreground">
-              {visibleProducts.length} essentials · straightforward care, ready to ship
+              Tap any product to view details and add it to your cart.
             </span>
           </div>
           {visibleProducts.length > 0 ? (
-            <div className="mt-9 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-5">
+            <div className="mt-9 grid grid-cols-2 gap-7 sm:grid-cols-5 sm:gap-5">
               {visibleProducts.map((product) => (
-                <ProductCard key={product.slug} product={product} />
+                <Link
+                  key={product.slug}
+                  to="/product/$product"
+                  params={{ product: product.slug }}
+                  className="group flex flex-col items-center text-center"
+                >
+                  <span className="relative grid h-28 w-28 place-items-center overflow-hidden rounded-full border border-border bg-surface p-1 transition-transform duration-500 group-hover:scale-105 sm:h-32 sm:w-32">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      loading="lazy"
+                      width={256}
+                      height={256}
+                      className="h-full w-full rounded-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <span className="absolute inset-0 rounded-full bg-linear-to-t from-black/50 via-transparent to-transparent" />
+                    <ArrowUpRight className="absolute bottom-3 right-3 h-4 w-4 text-white opacity-0 transition-opacity group-hover:opacity-100" />
+                  </span>
+                  <span className="mt-4 max-w-[9rem] font-display text-sm uppercase tracking-[0.08em] text-foreground">
+                    {product.name}
+                  </span>
+                  <span className="mt-1 text-xs text-muted-foreground">View product</span>
+                </Link>
               ))}
             </div>
           ) : (
@@ -261,6 +289,38 @@ function Home() {
               </p>
               <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
                 Our public care collections are temporarily unavailable. Please check back soon.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="border-y border-border bg-surface py-24 lg:py-28">
+        <div className="mx-auto max-w-7xl px-5">
+          <div className="flex flex-wrap items-end justify-between gap-5">
+            <SectionHead eyebrow="The five essentials" title="The Motoluxe range" />
+            <Link
+              to="/contact"
+              className="group inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.2em] text-accent"
+            >
+              Need a dealer pack?
+              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </div>
+          {visibleFeaturedProducts.length > 0 ? (
+            <div className="mt-12 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-5">
+              {visibleFeaturedProducts.map((product) => (
+                <ProductCard key={product.slug} product={product} />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-12 border border-border bg-background px-6 py-10 text-center">
+              <p className="font-display text-sm uppercase tracking-[0.18em] text-primary">
+                Featured products are being prepared
+              </p>
+              <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
+                There are no featured products published right now. Browse the available care
+                collections or check back soon.
               </p>
             </div>
           )}
