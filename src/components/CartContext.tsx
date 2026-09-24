@@ -408,127 +408,126 @@ export function CartPanel() {
               ))}
             </div>
           )}
-        </div>
-
-        {lines.length > 0 && (
-          <footer className="shrink-0 border-t border-border bg-surface px-5 py-5">
-            <form
-              onSubmit={(event) => {
-                event.preventDefault();
-                if (couponCode.trim()) applyCoupon(couponCode);
-              }}
-              className="mb-5 border-b border-border pb-5"
-            >
-              <label
-                htmlFor="cart-coupon"
-                className="flex items-center gap-2 font-display text-xs uppercase tracking-[0.16em] text-muted-foreground"
+          {lines.length > 0 && (
+            <footer className="-mx-5 mt-5 border-t border-border bg-surface px-5 py-5">
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  if (couponCode.trim()) applyCoupon(couponCode);
+                }}
+                className="mb-5 border-b border-border pb-5"
               >
-                <Tag className="h-3.5 w-3.5 text-accent" />
-                Have a coupon?
-              </label>
-              <div className="mt-3 flex gap-2">
-                <input
-                  id="cart-coupon"
-                  value={couponCode}
-                  onChange={(event) => {
-                    setCouponCode(event.target.value.toUpperCase());
-                  }}
-                  placeholder="Enter code"
-                  className="min-w-0 flex-1 border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
-                />
-                <button
-                  type="submit"
-                  disabled={!couponCode.trim()}
-                  className="border border-border px-4 py-2 font-display text-[10px] uppercase tracking-[0.16em] text-foreground transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+                <label
+                  htmlFor="cart-coupon"
+                  className="flex items-center gap-2 font-display text-xs uppercase tracking-[0.16em] text-muted-foreground"
                 >
-                  Apply
-                </button>
-              </div>
-              {couponError && <p className="mt-2 text-xs text-primary">{couponError}</p>}
-              {appliedCoupon && (
-                <div className="mt-3 flex items-center justify-between gap-3 border border-accent/30 bg-accent/10 px-3 py-2 text-xs text-accent">
-                  <span className="flex items-center gap-2">
-                    <Check className="h-3.5 w-3.5" />
-                    {appliedCoupon.code} applied · save ₹{discount}
-                  </span>
-                  <button type="button" onClick={removeCoupon} className="hover:text-foreground">
-                    Remove
+                  <Tag className="h-3.5 w-3.5 text-accent" />
+                  Have a coupon?
+                </label>
+                <div className="mt-3 flex gap-2">
+                  <input
+                    id="cart-coupon"
+                    value={couponCode}
+                    onChange={(event) => {
+                      setCouponCode(event.target.value.toUpperCase());
+                    }}
+                    placeholder="Enter code"
+                    className="min-w-0 flex-1 border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!couponCode.trim()}
+                    className="border border-border px-4 py-2 font-display text-[10px] uppercase tracking-[0.16em] text-foreground transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Apply
                   </button>
                 </div>
-              )}
-              {coupons.length > 0 && (
-                <div className="mt-4 grid gap-2">
-                  <span className="eyebrow text-muted-foreground">Available offers</span>
-                  {coupons.map((coupon) => (
-                    <button
-                      key={coupon.id}
-                      type="button"
-                      onClick={() => {
-                        setCouponCode(coupon.code);
-                        applyCoupon(coupon.code);
-                      }}
-                      className="flex items-start justify-between gap-3 border border-border bg-background px-3 py-2 text-left"
-                    >
-                      <span>
-                        <span className="font-display text-xs tracking-[0.1em] text-accent">
-                          {coupon.code}
-                        </span>
-                        {coupon.description && (
-                          <span className="mt-1 block text-[11px] text-muted-foreground">
-                            {coupon.description}
-                          </span>
-                        )}
-                      </span>
-                      <span className="max-w-44 text-right text-[10px] text-muted-foreground">
-                        {formatCouponOffer(coupon)}
-                      </span>
+                {couponError && <p className="mt-2 text-xs text-primary">{couponError}</p>}
+                {appliedCoupon && (
+                  <div className="mt-3 flex items-center justify-between gap-3 border border-accent/30 bg-accent/10 px-3 py-2 text-xs text-accent">
+                    <span className="flex items-center gap-2">
+                      <Check className="h-3.5 w-3.5" />
+                      {appliedCoupon.code} applied · save ₹{discount}
+                    </span>
+                    <button type="button" onClick={removeCoupon} className="hover:text-foreground">
+                      Remove
                     </button>
-                  ))}
+                  </div>
+                )}
+                {coupons.length > 0 && (
+                  <div className="mt-4 grid gap-2">
+                    <span className="eyebrow text-muted-foreground">Available offers</span>
+                    {coupons.map((coupon) => (
+                      <button
+                        key={coupon.id}
+                        type="button"
+                        onClick={() => {
+                          setCouponCode(coupon.code);
+                          applyCoupon(coupon.code);
+                        }}
+                        className="flex items-start justify-between gap-3 border border-border bg-background px-3 py-2 text-left"
+                      >
+                        <span>
+                          <span className="font-display text-xs tracking-[0.1em] text-accent">
+                            {coupon.code}
+                          </span>
+                          {coupon.description && (
+                            <span className="mt-1 block text-[11px] text-muted-foreground">
+                              {coupon.description}
+                            </span>
+                          )}
+                        </span>
+                        <span className="max-w-44 text-right text-[10px] text-muted-foreground">
+                          {formatCouponOffer(coupon)}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </form>
+              <div className="mb-4 grid gap-2 border-b border-border pb-4 text-xs">
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Subtotal</span>
+                  <span>₹{subtotal}</span>
                 </div>
-              )}
-            </form>
-            <div className="mb-4 grid gap-2 border-b border-border pb-4 text-xs">
-              <div className="flex justify-between text-muted-foreground">
-                <span>Subtotal</span>
-                <span>₹{subtotal}</span>
-              </div>
-              {discount > 0 && (
-                <div className="flex justify-between text-accent">
-                  <span>Coupon discount</span>
-                  <span>−₹{discount}</span>
+                {discount > 0 && (
+                  <div className="flex justify-between text-accent">
+                    <span>Coupon discount</span>
+                    <span>−₹{discount}</span>
+                  </div>
+                )}
+                <div className="flex justify-between font-display text-sm text-foreground">
+                  <span>Total</span>
+                  <span>₹{total}</span>
                 </div>
-              )}
-              <div className="flex justify-between font-display text-sm text-foreground">
-                <span>Total</span>
-                <span>₹{total}</span>
               </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="eyebrow text-muted-foreground">
-                {itemCount} item{itemCount === 1 ? "" : "s"} selected
-              </span>
-              <span className="font-display text-sm uppercase tracking-[0.12em] text-accent">
-                Order ready
-              </span>
-            </div>
-            <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-              Review this selection before placing your order.
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                closeCart();
-                openAuth(() => {
-                  void navigate({ to: "/order" });
-                });
-              }}
-              className="group mt-5 flex items-center justify-center gap-2 bg-primary px-5 py-4 font-display text-xs uppercase tracking-[0.2em] text-primary-foreground"
-            >
-              Place order
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </button>
-          </footer>
-        )}
+              <div className="flex items-center justify-between">
+                <span className="eyebrow text-muted-foreground">
+                  {itemCount} item{itemCount === 1 ? "" : "s"} selected
+                </span>
+                <span className="font-display text-sm uppercase tracking-[0.12em] text-accent">
+                  Order ready
+                </span>
+              </div>
+              <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+                Review this selection before placing your order.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  closeCart();
+                  openAuth(() => {
+                    void navigate({ to: "/order" });
+                  });
+                }}
+                className="group mt-5 flex items-center justify-center gap-2 bg-primary px-5 py-4 font-display text-xs uppercase tracking-[0.2em] text-primary-foreground"
+              >
+                Place order
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </button>
+            </footer>
+          )}
+        </div>
       </aside>
     </>
   );

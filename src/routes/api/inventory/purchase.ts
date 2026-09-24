@@ -121,9 +121,7 @@ export const Route = createFileRoute("/api/inventory/purchase")({
         const address = typeof delivery?.["address"] === "string" ? delivery["address"].trim() : "";
         const name =
           typeof delivery?.["name"] === "string" ? delivery["name"].trim() : (customer.name ?? "");
-        const accountEmail =
-          typeof customer.email === "string" ? customer.email.trim().toLowerCase() : "";
-        const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(accountEmail) ? accountEmail : "";
+        const email = "";
         if (address.length < 10 || address.length > 1000 || name.length < 2 || name.length > 100) {
           return jsonError(
             "Enter a valid name and a delivery address of at least 10 characters.",
