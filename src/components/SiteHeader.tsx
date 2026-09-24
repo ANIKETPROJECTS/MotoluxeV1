@@ -9,7 +9,7 @@ import { useWishlist } from "./WishlistContext";
 import { useStorefrontCatalog } from "./StorefrontCatalogContext";
 
 const linkBase =
-  "focus-ring shrink-0 font-display uppercase tracking-[0.16em] text-[11px] text-muted-foreground transition-colors hover:text-foreground";
+  "focus-ring shrink-0 font-display uppercase tracking-[0.16em] text-[11px] text-muted-foreground";
 
 function CategoriesMenu() {
   const { products } = useStorefrontCatalog();
@@ -81,7 +81,7 @@ function CategoriesMenu() {
                   className={`group/category flex items-center justify-between border border-transparent px-2.5 py-2.5 font-display text-xs uppercase tracking-[0.1em] transition-colors ${
                     isActive
                       ? "border-primary/40 bg-primary/10 text-primary"
-                      : "text-foreground hover:border-border hover:bg-background"
+                      : "text-foreground"
                   }`}
                 >
                   <span>
@@ -109,13 +109,13 @@ function CategoriesMenu() {
                         setOpen(false);
                         setActiveCategory(null);
                       }}
-                      className="group/category flex items-center justify-between border-b border-border pb-2 font-display text-xs uppercase tracking-[0.12em] text-foreground transition-colors hover:text-primary"
+                      className="group/category flex items-center justify-between border-b border-border pb-2 font-display text-xs uppercase tracking-[0.12em] text-foreground"
                     >
                       <span>
                         <span className="mr-2 text-accent">{category.index}</span>
                         {category.name}
                       </span>
-                      <span className="text-[10px] text-muted-foreground transition-colors group-hover/category:text-primary">
+                      <span className="text-[10px] text-muted-foreground">
                         View all
                       </span>
                     </Link>
@@ -131,7 +131,7 @@ function CategoriesMenu() {
                               setOpen(false);
                               setActiveCategory(null);
                             }}
-                            className="border border-transparent px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:border-border hover:bg-background hover:text-foreground"
+                            className="border border-transparent px-2 py-1.5 text-xs text-muted-foreground"
                           >
                             <span className="block font-display uppercase tracking-[0.08em]">
                               {product.name}
@@ -202,7 +202,7 @@ export function SiteHeader() {
               <Link
                 to="/profile"
                 aria-label="Open your profile"
-                className="flex items-center gap-2 border border-border bg-surface px-2 py-2 font-display text-[10px] uppercase tracking-[0.14em] text-foreground transition-colors hover:border-primary hover:text-primary sm:px-3"
+                className="flex items-center gap-2 border border-border bg-surface px-2 py-2 font-display text-[10px] uppercase tracking-[0.14em] text-foreground sm:px-3"
               >
                 <AccountIcon />
                 <span className="hidden max-w-[7rem] truncate sm:block">
@@ -214,7 +214,7 @@ export function SiteHeader() {
                 type="button"
                 aria-label="Sign in"
                 onClick={() => openAuth()}
-                className="flex items-center gap-2 border border-border bg-surface px-2 py-2 font-display text-[10px] uppercase tracking-[0.14em] text-foreground transition-colors hover:border-primary hover:text-primary sm:px-3"
+                className="flex items-center gap-2 border border-border bg-surface px-2 py-2 font-display text-[10px] uppercase tracking-[0.14em] text-foreground sm:px-3"
               >
                 <AccountIcon />
                 <span className="hidden sm:block">Sign in</span>
@@ -233,7 +233,7 @@ export function SiteHeader() {
                 aria-label={`Open wishlist, ${wishlistCount} item${wishlistCount === 1 ? "" : "s"}`}
                 aria-expanded={wishlistOpen}
                 onClick={() => setWishlistOpen((isOpen) => !isOpen)}
-                className={`relative grid h-10 w-10 place-items-center border bg-surface text-foreground transition-colors hover:border-primary hover:text-primary ${
+                className={`relative grid h-10 w-10 place-items-center border bg-surface text-foreground ${
                   wishlistOpen ? "border-primary text-primary" : "border-border"
                 }`}
               >
@@ -256,7 +256,7 @@ export function SiteHeader() {
                       type="button"
                       aria-label="Close wishlist"
                       onClick={() => setWishlistOpen(false)}
-                      className="text-muted-foreground transition-colors hover:text-foreground"
+                      className="text-muted-foreground"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -267,7 +267,7 @@ export function SiteHeader() {
                       {wishlist.map((product) => (
                         <div
                           key={product.slug}
-                          className="flex items-center gap-3 border border-transparent p-2 hover:border-border hover:bg-background"
+                          className="flex items-center gap-3 border border-transparent p-2"
                         >
                           <Link
                             to="/product/$product"
@@ -295,7 +295,7 @@ export function SiteHeader() {
                             type="button"
                             aria-label={`Remove ${product.name} from wishlist`}
                             onClick={() => removeFromWishlist(product.slug)}
-                            className="shrink-0 p-1 text-muted-foreground transition-colors hover:text-primary"
+                            className="shrink-0 p-1 text-muted-foreground"
                           >
                             <X className="h-4 w-4" />
                           </button>
@@ -314,7 +314,7 @@ export function SiteHeader() {
               type="button"
               aria-label={`Open cart, ${itemCount} item${itemCount === 1 ? "" : "s"}`}
               onClick={openCart}
-              className="relative grid h-10 w-10 place-items-center border border-border bg-surface text-foreground transition-colors hover:border-primary hover:text-primary"
+              className="relative grid h-10 w-10 place-items-center border border-border bg-surface text-foreground"
             >
               <ShoppingCart className="h-4 w-4" />
               <span className="absolute -right-1.5 -top-1.5 grid h-4 w-4 place-items-center bg-accent font-display text-[10px] text-accent-foreground">

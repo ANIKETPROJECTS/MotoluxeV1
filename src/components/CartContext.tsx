@@ -308,7 +308,7 @@ export function CartPanel() {
             type="button"
             aria-label="Close cart"
             onClick={closeCart}
-            className="grid h-10 w-10 place-items-center border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+            className="grid h-10 w-10 place-items-center border border-border text-muted-foreground"
           >
             <X className="h-4 w-4" />
           </button>
@@ -361,7 +361,7 @@ export function CartPanel() {
                           type="button"
                           aria-label={`Remove ${line.product.name}`}
                           onClick={() => removeFromCart(line.product.slug)}
-                          className="text-muted-foreground transition-colors hover:text-primary"
+                          className="text-muted-foreground"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -382,7 +382,7 @@ export function CartPanel() {
                                 updateQuantity(line.product.slug, line.quantity - 1);
                               }
                             }}
-                            className="grid h-8 w-8 place-items-center transition-colors hover:bg-surface-raised"
+                            className="grid h-8 w-8 place-items-center"
                           >
                             <Minus className="h-3.5 w-3.5" />
                           </button>
@@ -393,7 +393,7 @@ export function CartPanel() {
                             type="button"
                             aria-label={`Increase ${line.product.name} quantity`}
                             onClick={() => updateQuantity(line.product.slug, line.quantity + 1)}
-                            className="grid h-8 w-8 place-items-center transition-colors hover:bg-surface-raised"
+                            className="grid h-8 w-8 place-items-center"
                           >
                             <Plus className="h-3.5 w-3.5" />
                           </button>
@@ -437,7 +437,7 @@ export function CartPanel() {
                   <button
                     type="submit"
                     disabled={!couponCode.trim()}
-                    className="border border-border px-4 py-2 font-display text-[10px] uppercase tracking-[0.16em] text-foreground transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+                    className="border border-border px-4 py-2 font-display text-[10px] uppercase tracking-[0.16em] text-foreground disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Apply
                   </button>
@@ -449,7 +449,7 @@ export function CartPanel() {
                       <Check className="h-3.5 w-3.5" />
                       {appliedCoupon.code} applied · save ₹{discount}
                     </span>
-                    <button type="button" onClick={removeCoupon} className="hover:text-foreground">
+                    <button type="button" onClick={removeCoupon}>
                       Remove
                     </button>
                   </div>

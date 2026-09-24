@@ -153,7 +153,7 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
                 type="button"
                 aria-label="Close sign in"
                 onClick={closeAuth}
-                className="grid h-9 w-9 place-items-center border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                className="grid h-9 w-9 place-items-center border border-border text-muted-foreground"
               >
                 <X className="h-4 w-4" />
               </button>
