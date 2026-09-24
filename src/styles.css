@@ -6,7 +6,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Motoluxe storefront — workshop charcoal, warm porcelain and signal vermilion.
+ * Motoluxe storefront — workshop charcoal, dark racing red and muted brass.
  * Admin surfaces keep their independent control-room theme below.
  */
 
@@ -54,7 +54,7 @@
   --popover: oklch(0.18 0.009 260);
   --popover-foreground: oklch(0.96 0.003 260);
 
-  /* Signal vermilion */
+  /* Dark racing red */
   --primary: oklch(0.48 0.19 28);
   --primary-foreground: oklch(0.99 0.003 80);
 
@@ -68,7 +68,7 @@
   --accent: oklch(0.78 0.13 68);
   --accent-foreground: oklch(0.17 0.01 48);
 
-  --destructive: oklch(0.57 0.21 31);
+  --destructive: oklch(0.48 0.19 28);
   --destructive-foreground: oklch(0.99 0.003 80);
 
   --border: oklch(0.3 0.008 260);
@@ -158,43 +158,34 @@
 }
 
 .storefront-site {
-  --primary-hover: var(--primary);
+  color-scheme: dark;
 }
 
-/* Public controls keep their resting colors on hover; motion remains available. */
-.storefront-site .text-primary.hover\:text-accent:hover,
-.storefront-site .text-primary.hover\:text-foreground:hover {
-  color: var(--primary) !important;
-}
-
-.storefront-site .text-accent.hover\:text-primary:hover {
-  color: var(--accent) !important;
-}
-
-.storefront-site .text-foreground.hover\:text-primary:hover,
-.storefront-site .text-foreground.hover\:text-accent:hover {
-  color: var(--foreground) !important;
-}
-
-.storefront-site .text-muted-foreground.hover\:text-primary:hover,
-.storefront-site .text-muted-foreground.hover\:text-foreground:hover {
-  color: var(--muted-foreground) !important;
-}
-
-.storefront-site .bg-primary:hover {
+/* Shared controls retain their resting colors on the storefront; admin stays independent. */
+.storefront-site .bg-primary.hover\:bg-primary\/90:hover,
+.storefront-site .bg-primary.hover\:bg-primary\/80:hover {
   background-color: var(--primary) !important;
 }
 
-.storefront-site .bg-background:hover {
-  background-color: var(--background) !important;
+.storefront-site .bg-destructive.hover\:bg-destructive\/90:hover,
+.storefront-site .bg-destructive.hover\:bg-destructive\/80:hover {
+  background-color: var(--destructive) !important;
 }
 
-.storefront-site .bg-secondary:hover {
+.storefront-site .bg-secondary.hover\:bg-secondary\/80:hover {
   background-color: var(--secondary) !important;
 }
 
-.storefront-site .border-border:hover {
-  border-color: var(--border) !important;
+.storefront-site .bg-background.hover\:bg-accent:hover {
+  background-color: var(--background) !important;
+}
+
+.storefront-site .hover\:bg-accent:hover {
+  background-color: transparent !important;
+}
+
+.storefront-site .hover\:text-accent-foreground:hover {
+  color: var(--foreground) !important;
 }
 
 .admin-theme .admin-content-scroll {

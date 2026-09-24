@@ -99,10 +99,7 @@ function OrderPage() {
 
   return (
     <section className="mx-auto max-w-7xl px-5 py-16 lg:py-20">
-      <Link
-        to="/"
-        className="inline-flex items-center gap-2 text-xs text-muted-foreground transition-colors hover:text-primary"
-      >
+      <Link to="/" className="inline-flex items-center gap-2 text-xs text-muted-foreground">
         <ArrowLeft className="h-3.5 w-3.5" />
         Continue shopping
       </Link>
@@ -266,7 +263,7 @@ function OrderPage() {
                       <button
                         type="button"
                         onClick={() => removeFromCart(line.product.slug)}
-                        className="text-xs text-muted-foreground transition-colors hover:text-primary"
+                        className="text-xs text-muted-foreground"
                       >
                         Remove
                       </button>
@@ -283,7 +280,7 @@ function OrderPage() {
                               updateQuantity(line.product.slug, line.quantity - 1);
                             }
                           }}
-                          className="grid h-8 w-8 place-items-center transition-colors hover:bg-surface-raised"
+                          className="grid h-8 w-8 place-items-center"
                         >
                           <Minus className="h-3.5 w-3.5" />
                         </button>
@@ -294,7 +291,7 @@ function OrderPage() {
                           type="button"
                           aria-label={`Increase ${line.product.name} quantity`}
                           onClick={() => updateQuantity(line.product.slug, line.quantity + 1)}
-                          className="grid h-8 w-8 place-items-center transition-colors hover:bg-surface-raised"
+                          className="grid h-8 w-8 place-items-center"
                         >
                           <Plus className="h-3.5 w-3.5" />
                         </button>

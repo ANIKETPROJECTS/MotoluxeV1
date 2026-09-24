@@ -75,16 +75,10 @@ const careSteps = [
 ];
 
 function Home() {
-  const {
-    products,
-    filterCategories,
-    filterFeaturedProducts,
-    filterProducts,
-    isCategoryPublished,
-  } = useStorefrontCatalog();
+  const { products, filterCategories, filterProducts, isCategoryPublished } =
+    useStorefrontCatalog();
   const visibleCategories = filterCategories(categories);
   const visibleProducts = filterProducts(products);
-  const visibleFeaturedProducts = filterFeaturedProducts(products);
   const activeHighlights = highlights.map((highlight, index) =>
     index === 0 ? { ...highlight, value: String(products.length).padStart(2, "0") } : highlight,
   );
@@ -244,7 +238,7 @@ function Home() {
                 className="absolute inset-0 h-full w-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-linear-to-t from-background via-background/55 to-transparent" />
-              <div className="absolute right-5 top-5 font-display text-6xl font-bold text-primary/70">
+              <div className="absolute right-5 top-5 font-display text-6xl font-bold text-primary">
                 {category.index}
               </div>
               <div className="absolute inset-x-0 bottom-0 p-6">
@@ -267,38 +261,6 @@ function Home() {
               </p>
               <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
                 Our public care collections are temporarily unavailable. Please check back soon.
-              </p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      <section className="border-y border-border bg-surface py-24 lg:py-28">
-        <div className="mx-auto max-w-7xl px-5">
-          <div className="flex flex-wrap items-end justify-between gap-5">
-            <SectionHead eyebrow="The five essentials" title="The Motoluxe range" />
-            <Link
-              to="/contact"
-              className="group inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.2em] text-accent"
-            >
-              Need a dealer pack?
-              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </div>
-          {visibleFeaturedProducts.length > 0 ? (
-            <div className="mt-12 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-5">
-              {visibleFeaturedProducts.map((product) => (
-                <ProductCard key={product.slug} product={product} />
-              ))}
-            </div>
-          ) : (
-            <div className="mt-12 border border-border bg-background px-6 py-10 text-center">
-              <p className="font-display text-sm uppercase tracking-[0.18em] text-primary">
-                Featured products are being prepared
-              </p>
-              <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
-                There are no featured products published right now. Browse the available care
-                collections or check back soon.
               </p>
             </div>
           )}

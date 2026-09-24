@@ -78,10 +78,8 @@ function CategoriesMenu() {
                     setOpen(false);
                     setActiveCategory(null);
                   }}
-                  className={`group/category flex items-center justify-between border border-transparent px-2.5 py-2.5 font-display text-xs uppercase tracking-[0.1em] transition-colors ${
-                    isActive
-                      ? "border-primary/40 bg-primary/10 text-primary"
-                      : "text-foreground"
+                  className={`group/category flex items-center justify-between border border-transparent px-2.5 py-2.5 font-display text-xs uppercase tracking-[0.1em] text-foreground ${
+                    isActive ? "font-semibold" : ""
                   }`}
                 >
                   <span>
@@ -115,9 +113,7 @@ function CategoriesMenu() {
                         <span className="mr-2 text-accent">{category.index}</span>
                         {category.name}
                       </span>
-                      <span className="text-[10px] text-muted-foreground">
-                        View all
-                      </span>
+                      <span className="text-[10px] text-muted-foreground">View all</span>
                     </Link>
                     <div className="mt-2 grid gap-1">
                       {products

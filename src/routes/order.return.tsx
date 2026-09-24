@@ -167,14 +167,14 @@ function PaymentReturnPage() {
           ) : (
             <Link
               to="/order"
-              className="inline-flex items-center gap-2 border border-border px-5 py-4 font-display text-xs uppercase tracking-[0.16em] text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+              className="inline-flex items-center gap-2 border border-border px-5 py-4 font-display text-xs uppercase tracking-[0.16em] text-muted-foreground"
             >
               Return to checkout
             </Link>
           )}
           <Link
             to="/"
-            className="inline-flex items-center border border-border px-5 py-4 font-display text-xs uppercase tracking-[0.16em] text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+            className="inline-flex items-center border border-border px-5 py-4 font-display text-xs uppercase tracking-[0.16em] text-muted-foreground"
           >
             Continue shopping
           </Link>

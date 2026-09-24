@@ -43,10 +43,7 @@ export function SiteFooter() {
               </li>
             ))}
             <li>
-              <Link
-                to="/contact"
-                className="text-sm text-muted-foreground"
-              >
+              <Link to="/contact" className="text-sm text-muted-foreground">
                 Contact Us
               </Link>
             </li>
@@ -58,19 +55,13 @@ export function SiteFooter() {
           <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
             <li className="flex gap-2.5">
               <Mail className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-              <a href="mailto:info@motoluxe.co.in">
-                info@motoluxe.co.in
-              </a>
+              <a href="mailto:info@motoluxe.co.in">info@motoluxe.co.in</a>
             </li>
             <li className="flex gap-2.5">
               <Phone className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
               <span className="flex flex-col gap-1">
-                <a href="tel:+919172477222">
-                  +91 91724 77222
-                </a>
-                <a href="tel:+917304577779">
-                  +91 73045 77779
-                </a>
+                <a href="tel:+919172477222">+91 91724 77222</a>
+                <a href="tel:+917304577779">+91 73045 77779</a>
               </span>
             </li>
             <li className="flex gap-2.5">

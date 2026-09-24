@@ -72,13 +72,11 @@ function CategoryPage() {
         <div className="relative mx-auto grid max-w-7xl gap-10 px-5 py-20 lg:grid-cols-[1fr_300px] lg:items-end lg:py-28">
           <div>
             <nav className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Link to="/" className="transition-colors hover:text-primary">
-                Home
-              </Link>
+              <Link to="/">Home</Link>
               <ChevronRight className="h-3 w-3" />
               <span className="text-foreground">{category.name}</span>
             </nav>
-            <span className="mt-12 block font-display text-7xl font-bold text-primary/50">
+            <span className="mt-12 block font-display text-7xl font-bold text-primary">
               {category.index}
             </span>
             <span className="eyebrow mt-2 block text-accent">{category.short}</span>

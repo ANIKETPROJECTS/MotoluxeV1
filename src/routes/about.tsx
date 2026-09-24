@@ -97,7 +97,7 @@ function AboutPage() {
               </Link>
               <Link
                 to="/contact"
-                className="inline-flex items-center gap-2 border border-border px-7 py-4 font-display text-xs uppercase tracking-[0.22em] text-foreground transition-colors hover:border-primary hover:text-primary"
+                className="inline-flex items-center gap-2 border border-border px-7 py-4 font-display text-xs uppercase tracking-[0.22em] text-foreground"
               >
                 Talk to Motoluxe
               </Link>
@@ -169,7 +169,7 @@ function AboutPage() {
             {principles.map((principle) => (
               <article key={principle.number} className="bg-card p-7">
                 <div className="flex items-center justify-between border-b border-border pb-5">
-                  <span className="font-display text-5xl font-bold text-primary/70">
+                  <span className="font-display text-5xl font-bold text-primary">
                     {principle.number}
                   </span>
                   <span className="font-display text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
@@ -205,9 +205,7 @@ function AboutPage() {
                 key={step.number}
                 className="group grid gap-4 border-b border-border py-6 sm:grid-cols-[80px_1fr]"
               >
-                <span className="font-display text-4xl font-bold text-primary/45 transition-colors group-hover:text-primary">
-                  {step.number}
-                </span>
+                <span className="font-display text-4xl font-bold text-primary">{step.number}</span>
                 <div>
                   <h3 className="text-2xl font-semibold">{step.title}</h3>
                   <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
@@ -231,7 +229,7 @@ function AboutPage() {
           </div>
           <Link
             to="/contact"
-            className="group inline-flex items-center gap-2 border-b border-primary pb-2 font-display text-xs uppercase tracking-[0.2em] text-primary transition-colors hover:text-accent"
+            className="group inline-flex items-center gap-2 border-b border-primary pb-2 font-display text-xs uppercase tracking-[0.2em] text-primary"
           >
             Speak with our team
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

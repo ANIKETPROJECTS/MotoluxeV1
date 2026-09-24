@@ -110,7 +110,7 @@ function ContactPage() {
               <button
                 type="button"
                 onClick={() => setSent(false)}
-                className="mt-8 border border-border px-6 py-3 font-display text-xs uppercase tracking-[0.24em] transition-colors hover:border-primary hover:text-primary"
+                className="mt-8 border border-border px-6 py-3 font-display text-xs uppercase tracking-[0.24em]"
               >
                 Send Another
               </button>

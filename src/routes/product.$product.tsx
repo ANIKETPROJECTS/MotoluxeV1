@@ -106,15 +106,9 @@ function ProductPage() {
   return (
     <div className="mx-auto max-w-7xl px-5 py-10 lg:py-14">
       <nav className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-        <Link to="/" className="transition-colors hover:text-primary">
-          Home
-        </Link>
+        <Link to="/">Home</Link>
         <ChevronRight className="h-3 w-3" />
-        <StorefrontCategoryLink
-          slug={category.slug}
-          available={categoryPublished}
-          className="transition-colors hover:text-primary"
-        >
+        <StorefrontCategoryLink slug={category.slug} available={categoryPublished}>
           {category.name}
         </StorefrontCategoryLink>
         <ChevronRight className="h-3 w-3" />
@@ -168,7 +162,7 @@ function ProductPage() {
               className={`absolute right-5 top-5 grid h-11 w-11 place-items-center border backdrop-blur transition-colors ${
                 wishlisted
                   ? "border-primary bg-primary text-primary-foreground"
-                  : "border-white/20 bg-background/80 text-foreground hover:border-primary hover:text-primary"
+                  : "border-white/20 bg-background/80 text-foreground"
               } disabled:cursor-not-allowed disabled:opacity-40`}
             >
               <Heart className={`h-5 w-5 ${wishlisted ? "fill-current" : ""}`} />
@@ -178,7 +172,7 @@ function ProductPage() {
             {frames.map((position) => (
               <div
                 key={position}
-                className="overflow-hidden border border-border bg-card opacity-65 transition-all hover:border-primary hover:opacity-100"
+                className="overflow-hidden border border-border bg-card opacity-65 transition-opacity hover:opacity-100"
               >
                 <img
                   src={product.image}
@@ -233,7 +227,7 @@ function ProductPage() {
                 aria-label="Decrease quantity"
                 onClick={decreaseQuantity}
                 disabled={unavailable || qty === 1}
-                className="grid h-full w-11 place-items-center transition-colors hover:bg-surface-raised"
+                className="grid h-full w-11 place-items-center"
               >
                 <Minus className="h-4 w-4" />
               </button>
@@ -243,7 +237,7 @@ function ProductPage() {
                 aria-label="Increase quantity"
                 onClick={() => setQty((value) => Math.min(maxQuantity, value + 1))}
                 disabled={unavailable || qty >= maxQuantity}
-                className="grid h-full w-11 place-items-center transition-colors hover:bg-surface-raised disabled:cursor-not-allowed disabled:opacity-40"
+                className="grid h-full w-11 place-items-center disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <Plus className="h-4 w-4" />
               </button>

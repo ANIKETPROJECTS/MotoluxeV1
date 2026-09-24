@@ -35,9 +35,7 @@ function CategoriesPage() {
         <div className="absolute right-0 top-0 h-full w-2/3 bg-linear-to-bl from-primary/15 via-transparent to-transparent" />
         <div className="relative mx-auto max-w-7xl px-5 py-20 lg:py-28">
           <nav className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Link to="/" className="transition-colors hover:text-primary">
-              Home
-            </Link>
+            <Link to="/">Home</Link>
             <ChevronRight className="h-3 w-3" />
             <span className="text-foreground">Categories</span>
           </nav>
@@ -173,7 +171,7 @@ function CategoriesPage() {
                 <div key={category.slug} className="border-t border-border pt-6">
                   <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <span className="font-display text-2xl font-bold text-primary/70">
+                      <span className="font-display text-2xl font-bold text-primary">
                         {category.index}
                       </span>
                       <h3 className="text-2xl font-semibold">{category.name}</h3>
@@ -219,7 +217,7 @@ function CategoriesPage() {
           </div>
           <Link
             to="/contact"
-            className="group inline-flex items-center gap-2 border-b border-primary pb-2 font-display text-xs uppercase tracking-[0.2em] text-primary transition-colors hover:text-accent"
+            className="group inline-flex items-center gap-2 border-b border-primary pb-2 font-display text-xs uppercase tracking-[0.2em] text-primary"
           >
             Talk to Motoluxe
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

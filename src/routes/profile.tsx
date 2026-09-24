@@ -240,7 +240,7 @@ function ProfilePage() {
           <button
             type="button"
             onClick={() => void logout()}
-            className="mt-6 inline-flex items-center gap-2 text-xs text-muted-foreground transition-colors hover:text-primary"
+            className="mt-6 inline-flex items-center gap-2 text-xs text-muted-foreground"
           >
             <LogOut className="h-3.5 w-3.5" />
             Sign out
@@ -257,7 +257,7 @@ function ProfilePage() {
               className={`inline-flex items-center gap-2 border-b-2 px-5 py-3 font-display text-xs uppercase tracking-[0.18em] transition-colors ${
                 activeTab === "orders"
                   ? "border-primary text-primary"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
+                  : "border-transparent text-muted-foreground"
               }`}
             >
               <Package className="h-4 w-4" />
@@ -271,7 +271,7 @@ function ProfilePage() {
               className={`inline-flex items-center gap-2 border-b-2 px-5 py-3 font-display text-xs uppercase tracking-[0.18em] transition-colors ${
                 activeTab === "wishlist"
                   ? "border-primary text-primary"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
+                  : "border-transparent text-muted-foreground"
               }`}
             >
               <Heart className="h-4 w-4" />
@@ -425,7 +425,7 @@ function ProfilePage() {
                       <Link
                         to="/product/$product"
                         params={{ product: product.slug }}
-                        className="mt-1 block font-display text-lg uppercase tracking-[0.06em] text-foreground transition-colors hover:text-primary"
+                        className="mt-1 block font-display text-lg uppercase tracking-[0.06em] text-foreground"
                       >
                         {product.name}
                       </Link>
@@ -433,7 +433,7 @@ function ProfilePage() {
                         <Link
                           to="/product/$product"
                           params={{ product: product.slug }}
-                          className="text-xs text-muted-foreground hover:text-primary"
+                          className="text-xs text-muted-foreground"
                         >
                           View product
                         </Link>
@@ -441,7 +441,7 @@ function ProfilePage() {
                           type="button"
                           aria-label={`Remove ${product.name} from wishlist`}
                           onClick={() => void removeFromWishlist(product.slug)}
-                          className="p-1 text-muted-foreground transition-colors hover:text-primary"
+                          className="p-1 text-muted-foreground"
                         >
                           <X className="h-4 w-4" />
                         </button>
@@ -527,11 +527,7 @@ function CustomerReviewForm({
 
   if (!open) {
     return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="text-xs text-accent transition-colors hover:text-primary"
-      >
+      <button type="button" onClick={() => setOpen(true)} className="text-xs text-accent">
         Write a review
       </button>
     );
@@ -544,7 +540,7 @@ function CustomerReviewForm({
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="text-xs text-muted-foreground hover:text-primary"
+          className="text-xs text-muted-foreground"
         >
           Cancel
         </button>
