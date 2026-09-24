@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight, ChevronRight, CircleCheck, Sparkles } from "lucide-react";
 import heroImg from "@/assets/hero-banner.jpg";
 import heroVideo from "@/assets/motoluxe-chain-hero.mp4";
-import { categories, featuredProducts, products } from "@/data/catalog";
+import { categories } from "@/data/catalog";
 import { ProductCard } from "@/components/ProductCard";
 import { StorefrontCategoryLink, StorefrontProductLink } from "@/components/StorefrontCatalogLink";
 import { useStorefrontCatalog } from "@/components/StorefrontCatalogContext";
@@ -76,6 +76,7 @@ const careSteps = [
 
 function Home() {
   const {
+    products,
     filterCategories,
     filterFeaturedProducts,
     filterProducts,
@@ -84,7 +85,10 @@ function Home() {
   } = useStorefrontCatalog();
   const visibleCategories = filterCategories(categories);
   const visibleProducts = filterProducts(products);
-  const visibleFeaturedProducts = filterFeaturedProducts(featuredProducts);
+  const visibleFeaturedProducts = filterFeaturedProducts(products);
+  const activeHighlights = highlights.map((highlight, index) =>
+    index === 0 ? { ...highlight, value: String(products.length).padStart(2, "0") } : highlight,
+  );
 
   return (
     <>
@@ -171,7 +175,7 @@ function Home() {
 
       <section className="border-b border-border bg-surface">
         <div className="mx-auto grid max-w-7xl divide-y divide-border px-5 md:grid-cols-3 md:divide-x md:divide-y-0">
-          {highlights.map((highlight) => (
+          {activeHighlights.map((highlight) => (
             <div
               key={highlight.label}
               className="flex items-center gap-4 px-0 py-6 md:px-8 first:md:pl-0"

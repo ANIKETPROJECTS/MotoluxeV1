@@ -6,7 +6,10 @@ export const Route = createFileRoute("/api/catalog/stock")({
     handlers: {
       GET: async () => {
         try {
-          return Response.json({ stocks: await getPublicCatalogStocks() });
+          return Response.json(
+            { stocks: await getPublicCatalogStocks() },
+            { headers: { "cache-control": "no-store" } },
+          );
         } catch (error) {
           console.error("Public catalog stock unavailable", error);
           return Response.json(

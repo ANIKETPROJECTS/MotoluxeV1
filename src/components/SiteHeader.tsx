@@ -1,16 +1,18 @@
 import { ChevronDown, Heart, ShoppingCart, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { categories, getProductsByCategory, type CategorySlug } from "@/data/catalog";
+import { categories, type CategorySlug } from "@/data/catalog";
 import { Logo } from "./Logo";
 import { CartPanel, useCart } from "./CartContext";
 import { AccountIcon, useCustomerAuth } from "./CustomerAuthContext";
 import { useWishlist } from "./WishlistContext";
+import { useStorefrontCatalog } from "./StorefrontCatalogContext";
 
 const linkBase =
   "shrink-0 font-display uppercase tracking-[0.16em] text-[11px] text-muted-foreground transition-colors hover:text-foreground";
 
 function CategoriesMenu() {
+  const { products } = useStorefrontCatalog();
   const [open, setOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<CategorySlug | null>(null);
 
@@ -118,25 +120,27 @@ function CategoriesMenu() {
                       </span>
                     </Link>
                     <div className="mt-2 grid gap-1">
-                      {getProductsByCategory(category.slug).map((product) => (
-                        <Link
-                          key={product.slug}
-                          to="/product/$product"
-                          params={{ product: product.slug }}
-                          onClick={() => {
-                            setOpen(false);
-                            setActiveCategory(null);
-                          }}
-                          className="border border-transparent px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:border-border hover:bg-background hover:text-foreground"
-                        >
-                          <span className="block font-display uppercase tracking-[0.08em]">
-                            {product.name}
-                          </span>
-                          <span className="mt-0.5 block text-[11px] leading-snug">
-                            {product.tagline}
-                          </span>
-                        </Link>
-                      ))}
+                      {products
+                        .filter((product) => product.category === category.slug)
+                        .map((product) => (
+                          <Link
+                            key={product.slug}
+                            to="/product/$product"
+                            params={{ product: product.slug }}
+                            onClick={() => {
+                              setOpen(false);
+                              setActiveCategory(null);
+                            }}
+                            className="border border-transparent px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:border-border hover:bg-background hover:text-foreground"
+                          >
+                            <span className="block font-display uppercase tracking-[0.08em]">
+                              {product.name}
+                            </span>
+                            <span className="mt-0.5 block text-[11px] leading-snug">
+                              {product.tagline}
+                            </span>
+                          </Link>
+                        ))}
                     </div>
                   </>
                 );

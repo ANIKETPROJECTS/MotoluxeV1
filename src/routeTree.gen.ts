@@ -30,6 +30,7 @@ import { Route as ApiContactRouteImport } from './routes/api/contact'
 import { Route as ApiCouponsRouteImport } from './routes/api/coupons'
 import { Route as ApiReviewsRouteImport } from './routes/api/reviews'
 import { Route as CategoryCategoryRouteImport } from './routes/category.$category'
+import { Route as OrderReturnRouteImport } from './routes/order.return'
 import { Route as ProductProductRouteImport } from './routes/product.$product'
 import { Route as AdminCategoriesCategoryIdRouteImport } from './routes/admin.categories.$categoryId'
 import { Route as AdminCategoriesNewRouteImport } from './routes/admin.categories.new'
@@ -48,6 +49,7 @@ import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
 import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthMeRouteImport } from './routes/api/auth/me'
 import { Route as ApiAuthProfileRouteImport } from './routes/api/auth/profile'
+import { Route as ApiCatalogProductsRouteImport } from './routes/api/catalog/products'
 import { Route as ApiCatalogStockRouteImport } from './routes/api/catalog/stock'
 import { Route as ApiCatalogVisibilityRouteImport } from './routes/api/catalog/visibility'
 import { Route as ApiInventoryPurchaseRouteImport } from './routes/api/inventory/purchase'
@@ -68,6 +70,8 @@ import { Route as ApiAdminProductsIndexRouteImport } from './routes/api/admin/pr
 import { Route as ApiAdminProductsProductIdRouteImport } from './routes/api/admin/products/$productId'
 import { Route as ApiAdminReviewsIndexRouteImport } from './routes/api/admin/reviews/index'
 import { Route as ApiAdminReviewsReviewIdRouteImport } from './routes/api/admin/reviews/$reviewId'
+import { Route as ApiPaymentsPhonepeStatusRouteImport } from './routes/api/payments/phonepe/status'
+import { Route as ApiPaymentsPhonepeWebhookRouteImport } from './routes/api/payments/phonepe/webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -174,6 +178,11 @@ const CategoryCategoryRoute = CategoryCategoryRouteImport.update({
   path: '/category/$category',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrderReturnRoute = OrderReturnRouteImport.update({
+  id: '/return',
+  path: '/return',
+  getParentRoute: () => OrderRoute,
+} as any)
 const ProductProductRoute = ProductProductRouteImport.update({
   id: '/product/$product',
   path: '/product/$product',
@@ -263,6 +272,11 @@ const ApiAuthMeRoute = ApiAuthMeRouteImport.update({
 const ApiAuthProfileRoute = ApiAuthProfileRouteImport.update({
   id: '/api/auth/profile',
   path: '/api/auth/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCatalogProductsRoute = ApiCatalogProductsRouteImport.update({
+  id: '/api/catalog/products',
+  path: '/api/catalog/products',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiCatalogStockRoute = ApiCatalogStockRouteImport.update({
@@ -370,6 +384,18 @@ const ApiAdminReviewsReviewIdRoute = ApiAdminReviewsReviewIdRouteImport.update({
   path: '/api/admin/reviews/$reviewId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPaymentsPhonepeStatusRoute =
+  ApiPaymentsPhonepeStatusRouteImport.update({
+    id: '/api/payments/phonepe/status',
+    path: '/api/payments/phonepe/status',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPaymentsPhonepeWebhookRoute =
+  ApiPaymentsPhonepeWebhookRouteImport.update({
+    id: '/api/payments/phonepe/webhook',
+    path: '/api/payments/phonepe/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -377,7 +403,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/categories': typeof CategoriesRoute
   '/contact': typeof ContactRoute
-  '/order': typeof OrderRoute
+  '/order': typeof OrderRouteWithChildren
   '/profile': typeof ProfileRoute
   '/admin/categories': typeof AdminCategoriesRouteWithChildren
   '/admin/customers': typeof AdminCustomersRoute
@@ -393,6 +419,7 @@ export interface FileRoutesByFullPath {
   '/api/coupons': typeof ApiCouponsRoute
   '/api/reviews': typeof ApiReviewsRoute
   '/category/$category': typeof CategoryCategoryRoute
+  '/order/return': typeof OrderReturnRoute
   '/product/$product': typeof ProductProductRoute
   '/admin/categories/$categoryId': typeof AdminCategoriesCategoryIdRoute
   '/admin/categories/new': typeof AdminCategoriesNewRoute
@@ -411,6 +438,7 @@ export interface FileRoutesByFullPath {
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/profile': typeof ApiAuthProfileRoute
+  '/api/catalog/products': typeof ApiCatalogProductsRoute
   '/api/catalog/stock': typeof ApiCatalogStockRoute
   '/api/catalog/visibility': typeof ApiCatalogVisibilityRoute
   '/api/inventory/purchase': typeof ApiInventoryPurchaseRoute
@@ -427,6 +455,8 @@ export interface FileRoutesByFullPath {
   '/api/admin/orders/$orderId': typeof ApiAdminOrdersOrderIdRoute
   '/api/admin/products/$productId': typeof ApiAdminProductsProductIdRoute
   '/api/admin/reviews/$reviewId': typeof ApiAdminReviewsReviewIdRoute
+  '/api/payments/phonepe/status': typeof ApiPaymentsPhonepeStatusRoute
+  '/api/payments/phonepe/webhook': typeof ApiPaymentsPhonepeWebhookRoute
   '/api/admin/categories/': typeof ApiAdminCategoriesIndexRoute
   '/api/admin/customers/': typeof ApiAdminCustomersIndexRoute
   '/api/admin/products/': typeof ApiAdminProductsIndexRoute
@@ -438,7 +468,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRouteWithChildren
   '/categories': typeof CategoriesRoute
   '/contact': typeof ContactRoute
-  '/order': typeof OrderRoute
+  '/order': typeof OrderRouteWithChildren
   '/profile': typeof ProfileRoute
   '/admin/categories': typeof AdminCategoriesRouteWithChildren
   '/admin/customers': typeof AdminCustomersRoute
@@ -454,6 +484,7 @@ export interface FileRoutesByTo {
   '/api/coupons': typeof ApiCouponsRoute
   '/api/reviews': typeof ApiReviewsRoute
   '/category/$category': typeof CategoryCategoryRoute
+  '/order/return': typeof OrderReturnRoute
   '/product/$product': typeof ProductProductRoute
   '/admin/categories/$categoryId': typeof AdminCategoriesCategoryIdRoute
   '/admin/categories/new': typeof AdminCategoriesNewRoute
@@ -472,6 +503,7 @@ export interface FileRoutesByTo {
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/profile': typeof ApiAuthProfileRoute
+  '/api/catalog/products': typeof ApiCatalogProductsRoute
   '/api/catalog/stock': typeof ApiCatalogStockRoute
   '/api/catalog/visibility': typeof ApiCatalogVisibilityRoute
   '/api/inventory/purchase': typeof ApiInventoryPurchaseRoute
@@ -488,6 +520,8 @@ export interface FileRoutesByTo {
   '/api/admin/orders/$orderId': typeof ApiAdminOrdersOrderIdRoute
   '/api/admin/products/$productId': typeof ApiAdminProductsProductIdRoute
   '/api/admin/reviews/$reviewId': typeof ApiAdminReviewsReviewIdRoute
+  '/api/payments/phonepe/status': typeof ApiPaymentsPhonepeStatusRoute
+  '/api/payments/phonepe/webhook': typeof ApiPaymentsPhonepeWebhookRoute
   '/api/admin/categories': typeof ApiAdminCategoriesIndexRoute
   '/api/admin/customers': typeof ApiAdminCustomersIndexRoute
   '/api/admin/products': typeof ApiAdminProductsIndexRoute
@@ -500,7 +534,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/categories': typeof CategoriesRoute
   '/contact': typeof ContactRoute
-  '/order': typeof OrderRoute
+  '/order': typeof OrderRouteWithChildren
   '/profile': typeof ProfileRoute
   '/admin/categories': typeof AdminCategoriesRouteWithChildren
   '/admin/customers': typeof AdminCustomersRoute
@@ -516,6 +550,7 @@ export interface FileRoutesById {
   '/api/coupons': typeof ApiCouponsRoute
   '/api/reviews': typeof ApiReviewsRoute
   '/category/$category': typeof CategoryCategoryRoute
+  '/order/return': typeof OrderReturnRoute
   '/product/$product': typeof ProductProductRoute
   '/admin/categories/$categoryId': typeof AdminCategoriesCategoryIdRoute
   '/admin/categories/new': typeof AdminCategoriesNewRoute
@@ -534,6 +569,7 @@ export interface FileRoutesById {
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/profile': typeof ApiAuthProfileRoute
+  '/api/catalog/products': typeof ApiCatalogProductsRoute
   '/api/catalog/stock': typeof ApiCatalogStockRoute
   '/api/catalog/visibility': typeof ApiCatalogVisibilityRoute
   '/api/inventory/purchase': typeof ApiInventoryPurchaseRoute
@@ -550,6 +586,8 @@ export interface FileRoutesById {
   '/api/admin/orders/$orderId': typeof ApiAdminOrdersOrderIdRoute
   '/api/admin/products/$productId': typeof ApiAdminProductsProductIdRoute
   '/api/admin/reviews/$reviewId': typeof ApiAdminReviewsReviewIdRoute
+  '/api/payments/phonepe/status': typeof ApiPaymentsPhonepeStatusRoute
+  '/api/payments/phonepe/webhook': typeof ApiPaymentsPhonepeWebhookRoute
   '/api/admin/categories/': typeof ApiAdminCategoriesIndexRoute
   '/api/admin/customers/': typeof ApiAdminCustomersIndexRoute
   '/api/admin/products/': typeof ApiAdminProductsIndexRoute
@@ -579,6 +617,7 @@ export interface FileRouteTypes {
     | '/api/coupons'
     | '/api/reviews'
     | '/category/$category'
+    | '/order/return'
     | '/product/$product'
     | '/admin/categories/$categoryId'
     | '/admin/categories/new'
@@ -597,6 +636,7 @@ export interface FileRouteTypes {
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/profile'
+    | '/api/catalog/products'
     | '/api/catalog/stock'
     | '/api/catalog/visibility'
     | '/api/inventory/purchase'
@@ -613,6 +653,8 @@ export interface FileRouteTypes {
     | '/api/admin/orders/$orderId'
     | '/api/admin/products/$productId'
     | '/api/admin/reviews/$reviewId'
+    | '/api/payments/phonepe/status'
+    | '/api/payments/phonepe/webhook'
     | '/api/admin/categories/'
     | '/api/admin/customers/'
     | '/api/admin/products/'
@@ -640,6 +682,7 @@ export interface FileRouteTypes {
     | '/api/coupons'
     | '/api/reviews'
     | '/category/$category'
+    | '/order/return'
     | '/product/$product'
     | '/admin/categories/$categoryId'
     | '/admin/categories/new'
@@ -658,6 +701,7 @@ export interface FileRouteTypes {
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/profile'
+    | '/api/catalog/products'
     | '/api/catalog/stock'
     | '/api/catalog/visibility'
     | '/api/inventory/purchase'
@@ -674,6 +718,8 @@ export interface FileRouteTypes {
     | '/api/admin/orders/$orderId'
     | '/api/admin/products/$productId'
     | '/api/admin/reviews/$reviewId'
+    | '/api/payments/phonepe/status'
+    | '/api/payments/phonepe/webhook'
     | '/api/admin/categories'
     | '/api/admin/customers'
     | '/api/admin/products'
@@ -701,6 +747,7 @@ export interface FileRouteTypes {
     | '/api/coupons'
     | '/api/reviews'
     | '/category/$category'
+    | '/order/return'
     | '/product/$product'
     | '/admin/categories/$categoryId'
     | '/admin/categories/new'
@@ -719,6 +766,7 @@ export interface FileRouteTypes {
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/profile'
+    | '/api/catalog/products'
     | '/api/catalog/stock'
     | '/api/catalog/visibility'
     | '/api/inventory/purchase'
@@ -735,6 +783,8 @@ export interface FileRouteTypes {
     | '/api/admin/orders/$orderId'
     | '/api/admin/products/$productId'
     | '/api/admin/reviews/$reviewId'
+    | '/api/payments/phonepe/status'
+    | '/api/payments/phonepe/webhook'
     | '/api/admin/categories/'
     | '/api/admin/customers/'
     | '/api/admin/products/'
@@ -747,7 +797,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   CategoriesRoute: typeof CategoriesRoute
   ContactRoute: typeof ContactRoute
-  OrderRoute: typeof OrderRoute
+  OrderRoute: typeof OrderRouteWithChildren
   ProfileRoute: typeof ProfileRoute
   ApiContactRoute: typeof ApiContactRoute
   ApiCouponsRoute: typeof ApiCouponsRoute
@@ -766,6 +816,7 @@ export interface RootRouteChildren {
   ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
   ApiAuthMeRoute: typeof ApiAuthMeRoute
   ApiAuthProfileRoute: typeof ApiAuthProfileRoute
+  ApiCatalogProductsRoute: typeof ApiCatalogProductsRoute
   ApiCatalogStockRoute: typeof ApiCatalogStockRoute
   ApiCatalogVisibilityRoute: typeof ApiCatalogVisibilityRoute
   ApiInventoryPurchaseRoute: typeof ApiInventoryPurchaseRoute
@@ -780,6 +831,8 @@ export interface RootRouteChildren {
   ApiAdminMediaUploadRoute: typeof ApiAdminMediaUploadRoute
   ApiAdminProductsProductIdRoute: typeof ApiAdminProductsProductIdRoute
   ApiAdminReviewsReviewIdRoute: typeof ApiAdminReviewsReviewIdRoute
+  ApiPaymentsPhonepeStatusRoute: typeof ApiPaymentsPhonepeStatusRoute
+  ApiPaymentsPhonepeWebhookRoute: typeof ApiPaymentsPhonepeWebhookRoute
   ApiAdminCategoriesIndexRoute: typeof ApiAdminCategoriesIndexRoute
   ApiAdminCustomersIndexRoute: typeof ApiAdminCustomersIndexRoute
   ApiAdminProductsIndexRoute: typeof ApiAdminProductsIndexRoute
@@ -935,6 +988,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategoryCategoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/order/return': {
+      id: '/order/return'
+      path: '/return'
+      fullPath: '/order/return'
+      preLoaderRoute: typeof OrderReturnRouteImport
+      parentRoute: typeof OrderRoute
+    }
     '/product/$product': {
       id: '/product/$product'
       path: '/product/$product'
@@ -1059,6 +1119,13 @@ declare module '@tanstack/react-router' {
       path: '/api/auth/profile'
       fullPath: '/api/auth/profile'
       preLoaderRoute: typeof ApiAuthProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/catalog/products': {
+      id: '/api/catalog/products'
+      path: '/api/catalog/products'
+      fullPath: '/api/catalog/products'
+      preLoaderRoute: typeof ApiCatalogProductsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/catalog/stock': {
@@ -1201,6 +1268,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminReviewsReviewIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/payments/phonepe/status': {
+      id: '/api/payments/phonepe/status'
+      path: '/api/payments/phonepe/status'
+      fullPath: '/api/payments/phonepe/status'
+      preLoaderRoute: typeof ApiPaymentsPhonepeStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/payments/phonepe/webhook': {
+      id: '/api/payments/phonepe/webhook'
+      path: '/api/payments/phonepe/webhook'
+      fullPath: '/api/payments/phonepe/webhook'
+      preLoaderRoute: typeof ApiPaymentsPhonepeWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1272,6 +1353,16 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface OrderRouteChildren {
+  OrderReturnRoute: typeof OrderReturnRoute
+}
+
+const OrderRouteChildren: OrderRouteChildren = {
+  OrderReturnRoute: OrderReturnRoute,
+}
+
+const OrderRouteWithChildren = OrderRoute._addFileChildren(OrderRouteChildren)
+
 interface ApiAdminInventoryRouteChildren {
   ApiAdminInventoryMovementIdRoute: typeof ApiAdminInventoryMovementIdRoute
 }
@@ -1301,7 +1392,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   CategoriesRoute: CategoriesRoute,
   ContactRoute: ContactRoute,
-  OrderRoute: OrderRoute,
+  OrderRoute: OrderRouteWithChildren,
   ProfileRoute: ProfileRoute,
   ApiContactRoute: ApiContactRoute,
   ApiCouponsRoute: ApiCouponsRoute,
@@ -1320,6 +1411,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAuthLogoutRoute: ApiAuthLogoutRoute,
   ApiAuthMeRoute: ApiAuthMeRoute,
   ApiAuthProfileRoute: ApiAuthProfileRoute,
+  ApiCatalogProductsRoute: ApiCatalogProductsRoute,
   ApiCatalogStockRoute: ApiCatalogStockRoute,
   ApiCatalogVisibilityRoute: ApiCatalogVisibilityRoute,
   ApiInventoryPurchaseRoute: ApiInventoryPurchaseRoute,
@@ -1334,6 +1426,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminMediaUploadRoute: ApiAdminMediaUploadRoute,
   ApiAdminProductsProductIdRoute: ApiAdminProductsProductIdRoute,
   ApiAdminReviewsReviewIdRoute: ApiAdminReviewsReviewIdRoute,
+  ApiPaymentsPhonepeStatusRoute: ApiPaymentsPhonepeStatusRoute,
+  ApiPaymentsPhonepeWebhookRoute: ApiPaymentsPhonepeWebhookRoute,
   ApiAdminCategoriesIndexRoute: ApiAdminCategoriesIndexRoute,
   ApiAdminCustomersIndexRoute: ApiAdminCustomersIndexRoute,
   ApiAdminProductsIndexRoute: ApiAdminProductsIndexRoute,

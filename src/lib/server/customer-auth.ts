@@ -1,7 +1,6 @@
 import "@tanstack/react-start/server-only";
 
 import { type ObjectId } from "mongodb";
-import { getProduct } from "@/data/catalog";
 import {
   getMotoluxeDatabase,
   getRequiredEnvironment,
@@ -344,9 +343,16 @@ export async function updateCustomerWishlist(request: Request, submittedSlugs: s
   const customer = await getAuthenticatedCustomer(request);
   if (!customer) return null;
 
-  const wishlistSlugs = Array.from(
-    new Set(submittedSlugs.filter((slug) => Boolean(getProduct(slug)))),
+  const validSlugs = Array.from(
+    new Set(submittedSlugs.filter((slug) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug))),
   ).slice(0, 50);
+  const { db } = await getMotoluxeDatabase();
+  const existingProducts = await db
+    .collection<{ slug: string }>(MOTOLUXE_COLLECTIONS.products)
+    .find({ slug: { $in: validSlugs } }, { projection: { _id: 0, slug: 1 } })
+    .toArray();
+  const allowedSlugs = new Set(existingProducts.map((product) => product.slug));
+  const wishlistSlugs = validSlugs.filter((slug) => allowedSlugs.has(slug));
   const { customers } = await getCollections();
   await customers.updateOne(
     { _id: customer._id },

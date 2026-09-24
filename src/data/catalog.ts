@@ -22,6 +22,9 @@ export type Product = {
   description: string;
   benefits: string[];
   usage: string[];
+  published?: boolean;
+  featured?: boolean;
+  stock?: number;
 };
 
 export type Category = {

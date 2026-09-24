@@ -26,6 +26,7 @@ type VisibilityPayload = {
 
 type StorefrontCatalogContextValue = {
   loading: boolean;
+  products: Product[];
   isCategoryPublished: (slug: string) => boolean;
   isProductPublished: (slug: string) => boolean;
   isProductFeatured: (slug: string) => boolean;
@@ -34,11 +35,16 @@ type StorefrontCatalogContextValue = {
   filterFeaturedProducts: <T extends Product>(items: T[]) => T[];
 };
 
+type ProductPayload = {
+  products?: Product[];
+};
+
 const StorefrontCatalogContext = createContext<StorefrontCatalogContextValue | null>(null);
 
 export function StorefrontCatalogProvider({ children }: { children: ReactNode }) {
   const [categoryVisibility, setCategoryVisibility] = useState<Record<string, boolean>>({});
   const [productVisibility, setProductVisibility] = useState<Record<string, VisibilityProduct>>({});
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -50,13 +56,23 @@ export function StorefrontCatalogProvider({ children }: { children: ReactNode })
       controller = new AbortController();
       setLoading(true);
       try {
-        const response = await fetch("/api/catalog/visibility", {
-          signal: controller.signal,
-          cache: "no-store",
-        });
-        const payload = (await response.json().catch(() => ({}))) as VisibilityPayload;
-        if (!response.ok) throw new Error("Catalog visibility unavailable.");
+        const [visibilityResponse, productsResponse] = await Promise.all([
+          fetch("/api/catalog/visibility", {
+            signal: controller.signal,
+            cache: "no-store",
+          }),
+          fetch("/api/catalog/products", {
+            signal: controller.signal,
+            cache: "no-store",
+          }),
+        ]);
+        const [payload, productsPayload] = (await Promise.all([
+          visibilityResponse.json().catch(() => ({})),
+          productsResponse.json().catch(() => ({})),
+        ])) as [VisibilityPayload, ProductPayload];
+        if (!visibilityResponse.ok || !productsResponse.ok) throw new Error("Catalog unavailable.");
         if (disposed) return;
+        setProducts(Array.isArray(productsPayload.products) ? productsPayload.products : []);
         setCategoryVisibility(
           Object.fromEntries(
             (payload.categories ?? []).map((category) => [category.slug, category.published]),
@@ -90,6 +106,7 @@ export function StorefrontCatalogProvider({ children }: { children: ReactNode })
     const interval = window.setInterval(refresh, 15_000);
     window.addEventListener("focus", refresh);
     window.addEventListener(CATALOG_VISIBILITY_EVENT, refresh);
+    window.addEventListener("motoluxe:inventory-updated", refresh);
     window.addEventListener("storage", onStorage);
 
     return () => {
@@ -98,6 +115,7 @@ export function StorefrontCatalogProvider({ children }: { children: ReactNode })
       window.clearInterval(interval);
       window.removeEventListener("focus", refresh);
       window.removeEventListener(CATALOG_VISIBILITY_EVENT, refresh);
+      window.removeEventListener("motoluxe:inventory-updated", refresh);
       window.removeEventListener("storage", onStorage);
     };
   }, []);
@@ -105,24 +123,43 @@ export function StorefrontCatalogProvider({ children }: { children: ReactNode })
   const value = useMemo<StorefrontCatalogContextValue>(
     () => ({
       loading,
+      products,
       isCategoryPublished: (slug) => categoryVisibility[slug] !== false,
       isProductPublished: (slug) => {
         const product = productVisibility[slug];
-        const category = product?.category ?? getProduct(slug)?.category;
+        const catalogProduct = products.find((item) => item.slug === slug);
+        const category =
+          product?.category ?? catalogProduct?.category ?? getProduct(slug)?.category;
         return (
-          product?.published !== false && (category ? categoryVisibility[category] !== false : true)
+          product?.published !== false &&
+          catalogProduct?.published !== false &&
+          (category ? categoryVisibility[category] !== false : true)
         );
       },
-      isProductFeatured: (slug) => productVisibility[slug]?.featured !== false,
-      filterCategories: (items) => items,
-      filterProducts: (items) => items,
+      isProductFeatured: (slug) =>
+        productVisibility[slug]?.featured === true ||
+        products.find((item) => item.slug === slug)?.featured === true,
+      filterCategories: (items) => items.filter((item) => categoryVisibility[item.slug] !== false),
+      filterProducts: (items) =>
+        items.filter((item) => {
+          const product = products.find((candidate) => candidate.slug === item.slug);
+          const category = productVisibility[item.slug]?.category ?? product?.category;
+          return (
+            Boolean(product) &&
+            product?.published !== false &&
+            productVisibility[item.slug]?.published !== false &&
+            (category ? categoryVisibility[category] !== false : true)
+          );
+        }),
       filterFeaturedProducts: (items) =>
         items.filter((item) => {
-          const visibility = productVisibility[item.slug];
-          return visibility?.featured !== false;
+          return (
+            productVisibility[item.slug]?.featured === true ||
+            products.find((product) => product.slug === item.slug)?.featured === true
+          );
         }),
     }),
-    [categoryVisibility, loading, productVisibility],
+    [categoryVisibility, loading, productVisibility, products],
   );
 
   return (

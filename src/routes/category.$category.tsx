@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowUpRight, ChevronRight, ShieldCheck } from "lucide-react";
-import { getCategory, getProductsByCategory } from "@/data/catalog";
+import { getCategory } from "@/data/catalog";
 import { ProductCard } from "@/components/ProductCard";
 import { useStorefrontCatalog } from "@/components/StorefrontCatalogContext";
 
@@ -8,7 +8,7 @@ export const Route = createFileRoute("/category/$category")({
   loader: ({ params }) => {
     const category = getCategory(params.category);
     if (!category) throw notFound();
-    return { category, products: getProductsByCategory(params.category) };
+    return { category };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
@@ -30,10 +30,12 @@ export const Route = createFileRoute("/category/$category")({
 });
 
 function CategoryPage() {
-  const { category, products } = Route.useLoaderData();
-  const { filterProducts, isCategoryPublished } = useStorefrontCatalog();
+  const { category } = Route.useLoaderData();
+  const { products, filterProducts, isCategoryPublished } = useStorefrontCatalog();
   const categoryPublished = isCategoryPublished(category.slug);
-  const visibleProducts = filterProducts(products);
+  const visibleProducts = filterProducts(
+    products.filter((product) => product.category === category.slug),
+  );
 
   if (!categoryPublished) {
     return (

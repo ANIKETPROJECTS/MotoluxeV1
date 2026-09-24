@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
@@ -12,64 +12,59 @@ import {
   ShoppingCart,
   ShieldCheck,
 } from "lucide-react";
-import { getCategory, getProduct, getProductsByCategory } from "@/data/catalog";
+import { getCategory } from "@/data/catalog";
 import { ProductCard } from "@/components/ProductCard";
 import { StorefrontCategoryLink } from "@/components/StorefrontCatalogLink";
 import { useCart } from "@/components/CartContext";
 import { useWishlist } from "@/components/WishlistContext";
 import { useStorefrontInventory } from "@/components/StorefrontInventoryContext";
 import { useStorefrontCatalog } from "@/components/StorefrontCatalogContext";
+import { numericPrice } from "@/lib/coupon-types";
 
 export const Route = createFileRoute("/product/$product")({
-  loader: ({ params }) => {
-    const product = getProduct(params.product);
-    if (!product) throw notFound();
-    return {
-      product,
-      category: getCategory(product.category)!,
-      related: getProductsByCategory(product.category).filter((item) => item.slug !== product.slug),
-    };
-  },
-  head: ({ loaderData }) => {
-    if (!loaderData) {
-      return {
-        meta: [{ title: "Product not found — Motoluxe" }, { name: "robots", content: "noindex" }],
-      };
-    }
-    const { product } = loaderData;
-    const title = `${product.name} — Motoluxe`;
-    const desc = `${product.tagline} ${product.description}`;
-    return {
-      meta: [
-        { title },
-        { name: "description", content: desc },
-        { property: "og:title", content: title },
-        { property: "og:description", content: desc },
-      ],
-    };
-  },
+  loader: ({ params }) => ({ slug: params.product }),
+  head: () => ({
+    meta: [
+      { title: "Motoluxe Product" },
+      { name: "description", content: "Explore Motoluxe autocare products." },
+    ],
+  }),
   component: ProductPage,
 });
 
 function ProductPage() {
-  const { product, category, related } = Route.useLoaderData();
+  const { slug } = Route.useLoaderData();
   const { addToCart, removeFromCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { getStock } = useStorefrontInventory();
-  const { filterProducts, isCategoryPublished, isProductPublished } = useStorefrontCatalog();
+  const {
+    products,
+    loading: catalogLoading,
+    filterProducts,
+    isCategoryPublished,
+    isProductPublished,
+  } = useStorefrontCatalog();
+  const product = products.find((item) => item.slug === slug);
+  const category = product ? getCategory(product.category) : undefined;
+  const related = product
+    ? products.filter((item) => item.category === product.category && item.slug !== product.slug)
+    : [];
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
-  const wishlisted = isWishlisted(product.slug);
-  const stock = getStock(product.slug);
-  const productPublished = isProductPublished(product.slug);
-  const categoryPublished = isCategoryPublished(category.slug);
+  const wishlisted = product ? isWishlisted(product.slug) : false;
+  const stock = product ? getStock(product.slug) : undefined;
+  const productPublished = isProductPublished(slug);
+  const categoryPublished = category ? isCategoryPublished(category.slug) : false;
   const outOfStock = stock === 0;
-  const unavailable = !productPublished || outOfStock;
-  const maxQuantity = productPublished ? (stock ?? 99) : 0;
+  const productPrice = product ? numericPrice(product.price) : 0;
+  const priceUnavailable = !Number.isFinite(productPrice) || productPrice <= 0;
+  const unavailable = !productPublished || outOfStock || priceUnavailable;
+  const maxQuantity = unavailable ? 0 : (stock ?? 99);
   const visibleRelated = filterProducts(related);
   const frames = ["center", "top", "bottom"];
 
   useEffect(() => {
+    if (!product) return;
     if (stock !== undefined && stock > 0) {
       setQty((current) => Math.min(current, stock));
     }
@@ -77,9 +72,29 @@ function ProductPage() {
       setQty(1);
       setAdded(false);
     }
-  }, [outOfStock, stock, unavailable]);
+  }, [outOfStock, product, stock, unavailable]);
+
+  if (!product || !category) {
+    return (
+      <section className="mx-auto max-w-3xl px-5 py-24 text-center lg:py-32">
+        <span className="eyebrow text-primary">
+          {catalogLoading ? "Loading product" : "Product unavailable"}
+        </span>
+        <h1 className="mt-4 text-4xl font-bold sm:text-6xl">
+          {catalogLoading ? "Loading the Motoluxe catalog…" : "This product could not be found."}
+        </h1>
+        {!catalogLoading && (
+          <Link to="/" className="mt-7 inline-flex items-center gap-2 text-primary">
+            <ArrowLeft className="h-4 w-4" />
+            Return to the storefront
+          </Link>
+        )}
+      </section>
+    );
+  }
 
   function decreaseQuantity() {
+    if (!product) return;
     if (qty === 1) {
       removeFromCart(product.slug);
       setAdded(false);
@@ -250,6 +265,8 @@ function ProductPage() {
                 <>Not available</>
               ) : outOfStock ? (
                 <>Out of stock</>
+              ) : priceUnavailable ? (
+                <>Price not set for checkout</>
               ) : added ? (
                 <>
                   <Check className="h-4 w-4" /> Added to cart
@@ -263,7 +280,9 @@ function ProductPage() {
           </div>
           <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
             <Flame className="h-3.5 w-3.5 text-accent" />
-            Frontend preview — checkout and payment are not wired up.
+            {priceUnavailable
+              ? "A valid online price must be set in Admin before checkout."
+              : "PhonePe payment is verified before an order is confirmed."}
           </p>
 
           <div className="mt-10 grid gap-px border border-border bg-border sm:grid-cols-2">

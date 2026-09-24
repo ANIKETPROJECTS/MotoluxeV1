@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight, Check, ChevronRight, ShieldCheck } from "lucide-react";
-import { categories, getProductsByCategory } from "@/data/catalog";
+import { categories } from "@/data/catalog";
 import { ProductCard } from "@/components/ProductCard";
 import { StorefrontCategoryLink } from "@/components/StorefrontCatalogLink";
 import { useStorefrontCatalog } from "@/components/StorefrontCatalogContext";
@@ -24,7 +24,8 @@ export const Route = createFileRoute("/categories")({
 });
 
 function CategoriesPage() {
-  const { filterCategories, filterProducts, isCategoryPublished } = useStorefrontCatalog();
+  const { products, filterCategories, filterProducts, isCategoryPublished } =
+    useStorefrontCatalog();
   const visibleCategories = filterCategories(categories);
 
   return (
@@ -71,7 +72,9 @@ function CategoriesPage() {
 
         <div className="mt-10 grid gap-px border border-border bg-border lg:grid-cols-3">
           {visibleCategories.map((category) => {
-            const categoryProducts = filterProducts(getProductsByCategory(category.slug));
+            const categoryProducts = filterProducts(
+              products.filter((product) => product.category === category.slug),
+            );
             const categoryAvailable = isCategoryPublished(category.slug);
 
             return (
@@ -185,7 +188,9 @@ function CategoriesPage() {
                     </StorefrontCategoryLink>
                   </div>
                   <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {filterProducts(getProductsByCategory(category.slug)).map((product) => (
+                    {filterProducts(
+                      products.filter((product) => product.category === category.slug),
+                    ).map((product) => (
                       <ProductCard key={product.slug} product={product} />
                     ))}
                   </div>

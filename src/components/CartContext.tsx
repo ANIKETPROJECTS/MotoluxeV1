@@ -17,6 +17,7 @@ import {
   numericPrice,
   type Coupon,
 } from "@/lib/coupon-types";
+import { useStorefrontCatalog } from "@/components/StorefrontCatalogContext";
 import { useCustomerAuth } from "./CustomerAuthContext";
 
 type CartLine = {
@@ -45,19 +46,82 @@ type CartContextValue = {
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
+const CART_STORAGE_KEY = "motoluxe-cart-v1";
+
+function isPersistedCartLine(value: unknown): value is CartLine {
+  if (!value || typeof value !== "object") return false;
+  const line = value as { product?: unknown; quantity?: unknown };
+  if (!line.product || typeof line.product !== "object") return false;
+  const product = line.product as Record<string, unknown>;
+  return (
+    typeof line.quantity === "number" &&
+    Number.isSafeInteger(line.quantity) &&
+    line.quantity > 0 &&
+    typeof product["slug"] === "string" &&
+    /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(product["slug"]) &&
+    typeof product["name"] === "string" &&
+    typeof product["price"] === "string" &&
+    typeof product["category"] === "string" &&
+    typeof product["size"] === "string" &&
+    typeof product["image"] === "string"
+  );
+}
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [lines, setLines] = useState<CartLine[]>([]);
+  const [cartReady, setCartReady] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
   const [couponError, setCouponError] = useState("");
+  const { products: catalogProducts, loading: catalogLoading } = useStorefrontCatalog();
   const subtotal = lines.reduce(
     (sum, line) => sum + numericPrice(line.product.price) * line.quantity,
     0,
   );
   const discount = appliedCoupon ? calculateCouponDiscount(appliedCoupon, subtotal) : 0;
   const total = subtotal - discount;
+
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem(CART_STORAGE_KEY);
+      const parsed: unknown = stored ? JSON.parse(stored) : [];
+      setLines(Array.isArray(parsed) ? parsed.filter(isPersistedCartLine) : []);
+    } catch {
+      setLines([]);
+    } finally {
+      setCartReady(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!cartReady || catalogLoading || catalogProducts.length === 0) return;
+    setLines((currentLines) => {
+      let changed = false;
+      const refreshedLines = currentLines.map((line) => {
+        const currentProduct = catalogProducts.find(
+          (product) => product.slug === line.product.slug,
+        );
+        if (!currentProduct || currentProduct === line.product) return line;
+        changed = true;
+        return { ...line, product: currentProduct };
+      });
+      return changed ? refreshedLines : currentLines;
+    });
+  }, [cartReady, catalogLoading, catalogProducts]);
+
+  useEffect(() => {
+    if (!cartReady) return;
+    try {
+      if (lines.length === 0) {
+        sessionStorage.removeItem(CART_STORAGE_KEY);
+      } else {
+        sessionStorage.setItem(CART_STORAGE_KEY, JSON.stringify(lines));
+      }
+    } catch {
+      // Keep the in-memory cart usable when browser storage is unavailable.
+    }
+  }, [cartReady, lines]);
 
   const refreshCoupons = useCallback((signal?: AbortSignal) => {
     fetch("/api/coupons", signal ? { signal } : {})
@@ -153,6 +217,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setLines([]);
         setAppliedCoupon(null);
         setCouponError("");
+        try {
+          sessionStorage.removeItem(CART_STORAGE_KEY);
+        } catch {
+          // The state update still clears the visible cart if storage is unavailable.
+        }
       },
       applyCoupon: (submittedCode) => {
         const normalized = submittedCode.trim().toUpperCase();

@@ -7,8 +7,9 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { getProduct, products, type Product } from "@/data/catalog";
+import type { Product } from "@/data/catalog";
 import { useCustomerAuth } from "./CustomerAuthContext";
+import { useStorefrontCatalog } from "./StorefrontCatalogContext";
 
 const STORAGE_KEY = "motoluxe-wishlist";
 
@@ -26,7 +27,7 @@ const WishlistContext = createContext<WishlistContextValue | null>(null);
 function validSlugs(value: unknown) {
   if (!Array.isArray(value)) return [];
   return value.filter(
-    (slug): slug is string => typeof slug === "string" && Boolean(getProduct(slug)),
+    (slug): slug is string => typeof slug === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug),
   );
 }
 
@@ -42,6 +43,7 @@ function readStoredSlugs() {
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
   const { authenticated, checking, customer } = useCustomerAuth();
+  const { products } = useStorefrontCatalog();
   const [wishlistSlugs, setWishlistSlugs] = useState<string[]>([]);
   const [mode, setMode] = useState<"unknown" | "guest" | "customer">("unknown");
   const [error, setError] = useState("");
@@ -100,7 +102,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       wishlistSlugs
         .map((slug) => products.find((product) => product.slug === slug))
         .filter((product): product is Product => Boolean(product)),
-    [wishlistSlugs],
+    [products, wishlistSlugs],
   );
 
   const isWishlisted = useCallback(
@@ -143,10 +145,10 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
 
   const removeFromWishlist = useCallback(
     async (productSlug: string) => {
-      const product = getProduct(productSlug);
+      const product = products.find((candidate) => candidate.slug === productSlug);
       if (product) await toggleWishlist(product);
     },
-    [toggleWishlist],
+    [products, toggleWishlist],
   );
 
   const value = useMemo(

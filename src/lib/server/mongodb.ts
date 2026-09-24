@@ -17,6 +17,7 @@ export const MOTOLUXE_COLLECTIONS = {
   counters: "counters",
   inventoryMovements: "inventory_movements",
   orders: "orders",
+  paymentAttempts: "payment_attempts",
 } as const;
 
 type MongoGlobals = typeof globalThis & {
@@ -69,6 +70,12 @@ export async function getMotoluxeDatabase() {
     db.collection(MOTOLUXE_COLLECTIONS.customerSessions).createIndex({ expiresAt: 1 }),
     db.collection(MOTOLUXE_COLLECTIONS.orders).createIndex({ customerId: 1, createdAt: -1 }),
     db.collection(MOTOLUXE_COLLECTIONS.orders).createIndex({ status: 1, createdAt: -1 }),
+    db
+      .collection(MOTOLUXE_COLLECTIONS.paymentAttempts)
+      .createIndex({ merchantOrderId: 1 }, { unique: true }),
+    db
+      .collection(MOTOLUXE_COLLECTIONS.paymentAttempts)
+      .createIndex({ customerId: 1, createdAt: -1 }),
     db
       .collection(MOTOLUXE_COLLECTIONS.orders)
       .createIndex({ orderNumber: 1 }, { unique: true, sparse: true }),

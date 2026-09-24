@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Check, LoaderCircle, Minus, Plus } from "lucide-react";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { ArrowLeft, ArrowRight, LoaderCircle, Minus, Plus } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useCart } from "@/components/CartContext";
 import { useCustomerAuth } from "@/components/CustomerAuthContext";
@@ -18,6 +18,7 @@ export const Route = createFileRoute("/order")({
 });
 
 function OrderPage() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
   const {
     lines,
     itemCount,
@@ -27,13 +28,12 @@ function OrderPage() {
     total,
     updateQuantity,
     removeFromCart,
-    clearCart,
   } = useCart();
   const { customer, checking, authenticated, openAuth } = useCustomerAuth();
-  const [placedOrderId, setPlacedOrderId] = useState<string | null>(null);
-  const [placedOrderNumber, setPlacedOrderNumber] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  if (pathname === "/order/return") return <Outlet />;
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -64,16 +64,14 @@ function OrderPage() {
         }),
       });
       const payload = (await response.json().catch(() => ({}))) as {
-        orderId?: string;
-        orderNumber?: string;
+        merchantOrderId?: string;
+        redirectUrl?: string;
         error?: string;
       };
-      if (!response.ok || !payload.orderId || !payload.orderNumber) {
-        throw new Error(payload.error ?? "We could not place your order.");
+      if (!response.ok || !payload.merchantOrderId || !payload.redirectUrl) {
+        throw new Error(payload.error ?? "We could not start PhonePe checkout.");
       }
-      setPlacedOrderId(payload.orderId);
-      setPlacedOrderNumber(payload.orderNumber);
-      clearCart();
+      window.location.assign(payload.redirectUrl);
     } catch (requestError) {
       setError(
         requestError instanceof Error ? requestError.message : "We could not place your order.",
@@ -81,65 +79,6 @@ function OrderPage() {
     } finally {
       setSubmitting(false);
     }
-  }
-
-  if (placedOrderId) {
-    return (
-      <section className="relative mx-auto flex min-h-[70vh] max-w-3xl items-center justify-center px-5 py-20">
-        <div className="w-full border border-border bg-card p-8 text-center opacity-40 blur-[1px] sm:p-14">
-          <div className="mx-auto grid h-16 w-16 place-items-center bg-accent/15 text-accent">
-            <Check className="h-8 w-8" />
-          </div>
-          <span className="eyebrow mt-7 block text-primary">Order received</span>
-          <h1 className="mt-4 text-4xl font-bold sm:text-5xl">Your order is ready</h1>
-        </div>
-        <div
-          className="fixed inset-0 z-[100] grid place-items-center bg-foreground/70 px-5 py-8"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="order-success-title"
-        >
-          <div className="w-full max-w-lg border border-border bg-card shadow-2xl">
-            <div className="hazard-stripes h-1" />
-            <div className="p-7 text-center sm:p-10">
-              <div className="mx-auto grid h-16 w-16 place-items-center bg-accent/15 text-accent">
-                <Check className="h-8 w-8" />
-              </div>
-              <span className="eyebrow mt-7 block text-primary">Order placed</span>
-              <h1 id="order-success-title" className="mt-3 text-4xl font-bold sm:text-5xl">
-                Thank you.
-              </h1>
-              <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
-                Your order details have been sent to the Motoluxe team and are now available in your
-                account and the Admin Orders screen.
-              </p>
-              <p className="mt-5 border border-accent/30 bg-accent/10 px-4 py-3 font-display text-xs uppercase tracking-[0.14em] text-accent">
-                Reference: <span>{placedOrderNumber}</span>
-              </p>
-              <div className="mt-7 grid gap-3 sm:grid-cols-2">
-                <Link
-                  to="/profile"
-                  className="group inline-flex items-center justify-center gap-2 bg-primary px-5 py-4 font-display text-xs uppercase tracking-[0.16em] text-primary-foreground"
-                >
-                  View order & write review
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Link>
-                <Link
-                  to="/"
-                  className="inline-flex items-center justify-center border border-border px-5 py-4 font-display text-xs uppercase tracking-[0.16em] text-muted-foreground transition-colors hover:border-primary hover:text-primary"
-                >
-                  Continue shopping
-                </Link>
-              </div>
-              <p className="mt-5 text-xs leading-relaxed text-muted-foreground">
-                After placing an order, open your profile and choose “Write a review” beside a
-                purchased product. Your review goes to Admin Reviews & Questions for moderation.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
   }
 
   return (
@@ -160,8 +99,8 @@ function OrderPage() {
           </span>
           <h1 className="mt-4 max-w-2xl text-5xl font-bold sm:text-6xl">Order details</h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground">
-            Share your contact and delivery details. We will confirm availability and the next steps
-            for your order.
+            Share your delivery details, then complete payment through PhonePe. The order is created
+            only after PhonePe confirms the payment.
           </p>
 
           {lines.length === 0 ? (
@@ -246,7 +185,7 @@ function OrderPage() {
                 className="group inline-flex items-center gap-2 bg-primary px-8 py-4 font-display text-sm uppercase tracking-[0.22em] text-primary-foreground transition-all hover:ember-glow disabled:cursor-wait disabled:opacity-60"
               >
                 {submitting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : null}
-                {submitting ? "Saving order" : "Place order"}
+                {submitting ? "Opening PhonePe" : "Pay securely with PhonePe"}
                 {!submitting && (
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 )}

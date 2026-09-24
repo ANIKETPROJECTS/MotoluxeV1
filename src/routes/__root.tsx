@@ -147,8 +147,8 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <CustomerAuthProvider>
-        <WishlistProvider>
-          <StorefrontCatalogProvider>
+        <StorefrontCatalogProvider>
+          <WishlistProvider>
             <StorefrontInventoryProvider>
               <CartProvider>
                 <div className="flex min-h-screen flex-col">
@@ -161,8 +161,8 @@ function RootComponent() {
                 </div>
               </CartProvider>
             </StorefrontInventoryProvider>
-          </StorefrontCatalogProvider>
-        </WishlistProvider>
+          </WishlistProvider>
+        </StorefrontCatalogProvider>
       </CustomerAuthProvider>
     </QueryClientProvider>
   );

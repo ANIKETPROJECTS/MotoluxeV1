@@ -158,6 +158,27 @@ export async function listCatalogProducts(search = "", category = "", stockFilte
   return documents.map(toProduct);
 }
 
+export async function listPublicCatalogProducts() {
+  const { db } = await getMotoluxeDatabase();
+  const [products, categories] = await Promise.all([
+    db
+      .collection<CatalogProductDocument>(MOTOLUXE_COLLECTIONS.products)
+      .find({ published: { $ne: false } })
+      .sort({ createdAt: -1, name: 1 })
+      .limit(500)
+      .toArray(),
+    db
+      .collection<{ slug: string; published?: boolean }>(MOTOLUXE_COLLECTIONS.categories)
+      .find({}, { projection: { slug: 1, published: 1 } })
+      .limit(250)
+      .toArray(),
+  ]);
+  const unpublishedCategories = new Set(
+    categories.filter((category) => category.published === false).map((category) => category.slug),
+  );
+  return products.filter((product) => !unpublishedCategories.has(product.category)).map(toProduct);
+}
+
 export async function getCatalogProduct(id: string) {
   if (!ObjectId.isValid(id)) return null;
   const document = await (await getCollection()).findOne({ _id: new ObjectId(id) });
