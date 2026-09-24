@@ -86,7 +86,7 @@ export function ProductCard({ product }: { product: Product }) {
     <Link
       to="/product/$product"
       params={{ product: product.slug }}
-      className="focus-ring group relative flex h-full flex-col overflow-hidden border border-border bg-card transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-[0_18px_38px_-28px_var(--primary)]"
+      className="focus-ring group relative flex h-full flex-col overflow-hidden border border-border bg-card transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_18px_38px_-28px_var(--primary)]"
     >
       {cardContent}
     </Link>

@@ -137,7 +137,7 @@ function Home() {
               </a>
               <Link
                 to="/contact"
-                className="focus-ring inline-flex items-center gap-2 border border-white/25 bg-black/20 px-7 py-4 font-display text-sm uppercase tracking-[0.22em] text-white backdrop-blur transition-colors hover:border-accent hover:text-accent"
+                className="focus-ring inline-flex items-center gap-2 border border-white/25 bg-black/20 px-7 py-4 font-display text-sm uppercase tracking-[0.22em] text-white backdrop-blur"
               >
                 Dealer support
                 <ArrowUpRight className="h-4 w-4" />
@@ -233,7 +233,7 @@ function Home() {
               key={category.slug}
               slug={category.slug}
               available={isCategoryPublished(category.slug)}
-              className="group relative min-h-[360px] overflow-hidden border border-border bg-card transition-all duration-500 hover:-translate-y-1 hover:border-primary"
+              className="group relative min-h-[360px] overflow-hidden border border-border bg-card transition-transform duration-500 hover:-translate-y-1"
             >
               <img
                 src={category.image}
@@ -244,7 +244,7 @@ function Home() {
                 className="absolute inset-0 h-full w-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-linear-to-t from-background via-background/55 to-transparent" />
-              <div className="absolute right-5 top-5 font-display text-6xl font-bold text-white/15 transition-colors group-hover:text-primary/50">
+              <div className="absolute right-5 top-5 font-display text-6xl font-bold text-primary/70">
                 {category.index}
               </div>
               <div className="absolute inset-x-0 bottom-0 p-6">
@@ -316,7 +316,7 @@ function Home() {
             </p>
             <Link
               to="/contact"
-              className="mt-8 inline-flex items-center gap-2 border-b border-primary pb-2 font-display text-xs uppercase tracking-[0.2em] text-primary transition-colors hover:text-accent"
+              className="mt-8 inline-flex items-center gap-2 border-b border-primary pb-2 font-display text-xs uppercase tracking-[0.2em] text-primary"
             >
               Talk to Motoluxe
               <ArrowRight className="h-4 w-4" />
@@ -329,7 +329,7 @@ function Home() {
                   key={step.number}
                   className="group grid gap-4 border-b border-border py-7 sm:grid-cols-[80px_1fr]"
                 >
-                  <span className="font-display text-4xl font-bold text-primary/45 transition-colors group-hover:text-primary">
+                  <span className="font-display text-4xl font-bold text-primary">
                     {step.number}
                   </span>
                   <div>
@@ -364,7 +364,7 @@ function Home() {
             </p>
             <Link
               to="/contact"
-              className="group mt-7 inline-flex items-center gap-3 bg-background px-6 py-4 font-display text-xs uppercase tracking-[0.2em] text-foreground transition-colors hover:bg-accent"
+              className="group mt-7 inline-flex items-center gap-3 bg-background px-6 py-4 font-display text-xs uppercase tracking-[0.2em] text-foreground"
             >
               Talk to our team
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -383,7 +383,7 @@ function Home() {
             </p>
             <Link
               to="/about"
-              className="group mt-8 inline-flex items-center gap-2 border-b border-primary pb-2 font-display text-xs uppercase tracking-[0.2em] text-primary transition-colors hover:text-accent"
+              className="group mt-8 inline-flex items-center gap-2 border-b border-primary pb-2 font-display text-xs uppercase tracking-[0.2em] text-primary"
             >
               Read the Motoluxe story
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -393,10 +393,10 @@ function Home() {
             {trust.map((item) => (
               <article
                 key={item.title}
-                className="group flex min-h-[270px] flex-col bg-card p-6 transition-colors hover:bg-surface-raised sm:p-8"
+                className="group flex min-h-[270px] flex-col bg-card p-6 sm:p-8"
               >
                 <div className="flex items-center justify-between border-b border-border pb-5">
-                  <span className="font-display text-4xl font-bold text-primary/70 transition-colors group-hover:text-primary">
+                  <span className="font-display text-4xl font-bold text-primary">
                     {item.number}
                   </span>
                   <span className="text-right font-display text-[10px] uppercase tracking-[0.16em] text-muted-foreground">

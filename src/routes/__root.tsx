@@ -8,7 +8,7 @@ import {
   Scripts,
   useRouterState,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { createElement, useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -128,9 +128,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
+      {createElement("head", null, <HeadContent />)}
       <body>
         {children}
         <Scripts />
@@ -151,7 +149,9 @@ function RootComponent() {
           <WishlistProvider>
             <StorefrontInventoryProvider>
               <CartProvider>
-                <div className="flex min-h-screen flex-col">
+                <div
+                  className={`flex min-h-screen flex-col ${isAdminRoute ? "" : "storefront-site"}`}
+                >
                   {!isAdminRoute && <SiteHeader />}
                   <main className="flex-1">
                     {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
